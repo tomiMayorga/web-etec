@@ -1,0 +1,44 @@
+<%- include('partials/header') %>
+
+<main class="authorities-page">
+  <section class="authorities-page-banner"><div class="authorities-page-banner-inner"><h1>AUTORIDADES</h1></div></section>
+  <section class="authorities-wrapper">
+    <% if (gruposAutoridades?.length) { %>
+      <% gruposAutoridades.forEach((grupo) => { %>
+        <section class="role-section">
+          <h2><span aria-hidden="true">•</span><%= grupo.nombre %></h2>
+          <% const directos = grupo.secciones.filter((seccion) => !seccion.subgrupo?.trim()); %>
+          <% if (directos.length) { %>
+            <div class="authorities-grid-real <%= directos.length === 1 && !grupo.subgrupos.length ? 'authorities-grid-single' : '' %>">
+              <% directos.forEach((seccion) => { %>
+                <article class="authority-card-real">
+                  <h3><%= seccion.titulo %></h3>
+                  <% seccion.contenido.split(/\r?\n/).filter(Boolean).forEach((linea) => { %><p><%= linea %></p><% }) %>
+                </article>
+              <% }) %>
+            </div>
+          <% } %>
+          <% grupo.subgrupos.forEach((subgrupo) => { %>
+            <section class="authority-subgroup">
+              <h3><%= subgrupo.nombre %></h3>
+              <div class="authorities-grid-real <%= subgrupo.secciones.length === 1 ? 'authorities-grid-single' : '' %>">
+                <% subgrupo.secciones.forEach((seccion) => { %>
+                  <article class="authority-card-real">
+                    <h3><%= seccion.titulo %></h3>
+                    <% seccion.contenido.split(/\r?\n/).filter(Boolean).forEach((linea) => { %><p><%= linea %></p><% }) %>
+                  </article>
+                <% }) %>
+              </div>
+            </section>
+          <% }) %>
+        </section>
+      <% }) %>
+    <% } else { %>
+      <section class="role-section"><h2><span aria-hidden="true">•</span>Equipo Directivo</h2><div class="authorities-grid-real"><article class="authority-card-real"><h3>RECTORÍA</h3><p>Lic. Alejandro Ferrarini Cobas</p><span>Vicerrector a cargo</span></article><article class="authority-card-real"><h3>VICERRECTORA</h3><p>Dra. Luciana M. Alonso</p></article><article class="authority-card-real"><h3>VICERRECTOR</h3><p>Lic. Pablo B. Ronderos</p></article></div></section>
+      <section class="role-section"><h2><span aria-hidden="true">•</span>Gestión Académica</h2><div class="authorities-grid-real"><article class="authority-card-real"><h3>REGENCIA</h3><p>Prof. Cristian Serrano</p><p>Prof. Pablo Daponte</p><p>Prof. Diego Cal</p></article><article class="authority-card-real"><h3>SECRETARÍA DE PLANEAMIENTO EDUCATIVO</h3><p>Esp. Carlos A. Ruiz</p></article><article class="authority-card-real"><h3>SECRETARÍA INSTITUCIONAL</h3><p>Prof. María Alonso</p></article></div></section>
+      <section class="role-section"><h2><span aria-hidden="true">•</span>Gestión Administrativa</h2><div class="authorities-grid-real authorities-grid-single"><article class="authority-card-real"><h3>DIRECTOR GRAL. DE ADMINISTRACIÓN</h3><p>Cont. Alejandro Zalazar Carreño</p></article></div></section>
+    <% } %>
+  </section>
+</main>
+
+<%- include('partials/footer') %>

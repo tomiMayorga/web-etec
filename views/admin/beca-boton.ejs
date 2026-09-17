@@ -1,0 +1,12 @@
+<div class="admin-edit-grid">
+  <div class="form-field">
+    <label for="beca-boton-texto-<%= sufijo %>">Texto del botón</label>
+    <input id="beca-boton-texto-<%= sufijo %>" name="botonTexto" value="<%= boton.botonTexto %>" maxlength="160" required>
+    <span class="admin-field-help">Por ejemplo: Ir a Trámites a Distancia (TAD).</span>
+  </div>
+  <div class="form-field">
+    <label for="beca-boton-url-<%= sufijo %>">Dirección del botón</label>
+    <input id="beca-boton-url-<%= sufijo %>" name="botonUrl" type="url" pattern="https://.*" value="<%= boton.botonUrl %>" maxlength="500" placeholder="https://tramitesadistancia.uba.ar/" required>
+    <span class="admin-field-help">La página que se abrirá al hacer clic.</span>
+  </div>
+</div>

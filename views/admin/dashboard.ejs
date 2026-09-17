@@ -1,0 +1,176 @@
+<%- include('../partials/header') %>
+
+<main class="admin-dashboard-page">
+  <section class="admin-dashboard-header">
+    <div class="admin-dashboard-container">
+      <div>
+        <p class="preinscripcion-kicker">
+          Panel administrativo
+        </p>
+
+        <h1>
+          Hola, <%= usuario.nombreMostrado %>
+        </h1>
+
+        <p>
+          <span class="admin-role-badge">
+            <i class="fa-solid fa-shield-halved" aria-hidden="true"></i>
+            <%= usuario.rol === 'SUPER_ADMIN'
+              ? 'Superadministrador'
+              : 'Operador de ingreso' %>
+          </span>
+        </p>
+      </div>
+
+      <form
+        method="post"
+        action="/admin/logout"
+      >
+        <input
+          type="hidden"
+          name="_csrf"
+          value="<%= csrfToken %>"
+        >
+
+        <button
+          class="form-button form-button-secondary"
+          type="submit"
+        >
+          Cerrar sesión
+        </button>
+      </form>
+    </div>
+  </section>
+
+  <section class="admin-dashboard-content">
+    <div class="admin-dashboard-container">
+      <h2>Gestión del ingreso</h2>
+
+      <div class="admin-card-grid">
+        <a
+          class="admin-action-card"
+          href="/admin/inscripciones"
+        >
+          <span class="admin-card-icon" aria-hidden="true">
+            <i class="fa-solid fa-clipboard-list"></i>
+          </span>
+
+          <h3>Preinscripciones</h3>
+
+          <p>
+            Consultar y buscar aspirantes registrados.
+          </p>
+        </a>
+
+          <a
+            class="admin-action-card"
+            href="/admin/exportaciones"
+        >
+          <span class="admin-card-icon" aria-hidden="true">
+            <i class="fa-solid fa-file-excel"></i>
+          </span>
+
+          <h3>Descargar Excel</h3>
+
+          <p>
+            Generar el listado del ciclo seleccionado.
+          </p>
+        </a>
+
+        <% if (usuario.rol === 'SUPER_ADMIN') { %>
+          <a
+            class="admin-action-card"
+            href="/admin/rematriculacion"
+          >
+            <span class="admin-card-icon" aria-hidden="true">
+              <i class="fa-solid fa-calendar-days"></i>
+            </span>
+
+            <h3>Rematriculación</h3>
+
+            <p>
+              Configurar fechas y el aviso público de rematriculación.
+            </p>
+          </a>
+
+          <a
+            class="admin-action-card"
+            href="/admin/usuarios"
+          >
+            <span class="admin-card-icon" aria-hidden="true">
+              <i class="fa-solid fa-user-gear"></i>
+            </span>
+
+            <h3>Usuarios</h3>
+
+            <p>
+              Crear usuarios y administrar sus permisos.
+            </p>
+          </a>
+
+          <a
+            class="admin-action-card"
+            href="/admin/auditoria"
+          >
+            <span class="admin-card-icon" aria-hidden="true">
+              <i class="fa-solid fa-magnifying-glass-chart"></i>
+            </span>
+
+            <h3>Auditoría</h3>
+
+            <p>
+              Revisar accesos, cambios y exportaciones.
+            </p>
+          </a>
+
+          <a
+            class="admin-action-card"
+            href="/admin/conservacion"
+          >
+            <span class="admin-card-icon" aria-hidden="true">
+              <i class="fa-solid fa-database"></i>
+            </span>
+
+            <h3>Conservación de datos</h3>
+
+            <p>
+              Gestionar solicitudes y períodos de eliminación.
+            </p>
+          </a>
+
+          <a
+            class="admin-action-card"
+            href="/admin/contenidos"
+          >
+            <span class="admin-card-icon" aria-hidden="true">
+              <i class="fa-solid fa-pen-to-square"></i>
+            </span>
+
+            <h3>Contenido del sitio</h3>
+
+            <p>
+              Administrar avisos y páginas públicas.
+            </p>
+          </a>
+
+          <a class="admin-action-card" href="/admin/chatbot">
+            <span class="admin-card-icon" aria-hidden="true">
+              <i class="fa-solid fa-comments"></i>
+            </span>
+            <h3>Asistente virtual</h3>
+            <p>Configurar respuestas, áreas y derivaciones a WhatsApp.</p>
+          </a>
+        <% } %>
+      </div>
+
+      <div class="form-alert">
+        Las opciones visibles dependen del rol, pero todos los permisos
+        también serán verificados nuevamente en el servidor.
+      </div>
+    </div>
+  </section>
+</main>
+
+<%- include('../partials/footer') %>
+
+

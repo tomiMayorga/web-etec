@@ -1,0 +1,31 @@
+<% const grupos = [...new Set(secciones.map(s => s.grupo))]; %>
+<section class="admin-authorities-editor">
+  <div class="admin-section-heading"><div><h2>Régimen académico</h2><p>Abrí un título o anexo para editar sus artículos. Los campos siguen el orden del documento público.</p></div><a class="form-button form-button-secondary" href="/regimen-academico" target="_blank" rel="noopener">Ver página pública</a></div>
+  <div class="admin-content-location"><strong>Qué modifica cada campo</strong><p>Las etiquetas identifican encabezados, párrafos y puntos de listas. Guardá cada texto desde su botón. Al editar un encabezado principal también cambia su entrada en el índice.</p></div>
+  <div class="admin-collapsible-grid">
+  <% grupos.forEach(grupo => { %>
+    <details class="admin-editable-section">
+      <summary><span><strong><%= grupo %></strong><small>Textos en el orden de la página pública</small></span><span>Editar</span></summary>
+      <% secciones.filter(s => s.grupo === grupo).forEach(s => { const adicional = grupo === 'Información adicional'; %>
+        <form method="post" action="/admin/contenidos/secciones" class="admin-settings-card admin-settings-form">
+          <input type="hidden" name="_csrf" value="<%= csrfToken %>"><input type="hidden" name="id" value="<%= s.id %>"><input type="hidden" name="grupo" value="<%= s.grupo %>">
+          <% if (adicional) { %><div class="form-field"><label for="academico-titulo-<%= s.id %>">Título del apartado</label><input id="academico-titulo-<%= s.id %>" name="titulo" value="<%= s.titulo %>" minlength="2" maxlength="160" required></div><% } else { %><input type="hidden" name="titulo" value="<%= s.titulo %>"><% } %>
+          <div class="form-field"><label for="academico-texto-<%= s.id %>"><%= adicional ? 'Texto del apartado' : s.titulo %></label><textarea id="academico-texto-<%= s.id %>" name="contenido" rows="<%= s.contenido.length > 250 ? 5 : 2 %>" maxlength="2000" required><%= s.contenido %></textarea></div>
+          <div class="admin-toggle-row"><label><input type="checkbox" name="activo" <%= s.activo ? 'checked' : '' %>> Mostrar este texto en la página pública</label></div>
+          <div class="form-actions"><button class="form-button form-button-primary" type="submit">Guardar este texto</button></div>
+        </form>
+      <% }) %>
+    </details>
+  <% }) %>
+  </div>
+  <details class="admin-create-panel admin-create-section-panel"><summary>Agregar apartado al final</summary>
+    <form method="post" action="/admin/contenidos/secciones/nueva" class="admin-settings-form">
+      <input type="hidden" name="_csrf" value="<%= csrfToken %>"><input type="hidden" name="paginaClave" value="regimen-academico"><input type="hidden" name="grupo" value="Información adicional">
+      <p>El nuevo apartado se publica después de la resolución final.</p>
+      <div class="form-field"><label for="academico-nuevo-titulo">Título visible</label><input id="academico-nuevo-titulo" name="titulo" minlength="2" maxlength="160" required></div>
+      <div class="form-field"><label for="academico-nuevo-texto">Texto</label><textarea id="academico-nuevo-texto" name="contenido" rows="5" maxlength="2000" required></textarea></div>
+      <button class="form-button form-button-primary" type="submit">Agregar y publicar apartado</button>
+    </form>
+  </details>
+</section>
+

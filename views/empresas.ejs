@@ -1,0 +1,29 @@
+<%- include('partials/header') %>
+<% const { presentacion, contacto, propuestas, enlaceContacto } = contenidoEmpresas; %>
+<main class="community-page community-page--business">
+  <div class="community-shell">
+    <h1><%= presentacion.titulo %></h1>
+    <section class="community-hero-card">
+      <header class="business-banner"><h2><%= presentacion.datos.antetitulo %></h2><p><%= presentacion.datos.encabezado %></p></header>
+      <div class="business-body">
+      <% if (presentacion.datos.descripcion !== 'La ETEC articula con empresas y organizaciones para acercar a sus estudiantes a experiencias reales de trabajo, innovación y desarrollo tecnológico.') { %><p class="community-editable-text"><%= presentacion.datos.descripcion %></p><% } %>
+      <% if (propuestas.some(fila => fila.activo)) { %>
+      <div class="community-grid">
+        <% propuestas.filter(fila => fila.activo).forEach(fila => { %>
+          <article><span aria-hidden="true"><%= fila.contenido %></span><h3><%= fila.titulo %></h3></article>
+        <% }) %>
+      </div>
+      <% } %>
+      <% if (contacto.activo) { %>
+        <section class="business-contact"><h3>📩 <%= contacto.titulo %></h3>
+        <% const instrucciones = contacto.datos.instrucciones.split(/\r?\n/).filter(Boolean); %>
+        <p class="community-editable-text"><%= instrucciones[0] || '' %></p>
+        <% if (instrucciones.length > 1) { %><ul><% instrucciones.slice(1).forEach(linea => { %><li><%= linea %></li><% }) %></ul><% } %>
+        <a class="community-button" href="<%= enlaceContacto %>"><%= contacto.datos.boton %></a>
+        </section>
+      <% } %>
+      </div>
+    </section>
+  </div>
+</main>
+<%- include('partials/footer') %>

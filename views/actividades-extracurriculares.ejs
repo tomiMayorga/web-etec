@@ -1,0 +1,42 @@
+<%- include('partials/header') %>
+
+<%
+  const bloquesActividades = Array.isArray(seccionesActividades) ? seccionesActividades : [];
+  const actividadLineas = (contenido) => String(contenido || '').split(/\r?\n/).map((linea) => linea.trim()).filter(Boolean);
+  const parsearActividad = (contenido) => actividadLineas(contenido).map((linea) => linea.split('|').map((parte) => parte.trim()));
+  const presentacion = bloquesActividades.find((bloque) => bloque.grupo === 'Presentación');
+  const destacados = bloquesActividades.find((bloque) => bloque.grupo === 'Destacados');
+  const actividades = bloquesActividades.find((bloque) => bloque.grupo === 'Actividades');
+  const viajes = bloquesActividades.find((bloque) => bloque.grupo === 'Viajes de estudio');
+  const viajesItems = viajes ? parsearActividad(viajes.contenido) : [];
+  const viajesImagenes = viajesItems.filter((viaje) => viaje[0] && /^(https?:\/\/|\/)/i.test(viaje[0]));
+  const viajesDescripcion = viajesItems.filter((viaje) => !viaje[0] || !/^(https?:\/\/|\/)/i.test(viaje[0])).map((viaje) => viaje[1] || viaje[0]).filter(Boolean).join(' ');
+  const destacadosItems = destacados ? parsearActividad(destacados.contenido) : [
+    ['', '5to año en la Casita de Tucumán, 2022.'],
+    ['', '5to año visita a la Universidad de Tucumán, 2022.'],
+    ['', '6to año viaje a Villa La Angostura.'],
+    ['', '5to año viaje a Tucumán.'],
+  ];
+  const actividadesItems = actividades ? parsearActividad(actividades.contenido) : [
+    ['', 'TALLER DE RADIO Y STREAMING', '¡Sumate al Taller de Radio y Streaming! Un espacio para aprender a comunicar y producir contenido.', '02 septiembre 2024'],
+    ['', 'TALLER DE ENSAMBLE MUSICAL', '¡Sumate al Taller de Ensamble Musical! Un espacio para tocar, crear y hacer música junto a tus compañeros.', '14 junio 2024'],
+    ['', 'TALLER DE OLIMPIADAS DE MATEMÁTICA ARGENTINA', 'La Escuela ofrece talleres para entrenar a las alumnas y alumnos que participan de las Olimpiadas de Matemática.', '14 junio 2024'],
+    ['', 'TALLER DE FILOSOFÍA', '¡Sumate al Taller de Filosofía! Un espacio para pensar, debatir y cuestionar.', '14 junio 2024'],
+    ['', 'VOLEY MIXTO', '¡El taller de Voley Mixto está abierto para todos los estudiantes de la ETEC!', '31 mayo 2024'],
+    ['', 'FÚTBOL FEMENINO', '¡Inscribite al taller de Fútbol Femenino! Todos los martes de 17:20 a 19 h en la ETEC.', '31 mayo 2024'],
+    ['', 'TALLER DE CHINO', '¡Vení a la ETEC a aprender chino! Un espacio para acercarse a la lengua y cultura china.', '29 agosto 2023'],
+    ['', 'FÚTBOL MASCULINO', '¡Inscribite al taller de fútbol! Todos los sábados de 8:00 a 11:30 h en la ETEC.', '29 agosto 2023'],
+  ];
+%>
+
+<main class="activities-page">
+  <section class="activities-intro"><div><p>¡Conocé todas!</p><h1>ACTIVIDADES EXTRACURRICULARES</h1><h2><%= presentacion ? actividadLineas(presentacion.contenido).join(' ') : 'La ETEC cuenta con múltiples actividades y talleres extracurriculares para estudiantes y familias. ¡Sumate al que más te guste!' %></h2></div></section>
+  <section class="activities-highlights"><h2><%= destacados?.titulo || '¡Momentos destacados!' %></h2><div class="highlight-grid">
+    <% destacadosItems.forEach((destacado, indice) => { %><figure><% if (destacado[0] && /^(https?:\/\/|\/)/i.test(destacado[0])) { %><img src="<%= destacado[0] %>" alt="<%= destacado[1] || 'Momento destacado de ETEC' %>" loading="lazy"><% } else { %><span><%= ['🏛️', '🎓', '🏔️', '🚌'][indice] || '📌' %></span><% } %><figcaption><strong><%= destacado[1] || destacado[0] || 'Momento destacado' %></strong><% if (destacado[2]) { %><br><%= destacado[2] %><% } %><% if (destacado[3]) { %><br><small><%= destacado[3] %></small><% } %></figcaption></figure><% }) %>
+  </div></section>
+  <section class="activities-list"><h2><%= actividades?.titulo || 'Conocé todas las actividades y talleres' %></h2><div class="activity-grid">
+    <% actividadesItems.forEach((actividad) => { %><article class="activity-card"><time><%= actividad[3] || actividad[0] || '' %></time><h3><%= actividad[1] || 'Actividad extracurricular' %></h3><p><%= actividad[2] || '' %></p><% if (actividad[0] && /^(https?:\/\/|\/)/i.test(actividad[0])) { %><img src="<%= actividad[0] %>" alt="<%= actividad[1] || 'Actividad ETEC' %>" loading="lazy"><% } %><span>¡Conocé más!</span></article><% }) %>
+  </div></section>
+  <section class="study-trips"><div><h2><%= viajes?.titulo || 'Viajes de estudio' %></h2><% if (viajesDescripcion) { %><p><%= viajesDescripcion %></p><% } else if (!viajesImagenes.length) { %><p>En la ETEC cada año se realiza un viaje de estudios distinto, con destinos increíbles como Sierra de la Ventana, Tucumán y Villa La Angostura, entre otros.</p><% } %><% if (viajesImagenes.length) { %><div class="study-trips-carousel" data-study-trips-carousel aria-label="Carrusel de viajes de estudio"><div class="study-trips-slides" aria-live="polite"><% viajesImagenes.forEach((viaje, indice) => { %><figure class="study-trip-slide <%= indice === 0 ? 'is-active' : '' %>"><img src="<%= viaje[0] %>" alt="<%= viaje[1] || 'Viaje de estudio ETEC' %>" loading="lazy"><figcaption><strong><%= viaje[1] || 'Viaje de estudio' %></strong><% if (viaje[2]) { %><span><%= viaje[2] %></span><% } %><% if (viaje[3]) { %><small><%= viaje[3] %></small><% } %></figcaption></figure><% }) %></div><button class="study-trips-control study-trips-prev" type="button" aria-label="Viaje anterior">‹</button><button class="study-trips-control study-trips-next" type="button" aria-label="Viaje siguiente">›</button><div class="study-trips-dots" role="tablist" aria-label="Seleccionar viaje"><% viajesImagenes.forEach((_viaje, indice) => { %><button type="button" role="tab" aria-label="Ver viaje <%= indice + 1 %>" aria-selected="<%= indice === 0 ? 'true' : 'false' %>" class="<%= indice === 0 ? 'is-active' : '' %>" data-study-trip-to="<%= indice %>"></button><% }) %></div></div><% } %></div></section>
+</main>
+<%- include('partials/footer') %>

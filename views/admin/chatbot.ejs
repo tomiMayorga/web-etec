@@ -1,0 +1,177 @@
+<%- include('../partials/header') %>
+
+<main class="admin-management-page">
+  <header class="admin-management-header">
+    <div class="admin-dashboard-container">
+      <div>
+        <p class="preinscripcion-kicker">SuperAdmin</p>
+        <h1>Asistente virtual</h1>
+        <p>Administrá respuestas, áreas y derivaciones sin modificar el código.</p>
+      </div>
+      <a class="form-button form-button-secondary" href="/admin">Volver al panel</a>
+    </div>
+  </header>
+
+  <div class="admin-dashboard-container admin-management-content">
+    <% if (guardado && guardado !== 'error') { %>
+      <div class="admin-save-message" role="status">Los cambios se guardaron correctamente.</div>
+    <% } %>
+    <% if (guardado === 'error') { %>
+      <div class="form-alert form-alert-error" role="alert">No se pudieron guardar los cambios. Revisá los datos ingresados.</div>
+    <% } %>
+
+    <section class="admin-settings-card">
+      <h2>Configuración general</h2>
+      <form method="post" action="/admin/chatbot/configuracion" class="admin-settings-form">
+        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+        <div class="admin-toggle-row">
+          <label><input type="checkbox" name="activo" <%= configuracion.activo ? 'checked' : '' %>> Asistente habilitado</label>
+          <label><input type="checkbox" name="modoPrueba" <%= configuracion.modoPrueba ? 'checked' : '' %>> Modo de prueba</label>
+        </div>
+        <div class="form-field">
+          <label for="mensajeBienvenida">Mensaje de bienvenida</label>
+          <textarea id="mensajeBienvenida" name="mensajeBienvenida" maxlength="600" rows="3" required><%= configuracion.mensajeBienvenida %></textarea>
+        </div>
+        <div class="form-field">
+          <label for="mensajeNoEntendido">Respuesta cuando no entiende la consulta</label>
+          <textarea id="mensajeNoEntendido" name="mensajeNoEntendido" maxlength="600" rows="3" required><%= configuracion.mensajeNoEntendido %></textarea>
+        </div>
+        <div class="form-actions"><button class="form-button form-button-primary" type="submit">Guardar configuración</button></div>
+      </form>
+    </section>
+
+    <section class="admin-management-section">
+      <div class="admin-section-heading">
+        <div><h2>Áreas de contacto</h2><p>El número debe incluir código de país y área, sin +, espacios ni guiones.</p></div>
+        <div class="admin-section-actions">
+          <span class="admin-status-badge"><%= configuracion.modoPrueba ? 'Modo de prueba activo' : 'Derivaciones activas' %></span>
+          <details class="admin-create-panel">
+        <summary><i class="fa-solid fa-plus" aria-hidden="true"></i> Agregar área de contacto</summary>
+        <form method="post" action="/admin/chatbot/areas/nueva" class="admin-settings-form">
+          <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+          <div class="admin-toggle-row"><label><input type="checkbox" name="activo" checked> Área habilitada</label></div>
+          <div class="form-field">
+            <label for="nueva-area-nombre">Nombre del área</label>
+            <input id="nueva-area-nombre" name="nombre" type="text" minlength="2" maxlength="120" required>
+          </div>
+          <div class="form-field">
+            <label for="nueva-area-telefono">WhatsApp</label>
+            <input id="nueva-area-telefono" name="telefonoWhatsapp" type="text" inputmode="numeric" pattern="[0-9]{8,15}" maxlength="15" placeholder="Puede dejarse vacío durante las pruebas">
+          </div>
+          <div class="form-field">
+            <label for="nueva-area-mensaje">Mensaje inicial</label>
+            <textarea id="nueva-area-mensaje" name="mensajeInicial" minlength="5" maxlength="600" rows="3" required></textarea>
+          </div>
+          <div class="form-actions"><button class="form-button form-button-primary" type="submit">Crear área</button></div>
+        </form>
+          </details>
+        </div>
+      </div>
+      <div class="admin-edit-grid">
+        <% areas.forEach((area) => { %>
+          <form method="post" action="/admin/chatbot/areas" class="admin-settings-card admin-settings-form">
+            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+            <input type="hidden" name="id" value="<%= area.id %>">
+            <div class="admin-toggle-row"><label><input type="checkbox" name="activo" <%= area.activo ? 'checked' : '' %>> Área habilitada</label></div>
+            <div class="form-field">
+              <label for="area-nombre-<%= area.id %>">Nombre</label>
+              <input id="area-nombre-<%= area.id %>" name="nombre" type="text" maxlength="120" value="<%= area.nombre %>" required>
+            </div>
+            <div class="form-field">
+              <label for="area-telefono-<%= area.id %>">WhatsApp</label>
+              <input id="area-telefono-<%= area.id %>" name="telefonoWhatsapp" type="text" inputmode="numeric" pattern="[0-9]{8,15}" maxlength="15" value="<%= area.telefonoWhatsapp ?? '' %>" placeholder="5491123456789">
+            </div>
+            <div class="form-field">
+              <label for="area-mensaje-<%= area.id %>">Mensaje inicial</label>
+              <textarea id="area-mensaje-<%= area.id %>" name="mensajeInicial" maxlength="600" rows="3" required><%= area.mensajeInicial %></textarea>
+            </div>
+            <div class="form-actions"><button class="form-button form-button-primary" type="submit">Guardar área</button></div>
+          </form>
+        <% }) %>
+      </div>
+    </section>
+
+    <section class="admin-management-section">
+      <div class="admin-section-heading">
+        <div><h2>Respuestas e intenciones</h2><p>Escribí una frase reconocible por línea. Se admiten hasta 30 por respuesta.</p></div>
+        <div class="admin-section-actions">
+          <details class="admin-create-panel">
+        <summary><i class="fa-solid fa-plus" aria-hidden="true"></i> Agregar respuesta o intención</summary>
+        <form method="post" action="/admin/chatbot/intenciones/nueva" class="admin-settings-form">
+          <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+          <div class="admin-toggle-row"><label><input type="checkbox" name="activo" checked> Respuesta habilitada</label></div>
+          <div class="form-field">
+            <label for="nueva-intencion-titulo">Título visible</label>
+            <input id="nueva-intencion-titulo" name="titulo" type="text" minlength="2" maxlength="120" required>
+          </div>
+          <div class="form-field">
+            <label for="nueva-intencion-respuesta">Respuesta</label>
+            <textarea id="nueva-intencion-respuesta" name="respuesta" minlength="5" maxlength="600" rows="3" required></textarea>
+          </div>
+          <div class="form-field">
+            <label for="nueva-intencion-destino">Tipo de destino</label>
+            <select id="nueva-intencion-destino" name="tipoDestino" required>
+              <option value="PAGINA_INTERNA">Página de la web</option>
+              <option value="WHATSAPP">Área de WhatsApp</option>
+            </select>
+          </div>
+          <div class="admin-edit-grid admin-destination-fields">
+            <div class="form-field">
+              <label for="nueva-intencion-ruta">Ruta interna</label>
+              <input id="nueva-intencion-ruta" name="rutaInterna" type="text" maxlength="200" placeholder="/nombre-de-la-pagina">
+              <small>Completala solamente cuando el destino sea una página.</small>
+            </div>
+            <div class="form-field">
+              <label for="nueva-intencion-area">Área de contacto</label>
+              <select id="nueva-intencion-area" name="areaContactoId">
+                <option value="">Seleccionar área</option>
+                <% areas.forEach((area) => { %>
+                  <option value="<%= area.id %>"><%= area.nombre %></option>
+                <% }) %>
+              </select>
+              <small>Seleccionála solamente cuando el destino sea WhatsApp.</small>
+            </div>
+          </div>
+          <div class="form-field">
+            <label for="nueva-intencion-frases">Frases reconocidas</label>
+            <textarea id="nueva-intencion-frases" name="frases" maxlength="3000" rows="7" placeholder="Una frase por línea" required></textarea>
+          </div>
+          <div class="form-actions"><button class="form-button form-button-primary" type="submit">Crear respuesta</button></div>
+        </form>
+          </details>
+        </div>
+      </div>
+      <div class="admin-intentions-list">
+        <% intenciones.forEach((intencion) => { %>
+          <details class="admin-intention-card">
+            <summary>
+              <span><%= intencion.titulo %></span>
+              <small><%= intencion.tipoDestino === 'WHATSAPP' ? `WhatsApp: ${intencion.areaContacto?.nombre ?? 'sin área'}` : `Página: ${intencion.rutaInterna}` %></small>
+              <span class="admin-status-badge <%= intencion.activo ? '' : 'is-disabled' %>"><%= intencion.activo ? 'Activa' : 'Desactivada' %></span>
+            </summary>
+            <form method="post" action="/admin/chatbot/intenciones" class="admin-settings-form admin-intention-form">
+              <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+              <input type="hidden" name="id" value="<%= intencion.id %>">
+              <div class="admin-toggle-row"><label><input type="checkbox" name="activo" <%= intencion.activo ? 'checked' : '' %>> Respuesta habilitada</label></div>
+              <div class="form-field">
+                <label for="intencion-titulo-<%= intencion.id %>">Título visible</label>
+                <input id="intencion-titulo-<%= intencion.id %>" name="titulo" type="text" maxlength="120" value="<%= intencion.titulo %>" required>
+              </div>
+              <div class="form-field">
+                <label for="intencion-respuesta-<%= intencion.id %>">Respuesta</label>
+                <textarea id="intencion-respuesta-<%= intencion.id %>" name="respuesta" maxlength="600" rows="3" required><%= intencion.respuesta %></textarea>
+              </div>
+              <div class="form-field">
+                <label for="intencion-frases-<%= intencion.id %>">Frases reconocidas</label>
+                <textarea id="intencion-frases-<%= intencion.id %>" name="frases" maxlength="3000" rows="7" required><%= intencion.frases.map((frase) => frase.texto).join('\n') %></textarea>
+              </div>
+              <div class="form-actions"><button class="form-button form-button-primary" type="submit">Guardar respuesta</button></div>
+            </form>
+          </details>
+        <% }) %>
+      </div>
+    </section>
+  </div>
+</main>
+
+<%- include('../partials/footer') %>

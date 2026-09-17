@@ -1,0 +1,6 @@
+<div class="form-field"><label>Imagen del carrusel<input type="text" data-media-url value="<%= fila[0] || '' %>" maxlength="500" placeholder="Subí una imagen o pegá su dirección"></label><input type="file" data-media-file accept="image/jpeg,image/png,image/webp" hidden><button type="button" data-media-upload class="form-button form-button-secondary">Subir imagen desde la computadora</button><small data-media-upload-status role="status"></small></div>
+<div class="form-field"><label>Título sobre la foto<input type="text" data-media-title value="<%= fila[1] || '' %>" maxlength="160"></label><small>También describe la imagen para lectores de pantalla.</small></div>
+<div class="form-field"><label>Descripción debajo del título<textarea data-media-description rows="2" maxlength="500"><%= fila[2] || '' %></textarea></label></div>
+<input type="hidden" data-media-date value="<%= fila[3] || '' %>">
+<button type="button" data-media-remove class="form-button form-button-secondary">Quitar foto del carrusel</button>
+

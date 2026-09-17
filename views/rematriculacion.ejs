@@ -1,0 +1,27 @@
+<%- include('partials/header') %>
+<%
+const bloques = (Array.isArray(seccionesRematriculacion) ? seccionesRematriculacion : []).filter(s => s.activo);
+const lineas = x => String(x || '').split(/\r?\n/).map(y => y.trim()).filter(Boolean);
+%>
+<main class="reenrollment-page"><section class="reenrollment-layout"><div class="reenrollment-container">
+  <h1>Rematriculación</h1>
+  <p class="reenrollment-lead">Consultá las indicaciones y accedé a la documentación para realizar el trámite.</p>
+  <div class="reenrollment-content">
+    <aside class="reenrollment-notice" role="note"><strong>Aviso importante · Educación Física</strong><p><%= rematriculacion?.mensajeAptoFisico ?? 'Aquellos estudiantes que no presentaron apto físico ninguna vez durante el año. No podrán realizar Educación Física el año siguiente.' %></p></aside>
+    <% bloques.forEach(b => { %>
+      <section class="reenrollment-editable-block <%= b.grupo === 'Aviso de presentación' ? 'reenrollment-deadline-card' : '' %>">
+        <span class="reenrollment-category"><%= b.grupo === 'Documentación' ? 'Formularios y documentos' : b.grupo %></span><h2><%= b.titulo %></h2>
+        <% if (b.grupo === 'Documentación') { %>
+          <div class="reenrollment-documents">
+            <% lineas(b.contenido).forEach(l => { const p = l.split('|'); %>
+              <% if (p.length > 1) { %>
+                <article class="reenrollment-document-card"><span class="reenrollment-document-icon" aria-hidden="true"><i class="fas fa-file-alt"></i></span><h3><%= p[0].trim() %></h3><a href="<%= p[1].trim() %>" target="_blank" rel="noopener" aria-label="Abrir <%= p[0].trim() %> (en otra pestaña)">Abrir documento <span aria-hidden="true">↗</span></a></article>
+              <% } else { %><p><%= l %></p><% } %>
+            <% }) %>
+          </div>
+        <% } else { lineas(b.contenido).forEach(l => { %><p><%= l %></p><% }) } %>
+      </section>
+    <% }) %>
+  </div>
+</div></section></main>
+<%- include('partials/footer') %>

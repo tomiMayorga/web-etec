@@ -1,0 +1,90 @@
+<%- include('../partials/header') %>
+
+<main class="admin-login-page">
+  <section class="admin-login-section">
+    <div class="admin-login-card">
+      <div class="admin-login-icon" aria-hidden="true">
+        <i class="fa-solid fa-user-shield"></i>
+      </div>
+
+      <p class="preinscripcion-kicker">
+        Acceso restringido
+      </p>
+
+      <h1>Panel administrativo</h1>
+
+      <p>
+        Ingresá con tu cuenta autorizada para gestionar el curso
+        de ingreso.
+      </p>
+
+      <% if (error) { %>
+        <div
+          class="form-alert form-alert-error"
+          role="alert"
+        >
+          <%= error %>
+        </div>
+      <% } %>
+
+      <form
+        method="post"
+        action="/admin/login"
+        class="admin-login-form"
+      >
+        <input
+          type="hidden"
+          name="_csrf"
+          value="<%= csrfToken %>"
+        >
+
+        <div class="form-field">
+          <label for="admin-identificador">
+            Usuario o correo electrónico
+          </label>
+
+          <input
+            id="admin-identificador"
+            name="identificador"
+            type="text"
+            maxlength="254"
+            autocomplete="username"
+            required
+            autofocus
+          >
+        </div>
+
+        <div class="form-field">
+          <label for="admin-password">
+            Contraseña
+          </label>
+
+          <input
+            id="admin-password"
+            name="password"
+            type="password"
+            maxlength="128"
+            autocomplete="current-password"
+            required
+          >
+        </div>
+
+        <button
+          class="form-button form-button-primary"
+          type="submit"
+        >
+          Ingresar
+        </button>
+      </form>
+
+      <a
+        class="admin-back-link"
+        href="/"
+      >
+        Volver al sitio
+      </a>
+    </div>
+  </section>
+</main>
+
+

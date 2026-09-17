@@ -1,0 +1,52 @@
+<%- include('partials/header') %>
+
+<%
+  const cabecera = seccionesCronograma.find((fila) => fila.grupo === 'Cabecera');
+  const filas = seccionesCronograma.filter((fila) => fila.grupo !== 'Cabecera' && fila.activo);
+%>
+<main class="admission-schedule-page">
+  <h1 class="admission-schedule-page-title">Cronograma</h1>
+
+  <section class="admission-schedule-container">
+    <h2 class="admission-schedule-title">
+      <%= cabecera?.titulo || 'Cronograma de Curso de Ingreso' %>
+    </h2>
+
+    <div class="admission-schedule-identity">
+      <div class="admission-schedule-mini-logo">
+        <span class="dot">.</span><span class="uba">UBA</span><span class="technical">TÉCNICA</span>
+      </div>
+
+      <span class="admission-schedule-subtitle">
+        <%= cabecera?.contenido || 'Calendario Académico Oficial' %>
+      </span>
+    </div>
+
+    <div class="admission-schedule-table-wrapper">
+      <table class="admission-schedule-table">
+        <thead>
+          <tr>
+            <th>Fecha</th>
+            <th>Actividad / Detalle</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <% filas.forEach((fila) => { %>
+            <tr>
+              <td class="schedule-date"><%= fila.titulo %></td>
+              <td class="<%= fila.grupo === 'Alerta' ? 'schedule-alert' : fila.grupo === 'Evaluación' ? 'schedule-evaluation' : '' %>">
+                <% fila.contenido.split(/\r?\n/).forEach((linea, indice) => { %>
+                  <% if (indice === 0) { %><%= linea %><% } else { %><span class="schedule-note"><%= linea %></span><% } %>
+                <% }) %>
+              </td>
+            </tr>
+          <% }) %>
+          <% if (!filas.length) { %><tr><td colspan="2">Todavía no hay fechas publicadas para este cronograma.</td></tr><% } %>
+        </tbody>
+      </table>
+    </div>
+  </section>
+</main>
+
+<%- include('partials/footer') %>

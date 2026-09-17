@@ -1,0 +1,95 @@
+<%- include('partials/header') %>
+<%
+  const secciones = (Array.isArray(seccionesInformacionGeneral) ? seccionesInformacionGeneral : []).filter((seccion) => seccion.activo);
+  const presentacion = secciones.find((seccion) => seccion.grupo === 'Presentación');
+  const apartados = secciones.filter((seccion) => seccion.id !== presentacion?.id);
+  const titulosResumen = ['DURACIÓN', 'QUIÉNES PUEDEN CURSAR', 'MATERIAS', 'ASISTENCIA'];
+  const resumen = apartados.filter((seccion) => titulosResumen.includes(seccion.titulo.trim().toUpperCase()));
+  const detalle = apartados.filter((seccion) => !titulosResumen.includes(seccion.titulo.trim().toUpperCase()));
+  const grupos = [];
+  detalle.forEach((seccion) => {
+    const grupo = seccion.grupo?.trim() || 'Información del curso';
+    let destino = grupos.find((item) => item.nombre === grupo);
+    if (!destino) { destino = { nombre: grupo, secciones: [] }; grupos.push(destino); }
+    destino.secciones.push(seccion);
+  });
+  const iconos = ['fa-calendar-days', 'fa-users', 'fa-book-open', 'fa-calendar-check'];
+  const lineasDe = (contenido) => String(contenido || '').split(/\r?\n/).map((linea) => linea.trim()).filter(Boolean);
+%>
+
+<main class="general-info-page">
+  <section class="general-info-hero" aria-labelledby="general-info-title">
+    <div class="general-info-container general-info-hero-inner">
+      <span class="general-info-eyebrow">ETEC UBA · CURSO DE INGRESO</span>
+      <h1 id="general-info-title"><%= (typeof contenidoPagina !== 'undefined' && contenidoPagina?.titulo) || 'Información general' %></h1>
+      <% if (presentacion) { %>
+        <p class="general-info-hero-label"><%= presentacion.titulo %></p>
+        <div class="general-info-lead">
+          <% lineasDe(presentacion.contenido).forEach((linea) => { %><p><%= linea %></p><% }) %>
+        </div>
+      <% } %>
+      <div class="general-info-actions" aria-label="Accesos rápidos">
+        <a class="general-info-action general-info-action-primary" href="/cronograma-curso-ingreso"><i class="fa-solid fa-calendar-days" aria-hidden="true"></i> Ver cronograma</a>
+        <a class="general-info-action" href="/ingresantes"><i class="fa-solid fa-list-check" aria-hidden="true"></i> Consultar ingresantes</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="general-info-container general-info-content" aria-label="Información del Curso de Ingreso">
+    <% if (resumen.length) { %>
+      <div class="general-info-section-heading">
+        <span class="general-info-eyebrow general-info-eyebrow-dark">PARA TENER EN CUENTA</span>
+        <h2>Lo más importante</h2>
+        <p>Encontrá rápidamente los datos principales del Curso de Ingreso.</p>
+      </div>
+      <div class="general-info-summary-grid">
+        <% resumen.forEach((seccion, indice) => { const lineas = lineasDe(seccion.contenido); %>
+          <article class="general-info-summary-card">
+            <div class="general-info-card-icon"><i class="fa-solid <%= iconos[indice % iconos.length] %>" aria-hidden="true"></i></div>
+            <h3><%= seccion.titulo %></h3>
+            <div class="general-info-card-copy">
+              <% lineas.forEach((linea) => { %>
+                <% if (linea.startsWith('• ')) { %><p class="general-info-list-line"><span aria-hidden="true">•</span><%= linea.slice(2) %></p><% } else { %><p><%= linea %></p><% } %>
+              <% }) %>
+            </div>
+          </article>
+        <% }) %>
+      </div>
+    <% } %>
+
+    <% if (grupos.length) { %>
+      <div class="general-info-details">
+        <div class="general-info-section-heading">
+          <span class="general-info-eyebrow general-info-eyebrow-dark">GUÍA DEL INGRESO</span>
+          <h2>Información detallada</h2>
+          <p>Todo lo que necesitás saber, organizado por tema.</p>
+        </div>
+        <div class="general-info-accordion-list">
+          <% grupos.forEach((grupo, indiceGrupo) => { %>
+            <section class="general-info-group" id="general-info-group-<%= indiceGrupo + 1 %>">
+              <h3 class="general-info-group-title"><span><%= grupo.nombre %></span><i class="fa-solid fa-arrow-down" aria-hidden="true"></i></h3>
+              <div class="general-info-detail-grid">
+                <% grupo.secciones.forEach((seccion) => { const lineas = lineasDe(seccion.contenido); %>
+                  <article class="general-info-detail-card" id="general-info-<%= seccion.id %>">
+                    <h4><%= seccion.titulo %></h4>
+                    <div class="general-info-detail-copy">
+                      <% lineas.forEach((linea) => { %>
+                        <% if (linea.startsWith('• ')) { %><p class="general-info-list-line"><span aria-hidden="true">•</span><%= linea.slice(2) %></p><% } else { %><p><%= linea %></p><% } %>
+                      <% }) %>
+                    </div>
+                  </article>
+                <% }) %>
+              </div>
+            </section>
+          <% }) %>
+        </div>
+      </div>
+    <% } %>
+
+    <% if (!secciones.length) { %>
+      <p class="general-info-empty">La información se encuentra temporalmente no disponible.</p>
+    <% } %>
+  </section>
+</main>
+
+<%- include('partials/footer') %>

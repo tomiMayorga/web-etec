@@ -1,0 +1,45 @@
+<%
+ const ubicaciones = {
+  'Presentación':'Título e introducción al comienzo de la página.',
+  'Constancia':'Constancia de alumno regular: instrucciones para pedirla al preceptor.',
+  'Enlaces':'Acceso a TAD e instructivo, encima de la lista de trámites.',
+  'Trámites TAD':'Lista de constancias que se solicitan por TAD.',
+  'Legalización':'Instructivo para legalizar el certificado analítico parcial.',
+  'Aviso':'Aviso destacado al final de la página.'
+ };
+ const grupos = [...new Set(secciones.map(s => s.grupo))];
+%>
+<section class="admin-authorities-editor">
+ <div class="admin-section-heading"><div><h2>Trámites para alumnos/as</h2><p>Abrí un apartado para modificar sus textos, enlaces o documentos.</p></div><a class="form-button form-button-secondary" href="/tramites-para-alumnos-as" target="_blank" rel="noopener">Ver página pública</a></div>
+ <div class="admin-collapsible-grid">
+ <% grupos.forEach(grupo => { %>
+  <details class="admin-editable-section"><summary><span><strong><%= grupo %></strong><small><%= ubicaciones[grupo] || 'Apartado adicional al final de la página.' %></small></span><span>Editar</span></summary>
+  <% secciones.filter(s => s.grupo === grupo).forEach(s => { const esEnlace = ['Enlaces','Legalización'].includes(grupo); let enlace = {}; if (esEnlace) { try { enlace = JSON.parse(s.contenido); } catch {} } %>
+   <form method="post" action="/admin/contenidos/secciones" class="admin-settings-card admin-settings-form">
+    <input type="hidden" name="_csrf" value="<%= csrfToken %>"><input type="hidden" name="id" value="<%= s.id %>"><input type="hidden" name="grupo" value="<%= s.grupo %>">
+    <% if (grupo === 'Aviso') { %><input type="hidden" name="titulo" value="<%= s.titulo %>"><% } else { %><div class="form-field"><label for="tramite-titulo-<%= s.id %>"><%= esEnlace ? 'Texto del enlace que se puede pulsar' : 'Título o nombre visible' %></label><input id="tramite-titulo-<%= s.id %>" name="titulo" value="<%= s.titulo %>" minlength="2" maxlength="160" required></div><% } %>
+    <div class="form-field"><label for="tramite-texto-<%= s.id %>"><%= esEnlace ? 'Instrucciones antes del enlace' : grupo === 'Trámites TAD' ? 'Descripción opcional de este trámite' : 'Texto visible' %></label><textarea id="tramite-texto-<%= s.id %>" name="<%= esEnlace ? 'textoTramite' : 'contenido' %>" rows="3" maxlength="<%= esEnlace ? 1200 : 2000 %>"><%= esEnlace ? enlace.textoTramite || '' : s.contenido %></textarea></div>
+    <% if(esEnlace) { %>
+     <div data-pdf-upload data-pdf-success-name="PDF cargado correctamente" data-pdf-success-message="Guardá este trámite para publicar el nuevo documento.">
+      <div class="form-field"><label for="tramite-url-<%= s.id %>">Dirección del enlace o del PDF</label><input id="tramite-url-<%= s.id %>" name="urlTramite" data-pdf-url value="<%= enlace.urlTramite || '' %>" maxlength="500" required></div>
+      <input type="file" data-pdf-file accept="application/pdf" hidden><button type="button" data-pdf-select class="form-button form-button-secondary">Subir PDF desde la computadora</button><small data-pdf-name></small><small data-pdf-status role="status"></small>
+      <p>Podés pegar una dirección HTTPS o subir un PDF. Guardá este apartado para publicar el enlace.</p>
+     </div>
+    <% } %>
+    <div class="admin-toggle-row"><label><input type="checkbox" name="activo" <%= s.activo ? 'checked' : '' %>> Mostrar este elemento</label></div>
+    <div class="form-actions"><button type="submit" class="form-button form-button-primary">Guardar este elemento</button></div>
+   </form>
+  <% }) %>
+  </details>
+ <% }) %>
+ </div>
+ <details class="admin-create-panel admin-create-section-panel"><summary>Agregar trámite o apartado</summary>
+  <form method="post" action="/admin/contenidos/secciones/nueva" class="admin-settings-form">
+   <input type="hidden" name="_csrf" value="<%= csrfToken %>"><input type="hidden" name="paginaClave" value="tramites-alumnos">
+   <div class="form-field"><label for="tramite-nuevo-grupo">Dónde aparecerá</label><select id="tramite-nuevo-grupo" name="grupo"><option value="Trámites TAD">Lista de trámites por TAD</option><option value="Información adicional">Apartado al final de la página</option></select></div>
+   <div class="form-field"><label for="tramite-nuevo-titulo">Nombre o título</label><input id="tramite-nuevo-titulo" name="titulo" minlength="2" maxlength="160" required></div>
+   <div class="form-field"><label for="tramite-nuevo-texto">Descripción o instrucciones</label><textarea id="tramite-nuevo-texto" name="contenido" rows="4" maxlength="2000" required></textarea></div>
+   <button type="submit" class="form-button form-button-primary">Agregar y publicar</button>
+  </form>
+ </details>
+</section>

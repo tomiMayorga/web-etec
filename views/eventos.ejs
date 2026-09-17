@@ -1,0 +1,218 @@
+<%- include('partials/header') %>
+
+<%
+  const nombresMeses = [
+    'Enero',
+    'Febrero',
+    'Marzo',
+    'Abril',
+    'Mayo',
+    'Junio',
+    'Julio',
+    'Agosto',
+    'Septiembre',
+    'Octubre',
+    'Noviembre',
+    'Diciembre',
+  ];
+
+  const diasSemana = [
+    'Dom',
+    'Lun',
+    'Mar',
+    'Mié',
+    'Jue',
+    'Vie',
+    'Sáb',
+  ];
+
+  const etiquetasCategoria = {
+    INSTITUCIONAL: 'Institucional',
+    ACADEMICO: 'Académico',
+    CURSO_INGRESO: 'Curso de ingreso',
+    COMUNIDAD: 'Comunidad',
+    EXTRACURRICULAR: 'Extracurricular',
+  };
+
+  const dosDigitos = (numero) =>
+    String(numero).padStart(2, '0');
+
+  const crearClaveFecha = (mes, dia) =>
+    `${anio}-${dosDigitos(mes + 1)}-${dosDigitos(dia)}`;
+
+  const eventosDelDia = (claveFecha) => {
+    const inicioDia = new Date(
+      `${claveFecha}T00:00:00-03:00`
+    );
+
+    const finDia = new Date(
+      `${claveFecha}T23:59:59.999-03:00`
+    );
+
+    return eventos.filter((evento) => {
+      const inicioEvento = new Date(evento.fechaInicio);
+      const finEvento = evento.fechaFin
+        ? new Date(evento.fechaFin)
+        : inicioEvento;
+
+      return (
+        inicioEvento <= finDia &&
+        finEvento >= inicioDia
+      );
+    });
+  };
+
+  const formatearHora = (fecha) =>
+    new Intl.DateTimeFormat('es-AR', {
+      timeZone: 'America/Argentina/Buenos_Aires',
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: false,
+    }).format(new Date(fecha));
+  const formatearFecha = (fecha) => new Intl.DateTimeFormat('es-AR', {
+    timeZone: 'America/Argentina/Buenos_Aires', dateStyle: 'medium',
+  }).format(new Date(fecha));
+%>
+
+<main class="events-page">
+  <section class="events-hero">
+    <div class="events-container">
+      <p class="events-kicker">Agenda ETEC UBA</p>
+      <h1>EVENTOS</h1>
+
+      <p>
+        Consultá las actividades institucionales, académicas y
+        comunitarias programadas para el año.
+      </p>
+    </div>
+  </section>
+
+  <section class="events-calendar-section">
+    <div class="events-container">
+      <header class="events-year-navigation">
+        <a
+          class="events-year-button"
+          href="/eventos?anio=<%= anioAnterior %>"
+          aria-label="Ver calendario del año <%= anioAnterior %>"
+        >
+          <i class="fa-solid fa-chevron-left" aria-hidden="true"></i>
+          <%= anioAnterior %>
+        </a>
+
+        <h2><%= anio %></h2>
+
+        <a
+          class="events-year-button"
+          href="/eventos?anio=<%= anioSiguiente %>"
+          aria-label="Ver calendario del año <%= anioSiguiente %>"
+        >
+          <%= anioSiguiente %>
+          <i class="fa-solid fa-chevron-right" aria-hidden="true"></i>
+        </a>
+      </header>
+
+      <% if (eventos.length === 0) { %>
+        <div class="events-empty-message">
+          <i class="fa-regular fa-calendar" aria-hidden="true"></i>
+
+          <div>
+            <h2>No hay eventos publicados</h2>
+            <p>
+              Todavía no se publicaron eventos para el año
+              <%= anio %>.
+            </p>
+          </div>
+        </div>
+      <% } %>
+
+      <p class="events-calendar-help">Las fechas destacadas tienen actividades. Pasá el cursor o tocá una fecha para verlas todas. Con teclado, usá Tab y Enter. Cerrá el recuadro con la X o Escape.</p>
+      <div class="annual-calendar">
+        <% nombresMeses.forEach((nombreMes, indiceMes) => { %>
+          <article class="calendar-month" id="mes-<%= indiceMes + 1 %>">
+            <h2><%= nombreMes %></h2>
+
+            <div
+              class="calendar-weekdays"
+              aria-hidden="true"
+            >
+              <% diasSemana.forEach((diaSemana) => { %>
+                <span><%= diaSemana %></span>
+              <% }) %>
+            </div>
+
+            <ol
+              class="calendar-days"
+              aria-label="<%= nombreMes %> de <%= anio %>"
+            >
+              <%
+                const primerDia = new Date(
+                  Date.UTC(anio, indiceMes, 1)
+                ).getUTCDay();
+
+                const cantidadDias = new Date(
+                  Date.UTC(anio, indiceMes + 1, 0)
+                ).getUTCDate();
+              %>
+
+              <% for (let espacio = 0; espacio < primerDia; espacio += 1) { %>
+                <li
+                  class="calendar-day calendar-day-empty"
+                  aria-hidden="true"
+                ></li>
+              <% } %>
+
+              <% for (let dia = 1; dia <= cantidadDias; dia += 1) { %>
+                <%
+                  const claveFecha = crearClaveFecha(
+                    indiceMes,
+                    dia
+                  );
+
+                  const eventosFecha = eventosDelDia(
+                    claveFecha
+                  );
+                %>
+
+                <li
+                  class="calendar-day <%= eventosFecha.length > 0
+                    ? 'has-events'
+                    : '' %>"
+                >
+                  <% if (eventosFecha.length > 0) { %>
+                    <button class="calendar-day-trigger" type="button" data-day-template="agenda-<%= claveFecha %>" data-day-label="<%= dia %> de <%= nombreMes %> de <%= anio %>" aria-controls="events-day-popup" aria-expanded="false" aria-haspopup="dialog" aria-label="<%= dia %> de <%= nombreMes %> de <%= anio %>: <%= eventosFecha.length %> <%= eventosFecha.length === 1 ? 'actividad' : 'actividades' %>">
+                      <time datetime="<%= claveFecha %>"><%= dia %></time>
+                      <span class="calendar-day-count"><%= eventosFecha.length %> <span aria-hidden="true">act.</span></span>
+                    </button>
+                    <template id="agenda-<%= claveFecha %>">
+                      <p class="events-popup-count"><%= eventosFecha.length %> <%= eventosFecha.length === 1 ? 'actividad programada' : 'actividades programadas' %></p>
+                      <% eventosFecha.forEach(evento => { %>
+                        <article class="events-popup-event">
+                          <span class="event-category"><%= etiquetasCategoria[evento.categoria] %></span>
+                          <h3><%= evento.titulo %></h3>
+                          <p><strong>Horario:</strong> <%= evento.todoElDia ? 'Todo el día' : formatearHora(evento.fechaInicio) %><% if (!evento.todoElDia && evento.fechaFin) { %> a <%= formatearHora(evento.fechaFin) %><% } %></p>
+                          <% if (evento.fechaFin && formatearFecha(evento.fechaInicio) !== formatearFecha(evento.fechaFin)) { %><p><strong>Período:</strong> <%= formatearFecha(evento.fechaInicio) %> al <%= formatearFecha(evento.fechaFin) %></p><% } %>
+                          <% if (evento.ubicacion) { %><p><strong>Lugar:</strong> <%= evento.ubicacion %></p><% } %>
+                          <p class="events-popup-description"><%= evento.descripcion %></p>
+                        </article>
+                      <% }) %>
+                    </template>
+                  <% } else { %>
+                    <time datetime="<%= claveFecha %>"><%= dia %></time>
+                  <% } %>
+                </li>
+              <% } %>
+            </ol>
+          </article>
+        <% }) %>
+      </div>
+    </div>
+  </section>
+</main>
+
+<section id="events-day-popup" class="events-day-popup" role="dialog" aria-modal="false" aria-labelledby="events-popup-title" hidden>
+  <header class="events-popup-header"><h2 id="events-popup-title"></h2><button type="button" class="events-popup-close" aria-label="Cerrar actividades del día">×</button></header>
+  <div class="events-popup-body" tabindex="0" aria-label="Lista de actividades del día"></div>
+</section>
+<noscript><p class="events-calendar-help">Para abrir las actividades de cada fecha, activá JavaScript en tu navegador.</p></noscript>
+
+<%- include('partials/footer') %>

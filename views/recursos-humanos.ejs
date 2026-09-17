@@ -1,0 +1,36 @@
+<%- include('partials/header') %>
+<%
+  const bloquesRRHH = (Array.isArray(seccionesRRHH) ? seccionesRRHH : []).filter((s) => s.activo);
+  const rrhhLineas = (contenido) => String(contenido || '').split(/\r?\n/).map((linea) => linea.trim()).filter(Boolean);
+  const porGrupo = (grupo) => bloquesRRHH.find((bloque) => bloque.grupo === grupo);
+  const introRRHH = porGrupo('Introducción');
+  const autogestion = porGrupo('Autogestión UBA');
+  const legajo = porGrupo('Legajo Digital');
+  const justificaciones = bloquesRRHH.find((bloque) => bloque.grupo === 'Justificaciones Médicas' && bloque.titulo === 'Justificaciones Médicas');
+  const advertencia = bloquesRRHH.find((bloque) => bloque.grupo === 'Justificaciones Médicas' && bloque.titulo === 'Advertencia');
+  const postulaciones = porGrupo('Postulaciones');
+  const enlacesRRHH = new Map([
+    ['¿Cómo obtener mi cuenta UBA.AR?', 'https://wifi.uba.ar/CuentaUBA-Instructivo_de_Acceso_UBA-WIFI.pdf'],
+    ['Problemas de inicio de sesión', 'https://serviciosdigitales.uba.ar/support/home'],
+    ['Instructivo TAD', 'https://etec.uba.ar/wp-content/uploads/2024/09/Instructivo-TAD.pdf'],
+    ['Guía de trámite', 'https://etec.uba.ar/wp-content/uploads/2025/11/Guia-de-tramites.pdf'],
+    ['DDJJ Familiares', 'https://etec.uba.ar/wp-content/uploads/2025/11/Declaracion-Jurada-de-Familiares.pdf'],
+    ['DDJJ Cargos', 'https://etec.uba.ar/wp-content/uploads/2024/09/Declaracion-Jurada-de-Cargos-y-Actividades.pdf'],
+  ]);
+%>
+<main class="human-resources-page">
+  <section class="human-resources-banner"><div class="human-resources-banner-inner"><h1>RECURSOS HUMANOS</h1></div></section>
+  <section class="human-resources-layout"><div class="human-resources-container">
+    <% if (introRRHH) { %><header class="human-resources-introduction"><h2><%= introRRHH.titulo %></h2><p><%= rrhhLineas(introRRHH.contenido).join(' ') %></p></header><% } %>
+    <% if (autogestion || legajo) { %><div class="human-resources-grid">
+      <% [autogestion, legajo].filter(Boolean).forEach((bloque, indice) => { %><article class="human-resources-card"><header><span aria-hidden="true"><%= indice === 0 ? '💻' : '📂' %></span><h3><%= bloque.titulo %></h3></header><ul><% rrhhLineas(bloque.contenido).forEach((linea) => { %><li><% if (enlacesRRHH.has(linea)) { %><a href="<%= enlacesRRHH.get(linea) %>"><%= linea %></a><% } else { %><%= linea %><% } %></li><% }) %></ul><% if (bloque === autogestion) { %><a href="https://autogestion.rrhh.uba.ar/">Ingresar a Autogestión UBA</a><% } %></article><% }) %>
+    </div><% } %>
+    <% if (justificaciones || advertencia) { %><article class="human-resources-medical"><header><span aria-hidden="true">🏥</span><h3><%= justificaciones?.titulo || 'Justificaciones Médicas' %></h3></header>
+      <% if (justificaciones) { %><div class="medical-steps"><% rrhhLineas(justificaciones.contenido).forEach((linea) => { const [tituloPaso, ...detallePaso] = linea.split('|'); %><section><strong><%= tituloPaso.trim().replace(/^\d+[.)]\s*/, '') %></strong><% if (detallePaso.length) { %><p><% detallePaso.join('|').trim().split(/([A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,})/i).forEach((parte, indice) => { %><% if (indice % 2) { %><a href="mailto:<%= parte %>"><%= parte %></a><% } else { %><%= parte %><% } %><% }) %></p><% } %></section><% }) %></div><% } %>
+      <% if (advertencia) { %><p class="human-resources-warning"><span aria-hidden="true">📌</span><strong><%= advertencia.titulo %>:</strong> <%= rrhhLineas(advertencia.contenido).join(' ') %></p><% } %>
+    </article><% } %>
+    <% if (postulaciones) { %><section class="human-resources-join"><h3><%= postulaciones.titulo %></h3><% rrhhLineas(postulaciones.contenido).forEach((linea) => { %><p><%= linea %></p><% }) %><% const correoRRHH = String(postulaciones.contenido || '').match(/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/i)?.[0]; if (correoRRHH) { %><a href="mailto:<%= correoRRHH %>">Enviar CV a RRHH</a><% } %></section><% } %>
+    <% bloquesRRHH.filter((s) => !['Introducción', 'Autogestión UBA', 'Legajo Digital', 'Justificaciones Médicas', 'Postulaciones'].includes(s.grupo)).forEach((bloque) => { %><section class="human-resources-join"><h3><%= bloque.titulo %></h3><% rrhhLineas(bloque.contenido).forEach((linea) => { %><p><%= linea %></p><% }) %></section><% }) %>
+  </div></section>
+</main>
+<%- include('partials/footer') %>

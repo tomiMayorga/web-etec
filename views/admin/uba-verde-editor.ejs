@@ -1,0 +1,43 @@
+<%
+ const destinos = {
+ 'Encabezado':'Título de la página y frase «Compromiso Ambiental ETEC».',
+ 'Programa':'Presentación del programa al comienzo de la tarjeta.',
+ 'Convocatoria':'Invitación a participar, debajo de la presentación.',
+ 'Equipo':'Nombre destacado del equipo convocado.',
+ 'Acciones':'Los tres mensajes con iconos ambientales.',
+ 'Lanzamiento':'Aviso de fecha que aparece sobre el botón.',
+ 'Botón':'Texto y destino de «Quiero participar».'
+ };
+%>
+<section class="admin-authorities-editor">
+ <div class="admin-section-heading"><div><h2>UBA Verde</h2><p>Editá los textos actuales del programa y su convocatoria.</p></div><a class="form-button form-button-secondary" href="/uba-verde" target="_blank" rel="noopener">Ver página pública</a></div>
+ <div class="admin-collapsible-grid">
+ <% [...new Set(secciones.map(s => s.grupo))].forEach(grupo => { %>
+  <details class="admin-editable-section"><summary><span><strong><%= grupo %></strong><small><%= destinos[grupo] || 'Apartado adicional al final de la página.' %></small></span><span>Editar</span></summary>
+  <% secciones.filter(s => s.grupo === grupo).forEach(s => { const soloTitulo = ['Equipo','Acciones'].includes(grupo); %>
+   <form method="post" action="/admin/contenidos/secciones" class="admin-settings-card admin-settings-form">
+    <input type="hidden" name="_csrf" value="<%= csrfToken %>"><input type="hidden" name="id" value="<%= s.id %>"><input type="hidden" name="grupo" value="<%= s.grupo %>">
+    <% if(grupo === 'Lanzamiento') { %><input type="hidden" name="titulo" value="<%= s.titulo %>"><% } else { %><div class="form-field"><label for="verde-titulo-<%= s.id %>"><%= grupo === 'Botón' ? 'Texto del botón' : 'Título o nombre visible' %></label><input id="verde-titulo-<%= s.id %>" name="titulo" value="<%= s.titulo %>" minlength="2" maxlength="160" required></div><% } %>
+    <% if(soloTitulo) { %><input type="hidden" name="contenido" value="<%= s.contenido %>"><% } else { %>
+     <div class="form-field"><label for="verde-texto-<%= s.id %>"><%= grupo === 'Botón' ? 'Destino del botón' : grupo === 'Encabezado' ? 'Frase sobre la presentación' : grupo === 'Lanzamiento' ? 'Mensaje de lanzamiento' : 'Descripción visible' %></label>
+      <% if(grupo === 'Botón') { %><input type="hidden" name="editorBotonVerde" value="1"><input id="verde-texto-<%= s.id %>" name="contenido" value="<%= s.contenido %>" maxlength="500" required><small>#participar lleva a la convocatoria de esta página. También podés indicar una página interna o un formulario con dirección HTTPS.</small><% } else { %><textarea id="verde-texto-<%= s.id %>" name="contenido" rows="4" maxlength="2000"><%= s.contenido %></textarea><% } %>
+     </div>
+    <% } %>
+    <div class="admin-toggle-row"><label><input type="checkbox" name="activo" <%= s.activo ? 'checked' : '' %>> Mostrar este elemento</label></div>
+    <div class="form-actions"><button type="submit" class="form-button form-button-primary">Guardar este elemento</button></div>
+   </form>
+  <% }) %>
+  </details>
+ <% }) %>
+ </div>
+ <details class="admin-create-panel admin-create-section-panel"><summary>Agregar apartado de UBA Verde</summary>
+  <form method="post" action="/admin/contenidos/secciones/nueva" class="admin-settings-form">
+   <input type="hidden" name="_csrf" value="<%= csrfToken %>"><input type="hidden" name="paginaClave" value="uba-verde"><input type="hidden" name="grupo" value="Información adicional">
+   <p>El apartado se publica debajo de la tarjeta del programa.</p>
+   <div class="form-field"><label for="verde-nuevo-titulo">Título</label><input id="verde-nuevo-titulo" name="titulo" minlength="2" maxlength="160" required></div>
+   <div class="form-field"><label for="verde-nuevo-texto">Texto</label><textarea id="verde-nuevo-texto" name="contenido" rows="4" maxlength="2000" required></textarea></div>
+   <button type="submit" class="form-button form-button-primary">Agregar y publicar apartado</button>
+  </form>
+ </details>
+</section>
+

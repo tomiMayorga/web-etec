@@ -1,0 +1,169 @@
+<%
+  const seccionesVisibles = Array.isArray(secciones) ? secciones : [];
+  const lineasEditor = (contenido) => String(contenido || '').split(/\r?\n/).map((linea) => linea.trim()).filter(Boolean);
+  const esUrlImagen = (valor) => /^(https?:\/\/|\/)/i.test(String(valor || '').trim());
+  const esEditorMultimedia = (seccion) => {
+    const referencia = `${seccion.grupo} ${seccion.titulo}`;
+    return /(carrusel|galer[ií]a|im[aá]genes|p[oó]ster|talleres y actividades|momentos destacados|destacados|viajes de estudio)/i.test(referencia)
+      || lineasEditor(seccion.contenido).some((linea) => esUrlImagen(linea.split('|')[0]));
+  };
+  const elementosMultimedia = (contenido, permitirTextoComoTitulo = false) => lineasEditor(contenido).map((linea) => {
+    const partes = linea.split('|').map((parte) => parte.trim());
+    if (permitirTextoComoTitulo && !esUrlImagen(partes[0])) return { url: '', titulo: linea, descripcion: '', fecha: '' };
+    return { url: partes[0] || '', titulo: partes[1] || '', descripcion: partes[2] || '', fecha: partes[3] || '' };
+  }).filter((elemento) => elemento.url || elemento.titulo || elemento.descripcion || elemento.fecha);
+  const extraerDocumentoUrl = (contenido) => lineasEditor(contenido).map((linea) => linea.replace(/^PDF:\s*/i, '').split('|')[0].trim()).find((linea) => /^(https?:\/\/|\/uploads\/)/i.test(linea)) || '';
+  const contenidoNovedades = (contenido) => lineasEditor(contenido)
+    .filter((linea) => !/^(PDF:\s*)?(https?:\/\/|\/uploads\/)/i.test(linea))
+    .map((linea) => linea.split('|')[0].trim()).filter(Boolean).join('\n');
+  const ubicaciones = {
+    'home:Imágenes de portada': 'Portada de Inicio: imágenes grandes que aparecen detrás del texto de bienvenida.',
+    'home:Texto de bienvenida': 'Portada de Inicio: título y descripción que aparecen sobre el carrusel principal.',
+    'home:Carrusel de actividades extracurriculares': 'Inicio: tarjetas de actividades que aparecen debajo del texto de bienvenida.',
+    'orientaciones:Imágenes de Orientaciones': 'Orientaciones: carrusel de imágenes de la cabecera.',
+    'orientaciones:¿Cómo se eligen las especialidades?': 'Orientaciones: paneles desplegables de elección, Mecatrónica y TIC.',
+    'calendario:Comienzo de ciclo lectivo de 1° año': 'Calendario Académico: primera fila del bloque Cursada Regular.',
+    'actividades-extracurriculares:Actividades extracurriculares': 'Actividades Extracurriculares: presentación superior de la página.',
+    'actividades-extracurriculares:Talleres y actividades': 'Actividades Extracurriculares: tarjetas de talleres y deportes.',
+    'actividades-extracurriculares:Momentos destacados': 'Actividades Extracurriculares: galería de momentos destacados.',
+    'actividades-extracurriculares:Viajes de estudio': 'Actividades Extracurriculares: galería de viajes de estudio.',
+    'semana-tecnica:Galería de la Semana Técnica': 'Semana Técnica: carrusel central de fotografías.',
+    'genero:Póster informativo': 'Oficina de Género: imagen ubicada al final de la página.',
+    'genero:OFICINA DE ASISTENCIA CONTRA LA VIOLENCIA DE GÉNERO, ACOSO SEXUAL Y DISCRIMINACIÓN': 'Oficina de Género: encabezado principal de la tarjeta.',
+    'genero:Nuestra misión': 'Oficina de Género: misión que aparece debajo del encabezado.',
+    'genero:RESPONSABLE': 'Oficina de Género: tarjeta de datos de la persona responsable.',
+    'genero:UBICACIÓN': 'Oficina de Género: tarjeta con la ubicación de atención.',
+    'genero:HORARIOS DE ATENCIÓN': 'Oficina de Género: tarjeta con días y horarios.',
+    'genero:CONTACTO DIRECTO': 'Oficina de Género: tarjeta con el correo de contacto.',
+    'genero:Perspectiva educativa y formativa': 'Oficina de Género: bloque informativo sobre formación y prevención.',
+    'genero:¿Necesitás comunicarte?': 'Oficina de Género: bloque de contacto y confidencialidad.',
+    'genero:Normativas y Resoluciones': 'Oficina de Género: normativa y resoluciones publicadas.',
+    'beca-ricardo-rojas:Ayuda económica para tu formación secundaria': 'Becas: presentación y objetivo de la beca.',
+    'beca-ricardo-rojas:Requisitos de Postulación': 'Becas: requisitos que debe cumplir cada postulante.',
+    'beca-ricardo-rojas:¿Cómo postularse?': 'Becas: instrucciones y enlace para realizar la postulación.',
+    'beca-ricardo-rojas:Información importante': 'Becas: aviso final con fechas y lugar de consultas.',
+    'contrataciones:Licitaciones Vigentes 2026': 'Compras: encabezado de licitaciones vigentes y contacto de consultas.',
+    'contrataciones:CD 12-26 · Contratación Directa': 'Compras: licitación vigente y su pliego de condiciones.',
+    'odontologia-estudiantes:Asistencia Odontológica Gratuita': 'Odontología: título y presentación que aparecen en la tarjeta principal.',
+    'odontologia-estudiantes:Días y horarios de atención': 'Odontología: días y horarios que aparecen en el recuadro de atención.',
+    'odontologia-estudiantes:Coordinación del servicio': 'Odontología: aviso final sobre el área que coordina el servicio.',
+  };
+  const explicarUbicacion = (seccion) => paginaClave === 'calendario'
+    ? `Calendario Académico: fila «${seccion.titulo}», dentro del bloque «${seccion.grupo}».`
+    : ubicaciones[`${paginaClave}:${seccion.titulo}`] || `Página pública: sección «${seccion.grupo}», debajo del encabezado principal.`;
+  const esCalendario = paginaClave === 'calendario';
+  const esHome = paginaClave === 'home';
+  const esNovedades = paginaClave === 'novedades';
+  const esOdontologia = paginaClave === 'odontologia-estudiantes';
+  const esGenero = paginaClave === 'genero';
+  const esActividades = paginaClave === 'actividades-extracurriculares';
+  const esBeca = paginaClave === 'beca-ricardo-rojas';
+  const esCompras = paginaClave === 'contrataciones';
+  const rutasPublicas = {
+    home: '/',
+    genero: '/oficina-de-genero',
+    'recursos-humanos': '/recursos-humanos',
+    ingreso: '/presentacion',
+    'beca-ricardo-rojas': '/beca-rector-ricardo-rojas',
+    contrataciones: '/contrataciones',
+    novedades: '/novedades-institucionales',
+    'odontologia-estudiantes': '/servicio-de-odontologia-para-estudiantes',
+    orientaciones: '/orientaciones',
+    'actividades-extracurriculares': '/actividades-extracurriculares',
+    'semana-tecnica': '/semana-tecnica',
+  };
+%>
+
+<section class="admin-authorities-editor admin-page-sections-editor">
+  <div class="admin-section-heading">
+    <div>
+      <h2><%= esCalendario ? 'Fechas del calendario académico' : (esHome ? 'Contenido de la página de Inicio' : (esNovedades ? 'Comunicado institucional y PDF' : (esOdontologia ? 'Servicio de Odontología para estudiantes' : (esGenero ? 'Contenido de la Oficina de Género' : (esActividades ? 'Actividades y talleres' : (esBeca ? 'Contenido de Becas' : (esCompras ? 'Compras y contrataciones' : tituloEditor))))))) %></h2>
+      <p><%= esCalendario ? 'Cada tarjeta representa una fila del calendario. Modificá la actividad y su fecha o período; el bloque indica en qué tabla aparecerá.' : (esHome ? 'La portada está dividida en bloques visibles: imágenes grandes, texto de bienvenida y carrusel de actividades. Abrí cada bloque para saber exactamente qué parte de Inicio modifica.' : (esNovedades ? 'Este bloque representa el documento que aparece en Novedades Institucionales. Editá el texto y conservá el enlace HTTPS al PDF en una línea propia para que se muestre embebido.' : (esOdontologia ? 'Cada bloque corresponde a una parte visible del servicio: presentación, días y horarios o coordinación. Abrilo para editarlo y comprobá el resultado en la página pública.' : (esGenero ? 'Cada bloque corresponde a una parte visible de la página: encabezado, misión, datos de atención, contacto, normativas o póster. Abrilo para saber exactamente qué estás modificando.' : (esActividades ? 'Cada bloque corresponde a una parte concreta de la página pública. Abrilo para editar textos, talleres, imágenes y elementos del carrusel.' : (esBeca ? 'Cada bloque representa una parte visible de la página de Becas: presentación, requisitos, postulación o aviso. Editá el bloque correspondiente y guardalo.' : (esCompras ? 'Cada bloque representa una parte concreta de Compras: licitaciones vigentes, historial, ganadores y enlaces a pliegos. Editá el bloque correspondiente y guardalo.' : 'Estos campos corresponden a partes concretas de la página pública. Editá el contenido de cada tarjeta y usá «Ver página» para comprobar el resultado.'))))))) %></p>
+    </div>
+    <% if (rutasPublicas[paginaClave]) { %><a class="form-button form-button-secondary" href="<%= rutasPublicas[paginaClave] %>" target="_blank" rel="noopener">Ver página pública</a><% } %>
+  </div>
+
+  <% if (!seccionesVisibles.length) { %>
+    <div class="form-alert">Todavía no hay bloques precargados para esta página.</div>
+  <% } %>
+
+  <div class="admin-edit-grid <%= esHome || esNovedades || esOdontologia || esGenero || esActividades || esBeca || esCompras ? 'admin-collapsible-grid' : '' %>">
+    <% seccionesVisibles.forEach((seccion) => { %>
+      <% const multimedia = !esNovedades && esEditorMultimedia(seccion); %>
+      <% if (esHome || esNovedades || esOdontologia || esGenero || esActividades || esBeca || esCompras) { %>
+        <details class="admin-editable-section">
+          <summary><span><strong><%= seccion.titulo %></strong><small><%= explicarUbicacion(seccion) %></small></span><span>Editar bloque <i class="fa-solid fa-chevron-down" aria-hidden="true"></i></span></summary>
+      <% } %>
+      <form method="post" action="/admin/contenidos/secciones" class="admin-settings-card admin-settings-form <%= multimedia ? 'admin-media-editor' : '' %>" <%= multimedia ? 'data-media-form' : '' %>>
+        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+        <input type="hidden" name="id" value="<%= seccion.id %>">
+
+        <div class="admin-content-location">
+          <span class="admin-content-location-label">Dónde se modifica</span>
+          <strong><%= explicarUbicacion(seccion) %></strong>
+          <small><%= multimedia ? 'Tipo: imágenes o carrusel' : 'Tipo: texto editable' %></small>
+        </div>
+
+        <div class="admin-content-structure">
+          <div class="form-field"><label for="generico-grupo-<%= seccion.id %>"><%= esCalendario ? 'Bloque del calendario' : 'Sección de la página' %></label><span class="admin-field-help">Indica la zona donde se muestra. Se mantiene fija para no mover accidentalmente el contenido.</span><input id="generico-grupo-<%= seccion.id %>" name="grupo" maxlength="120" value="<%= seccion.grupo %>" readonly></div>
+          <div class="form-field"><label for="generico-titulo-<%= seccion.id %>"><%= esCalendario ? 'Actividad o concepto' : 'Título visible' %></label><span class="admin-field-help"><%= esCalendario ? 'Es el nombre de la actividad, período o instancia que verá el visitante.' : 'Es el encabezado que verá el visitante. Cambialo solo si también querés cambiar ese encabezado.' %></span><input id="generico-titulo-<%= seccion.id %>" name="titulo" maxlength="160" value="<%= seccion.titulo %>" required></div>
+        </div>
+
+        <% if (multimedia) { %>
+          <div class="admin-media-help"><strong>Cómo editar esta galería</strong><span>Completá una tarjeta por imagen. La URL puede ser una ruta local como <code>/img/foto.jpg</code> o una dirección HTTPS.</span></div>
+          <div class="admin-media-rows" data-media-rows>
+            <% elementosMultimedia(seccion.contenido, seccion.titulo === 'Momentos destacados' || seccion.grupo === 'Viajes de estudio').forEach((elemento) => { %>
+              <div class="admin-media-row" data-media-row>
+                <div class="form-field"><label>Imagen o URL</label><div class="admin-media-source"><input type="text" data-media-url value="<%= elemento.url %>" placeholder="/img/foto.jpg o https://..." maxlength="500"><input type="file" data-media-file accept="image/jpeg,image/png,image/webp" hidden><button class="form-button form-button-secondary admin-media-upload" type="button" data-media-upload><i class="fa-solid fa-upload" aria-hidden="true"></i> Subir</button></div><small data-media-upload-status></small></div>
+                <div class="form-field"><label>Título de la imagen</label><input type="text" data-media-title value="<%= elemento.titulo %>" maxlength="160"></div>
+                <div class="form-field"><label>Descripción</label><input type="text" data-media-description value="<%= elemento.descripcion %>" maxlength="500"></div>
+                <div class="form-field"><label>Fecha (opcional)</label><input type="text" data-media-date value="<%= elemento.fecha %>" maxlength="80"></div>
+                <button class="form-button form-button-secondary admin-media-remove" type="button" data-media-remove>Quitar elemento</button>
+              </div>
+            <% }) %>
+          </div>
+          <button class="form-button form-button-secondary" type="button" data-media-add>Agregar imagen o elemento</button>
+          <textarea name="contenido" data-media-value hidden><%= seccion.contenido %></textarea>
+        <% } else { %>
+          <div class="form-field"><label for="generico-contenido-<%= seccion.id %>"><%= esCalendario ? 'Fecha o período' : (esNovedades ? 'Descripción del documento' : 'Contenido que verá el visitante') %></label><span class="admin-field-help"><%= esCalendario ? 'Escribí la fecha o el período tal como querés que aparezca en la tabla.' : (esNovedades ? 'Este texto acompaña al archivo y se muestra debajo de su título.' : 'Una línea nueva crea un párrafo, dato o elemento separado según el diseño de esta página.') %></span><textarea id="generico-contenido-<%= seccion.id %>" name="contenido" rows="6" maxlength="2000" required><%= esNovedades ? contenidoNovedades(seccion.contenido) : seccion.contenido %></textarea></div>
+          <% if (esNovedades) { %>
+            <input type="hidden" name="pliegoUrl" data-pdf-url value="<%= extraerDocumentoUrl(seccion.contenido) %>">
+            <div class="admin-pdf-upload admin-document-upload" data-pdf-upload>
+              <input id="documento-<%= seccion.id %>" type="file" data-pdf-file accept="application/pdf" hidden>
+              <label for="documento-<%= seccion.id %>" class="form-button form-button-secondary" data-pdf-select><i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> Subir documento PDF</label>
+              <span data-pdf-name><%= extraerDocumentoUrl(seccion.contenido) ? 'Documento cargado' : 'Todavía no hay documento cargado' %></span>
+              <small data-pdf-status></small>
+            </div>
+          <% } %>
+        <% } %>
+
+        <div class="admin-toggle-row"><label><input type="checkbox" name="activo" <%= seccion.activo ? 'checked' : '' %>> Mostrar esta sección en la página pública</label></div>
+        <div class="form-actions"><button class="form-button form-button-primary" type="submit">Guardar esta sección</button></div>
+      </form>
+      <% if (esHome || esNovedades || esOdontologia || esGenero || esActividades || esBeca || esCompras) { %>
+        </details>
+      <% } %>
+    <% }) %>
+  </div>
+
+  <details class="admin-create-panel admin-create-section-panel">
+    <summary><i class="fa-solid fa-plus" aria-hidden="true"></i> <%= esCalendario ? 'Agregar una nueva fecha' : (esHome ? 'Agregar un bloque de Inicio' : (esNovedades ? 'Agregar un documento' : (esOdontologia ? 'Agregar un bloque de Odontología' : (esActividades ? 'Agregar una actividad o sección' : (esBeca ? 'Agregar un bloque de Becas' : (esCompras ? 'Agregar un bloque de Compras' : 'Agregar una nueva sección')))))) %></summary>
+    <form method="post" action="/admin/contenidos/secciones/nueva" class="admin-settings-form">
+      <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+      <input type="hidden" name="paginaClave" value="<%= paginaClave %>">
+      <div class="admin-create-explanation"><%= esCalendario ? 'Agregá una fila nueva al bloque correspondiente. Las fechas existentes se editan desde las tarjetas anteriores.' : (esHome ? 'Usá esta opción solo para sumar un bloque nuevo a Inicio. Para cambiar las imágenes, bienvenida o actividades que ya existen, abrí uno de los tres bloques precargados.' : (esNovedades ? 'Agregá otro documento institucional. Completá el título, una descripción opcional y subí un PDF desde tu computadora.' : (esOdontologia ? 'Usá esta opción para sumar un apartado del servicio. Los bloques existentes se editan desde los desplegables anteriores.' : (esActividades ? 'Usá esta opción para sumar un nuevo bloque visible en la página. Los talleres existentes se editan desde los desplegables anteriores.' : (esBeca ? 'Usá esta opción para agregar una nueva parte de la página de Becas. Para cambiar algo que ya existe, editá uno de los bloques precargados.' : (esCompras ? 'Usá esta opción para agregar una nueva licitación, un historial o un bloque informativo. Para cambiar algo existente, editá uno de los bloques precargados.' : 'Usá esta opción solo si querés sumar una sección que todavía no existe. Si querés cambiar un contenido actual, editá una de las tarjetas anteriores.')))))) %></div>
+      <div class="admin-edit-grid"><div class="form-field"><label><%= esCalendario ? 'Bloque del calendario' : 'Nombre de la sección' %></label><input name="grupo" maxlength="120" placeholder="<%= esCalendario ? 'Ej. CURSO DE INGRESO' : (esHome ? 'Ej. Aviso de Inicio' : 'Ej. Noticias') %>" required></div><div class="form-field"><label><%= esCalendario ? 'Actividad o concepto' : 'Título visible' %></label><input name="titulo" maxlength="160" placeholder="<%= esCalendario ? 'Ej. Reunión con familias' : (esHome ? 'Ej. Nuevo aviso' : 'Ej. Nuevo comunicado') %>" required></div></div>
+      <div class="form-field"><label><%= esCalendario ? 'Fecha o período' : (esNovedades ? 'Descripción del documento (opcional)' : 'Contenido inicial') %></label><textarea name="contenido" rows="5" maxlength="2000" placeholder="<%= esCalendario ? 'Ej. 15 de agosto' : (esHome ? 'Escribí el texto o las imágenes del nuevo bloque' : (esNovedades ? 'Resumen o descripción que acompañará al PDF' : 'Escribí el contenido que tendrá la nueva sección')) %>" <%= esNovedades ? '' : 'required' %>></textarea></div>
+      <% if (esNovedades) { %>
+        <input type="hidden" name="pliegoUrl" data-pdf-url>
+        <div class="admin-pdf-upload admin-document-upload" data-pdf-upload>
+          <input id="documento-nuevo" type="file" data-pdf-file accept="application/pdf" hidden>
+          <label for="documento-nuevo" class="form-button form-button-secondary" data-pdf-select><i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> Subir documento PDF</label>
+          <span data-pdf-name>No hay documento cargado</span>
+          <small data-pdf-status></small>
+        </div>
+      <% } %>
+      <button class="form-button form-button-primary" type="submit"><%= esCalendario ? 'Agregar fecha' : (esHome ? 'Agregar bloque' : 'Agregar sección') %></button>
+    </form>
+  </details>
+</section>

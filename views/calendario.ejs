@@ -1,0 +1,62 @@
+<%- include('partials/header') %>
+
+<%
+  const secciones = Array.isArray(seccionesCalendario) && seccionesCalendario.length
+    ? seccionesCalendario
+    : (Array.isArray(seccionesPagina) ? seccionesPagina : []);
+  const bloques = [];
+  const bloquesPorNombre = new Map();
+  secciones.forEach((seccion) => {
+    if (!bloquesPorNombre.has(seccion.grupo)) {
+      const bloque = { nombre: seccion.grupo, filas: [] };
+      bloquesPorNombre.set(seccion.grupo, bloque);
+      bloques.push(bloque);
+    }
+    bloquesPorNombre.get(seccion.grupo).filas.push(seccion);
+  });
+  const esDestacado = (titulo) => /RECESO ESCOLAR|FIN DE 2° CUATRIMESTRE|ÚLTIMO DÍA DE CLASES/i.test(titulo);
+  const esImportante = (titulo) => /Inicio de período de recuperación|Mesa de examen para todo el alumnado/i.test(titulo);
+%>
+
+<main class="calendar-page">
+  <section class="calendar-layout">
+    <div class="calendar-container">
+      <h1>Calendario Académico 2026</h1>
+
+      <p class="calendar-resolution">
+        <strong>Calendario Académico para el año 2026 aprobado mediante RREM-2026-93-E-UBA-ETEC</strong>
+      </p>
+
+      <% if (bloques.length) { %>
+        <% bloques.forEach((bloque) => { %>
+          <section class="calendar-section">
+            <h2><%= bloque.nombre %></h2>
+            <div class="calendar-table-wrapper">
+              <table class="calendar-table">
+                <tbody>
+                  <% bloque.filas.forEach((fila) => { %>
+                    <tr class="<%= esDestacado(fila.titulo) ? 'calendar-highlight' : (esImportante(fila.titulo) ? 'calendar-important' : '') %>">
+                      <td><%= fila.titulo %></td>
+                      <td><%= fila.contenido %></td>
+                    </tr>
+                  <% }) %>
+                </tbody>
+              </table>
+            </div>
+          </section>
+        <% }) %>
+      <% } else { %>
+        <p class="form-alert">El calendario académico se encuentra temporalmente no disponible.</p>
+      <% } %>
+
+      <p class="calendar-notice">
+        <strong>IMPORTANTE:</strong>
+        En caso de que hubiera alguna modificación en fechas, o debamos
+        incorporar algún evento se comunicará por mail a los Jefes de Dpto.
+        y a todos los involucrados.
+      </p>
+    </div>
+  </section>
+</main>
+
+<%- include('partials/footer') %>

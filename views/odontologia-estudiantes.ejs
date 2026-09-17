@@ -1,0 +1,44 @@
+<%- include('partials/header') %>
+<%
+  const bloques = (Array.isArray(seccionesOdontologia) ? seccionesOdontologia : []).filter((bloque) => bloque.activo);
+  const lineasDe = (contenido) => String(contenido || '').split(/\r?\n/).map((linea) => linea.trim()).filter(Boolean);
+  const presentacion = bloques.find((bloque) => bloque.grupo === 'Presentación');
+  const horario = bloques.find((bloque) => /horario|atenci[oó]n/i.test(`${bloque.grupo} ${bloque.titulo}`));
+  const otros = bloques.filter((bloque) => bloque.id !== presentacion?.id && bloque.id !== horario?.id);
+%>
+
+<main class="community-page community-page--students">
+  <div class="community-shell">
+    <h1><%= (typeof contenidoPagina !== 'undefined' && contenidoPagina?.titulo) || 'Servicio de Odontología para Estudiantes' %></h1>
+    <section class="community-hero-card community-hero-card--centered">
+      <header class="dental-banner"><h2><%= presentacion?.titulo || 'Asistencia Odontológica Gratuita' %></h2></header>
+      <div class="dental-body"><div class="dental-introduction">
+      <% if (presentacion) { %>
+        <% lineasDe(presentacion.contenido).forEach((linea) => { %><p><%= linea %></p><% }) %>
+      <% } else { %>
+        <p>Brindamos atención a nuestras/os alumnas/os a través del Programa de la Facultad de Odontología – UBA.</p>
+      <% } %>
+
+      </div>
+      <% if (horario) { %>
+        <div class="schedule-card">
+          <h3><span aria-hidden="true">📅</span> <%= horario.titulo %></h3>
+          <dl class="dental-schedule-strip"><% lineasDe(horario.contenido).forEach((linea, indice) => { const separador = linea.indexOf(':'); %>
+            <div><dt><%= indice === 0 ? 'Días de atención' : separador >= 0 ? linea.slice(0, separador) : 'Horario' %></dt><dd><%= indice > 0 && separador >= 0 ? linea.slice(separador + 1).trim() : linea %></dd></div>
+          <% }) %></dl>
+        </div>
+      <% } %>
+
+      <% otros.forEach((bloque) => { %>
+        <div class="service-callout community-dynamic-block">
+          <span aria-hidden="true">ℹ️</span>
+          <div><h3><%= bloque.titulo %></h3><% lineasDe(bloque.contenido).forEach((linea) => { %><p><%= linea %></p><% }) %></div>
+        </div>
+      <% }) %>
+      <% if (!bloques.length) { %><p class="community-notice">La información del servicio se encuentra temporalmente no disponible.</p><% } %>
+      </div>
+    </section>
+  </div>
+</main>
+
+<%- include('partials/footer') %>

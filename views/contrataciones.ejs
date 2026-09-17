@@ -1,0 +1,69 @@
+<%- include('partials/header') %>
+<%
+  const seccionesComprasVisibles = Array.isArray(seccionesCompras) ? seccionesCompras : [];
+  const lineasCompra = (contenido) => String(contenido || '').split(/\r?\n/).map((linea) => linea.trim()).filter(Boolean);
+  const gruposCompra = [];
+  const mapaGruposCompra = new Map();
+  seccionesComprasVisibles.forEach((seccion) => {
+    if (!mapaGruposCompra.has(seccion.grupo)) {
+      const grupo = { nombre: seccion.grupo, secciones: [] };
+      mapaGruposCompra.set(seccion.grupo, grupo);
+      gruposCompra.push(grupo);
+    }
+    mapaGruposCompra.get(seccion.grupo).secciones.push(seccion);
+  });
+  const enlaceCompra = (linea) => {
+    const partes = linea.split('|').map((parte) => parte.trim());
+    const coincidencia = linea.match(/https:\/\/[^\s|]+/i);
+    const url = coincidencia?.[0];
+    if (!url) return null;
+    const texto = partes.find((parte) => parte !== url && !/https:\/\//i.test(parte)) || 'Ver Pliego';
+    return { url, texto: texto.replace(/^PDF:\s*/i, '') || 'Ver Pliego' };
+  };
+%>
+
+<main class="purchases-page">
+  <header class="purchases-page-header"><div class="purchases-wide-container"><h1>Compras</h1></div></header>
+  <section class="purchases-layout"><div class="purchases-container">
+    <% if (seccionesComprasVisibles.length) { %>
+      <% const encabezado = gruposCompra.find((grupo) => grupo.nombre === 'Encabezado'); %>
+      <% const finalizadas = gruposCompra.find((grupo) => grupo.nombre === 'Finalizadas'); %>
+      <% const historiales = gruposCompra.filter((grupo) => /^\d{4}$/.test(grupo.nombre)); %>
+      <% const otros = gruposCompra.filter((grupo) => !['Encabezado', 'Finalizadas'].includes(grupo.nombre) && !/^\d{4}$/.test(grupo.nombre)); %>
+
+      <% if (encabezado) { %>
+        <div class="purchases-title-row"><div><h2><%= encabezado.secciones[0].titulo %></h2>
+          <% const lineasEncabezado = lineasCompra(encabezado.secciones[0].contenido); lineasEncabezado.forEach((linea, indice) => { %>
+            <% if (/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(linea)) { %><p><%= indice > 0 && /por consultas dirigirse a/i.test(lineasEncabezado[indice - 1]) ? '' : 'Por consultas dirigirse a: ' %><a href="mailto:<%= linea %>"><%= linea %></a></p><% } else { %><p><%= linea %></p><% } %>
+          <% }) %>
+        </div></div>
+      <% } %>
+
+      <% if (finalizadas) { %>
+        <section class="purchase-history"><h2><%= finalizadas.secciones[0].titulo %></h2>
+          <% lineasCompra(finalizadas.secciones[0].contenido).forEach((linea) => { %><p><%= linea %></p><% }) %>
+          <% historiales.forEach((grupo) => { %>
+            <details class="purchase-history-group"><summary><span class="purchase-history-symbol" aria-hidden="true"></span><span aria-hidden="true">📁</span> Ver Historial de Licitaciones <%= grupo.nombre %></summary><div class="purchase-history-list">
+          <% grupo.secciones.forEach((seccion) => { const lineas = lineasCompra(seccion.contenido); %>
+            <article class="purchase-history-item"><div><span class="purchase-history-meta"><%= seccion.titulo %></span>
+              <% lineas.forEach((linea) => { const enlace = enlaceCompra(linea); %>
+                <% if (!enlace) { %><p><%= linea %></p><% } %>
+              <% }) %>
+            </div><% const pliego = lineas.map(enlaceCompra).find(Boolean); if (pliego) { %><a class="purchase-document-button" href="<%= pliego.url %>" target="_blank" rel="noopener">📄 <%= pliego.texto %></a><% } %></article>
+          <% }) %>
+            </div></details>
+          <% }) %>
+        </section>
+      <% } %>
+
+      <% otros.forEach((grupo) => { grupo.secciones.forEach((seccion) => { %>
+        <article class="current-purchase-card"><div class="current-purchase-body"><h3><%= seccion.titulo %></h3><% lineasCompra(seccion.contenido).forEach((linea) => { const enlace = enlaceCompra(linea); %><% if (enlace) { %><a class="purchase-document-button" href="<%= enlace.url %>" target="_blank" rel="noopener">📄 <%= enlace.texto %></a><% } else { %><p><%= linea %></p><% } %><% }) %></div></article>
+      <% }) }) %>
+    <% } else { %>
+      <div class="purchases-title-row"><div><h2>Licitaciones Vigentes 2026</h2><p>Por consultas dirigirse a: <a href="mailto:contrataciones@etec.uba.ar">contrataciones@etec.uba.ar</a></p></div></div>
+      <article class="current-purchase-card"><div class="current-purchase-body"><h3>Actualmente no hay licitaciones cargadas.</h3><p>La información se actualizará en este espacio.</p></div></article>
+    <% } %>
+  </div></section>
+</main>
+
+<%- include('partials/footer') %>

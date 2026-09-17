@@ -1,0 +1,23 @@
+<%- include('partials/header') %>
+<%
+  const bloques = seccionesPlan.filter((s) => s.activo);
+  const grupo = (nombre) => bloques.filter((s) => s.grupo === nombre);
+  const titulo = (nombre) => grupo(nombre)[0]?.titulo || '';
+  const lineas = (s) => s.contenido.split(/\r?\n/).map((l) => l.trim()).filter(Boolean);
+%>
+<main class="study-page">
+  <section class="study-page-banner"><div class="study-page-banner-inner"><h1><%= titulo('Título de página') %></h1></div></section>
+  <section class="study-layout"><div class="study-container">
+    <div class="study-features"><% grupo('Características').forEach((s, i) => { %><article class="study-feature"><span class="study-feature-icon" aria-hidden="true"><%= ['🎓', '🕒', '🍎'][i] || 'ℹ️' %></span><h2><%= s.titulo %></h2><% lineas(s).forEach((l) => { %><p><%= l %></p><% }) %></article><% }) %></div>
+    <section class="study-introduction">
+      <% grupo('Introducción').forEach((s) => { %><h2><%= s.titulo %></h2><% lineas(s).forEach((l) => { %><p><%= l %></p><% }) %><% }) %>
+      <div class="study-cycles"><% grupo('Ciclos').forEach((s) => { %><div><strong><%= s.titulo %></strong><span><%= s.contenido %></span></div><% }) %></div>
+    </section>
+    <section class="study-years"><% grupo('Materias por año').forEach((s, i) => { %><article class="study-year-card <%= i === 2 ? 'study-year-third' : '' %>"><h3><%= s.titulo %></h3><% if (i === 2 && titulo('Aviso de orientación')) { %><p><%= titulo('Aviso de orientación') %></p><% } %><ul><% lineas(s).forEach((l) => { %><li><%= l %></li><% }) %></ul></article><% }) %></section>
+    <section class="specializations"><h2><%= titulo('Título especializaciones') %></h2>
+      <div class="specializations-grid"><% ['Mecatrónica', 'TIC'].forEach((nombre, i) => { if (!grupo(nombre).length && !titulo('Título ' + nombre)) return; %><article class="specialization-card <%= i === 0 ? 'mechatronics' : 'technology' %>"><h3><%= titulo('Título ' + nombre) %></h3><% grupo(nombre).forEach((s) => { %><section><h4><%= s.titulo %></h4><ul><% lineas(s).forEach((l) => { %><li><%= l %></li><% }) %></ul></section><% }) %></article><% }) %></div>
+      <% grupo('Materias comunes').forEach((s) => { %><p class="specializations-common"><strong><%= s.titulo %></strong> <%= s.contenido %></p><% }) %>
+    </section>
+  </div></section>
+</main>
+<%- include('partials/footer') %>

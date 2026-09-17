@@ -1,0 +1,34 @@
+<%- include('partials/header') %>
+<% const textosSorteo = seccionesSorteo.filter(s => s.activo); const bloqueSorteo = grupo => textosSorteo.find(s => s.grupo === grupo); const presentacion = bloqueSorteo('Presentación'); const tabla = bloqueSorteo('Listado'); const espera = bloqueSorteo('Espera'); %>
+<main class="admission-draw-page">
+  <section class="admission-draw-layout">
+    <h1><%= presentacion?.titulo || 'Sorteo' %></h1>
+    <div class="admission-draw-content">
+      <% if (presentacion) { presentacion.contenido.split(/\r?\n/).filter(Boolean).forEach(linea => { %><p><%= linea %></p><% }); } %>
+      <% if (listadoSorteo.cicloLectivo) { %><p>Ciclo lectivo <strong><%= listadoSorteo.cicloLectivo %></strong></p><% } %>
+      <% if (!listadoSorteo.publicado) { %>
+        <section role="status"><h2><%= espera?.titulo || 'Listado pendiente de publicación' %></h2><p><%= espera?.contenido || 'La tabla estará disponible cuando finalice la etapa de preinscripción.' %></p></section>
+      <% } else { %>
+        <h2><%= tabla?.titulo || 'Postulantes preinscriptos para el sorteo' %></h2>
+        <% if (tabla) { %><p><%= tabla.contenido %></p><% } %>
+        <p>Total de postulantes: <strong><%= listadoSorteo.postulantes.length %></strong></p>
+        <div class="admission-draw-table-wrapper">
+          <table class="admission-draw-table">
+            <thead><tr><th scope="col">N.º de preinscripción</th><th scope="col">Nombre</th><th scope="col">Apellido</th></tr></thead>
+            <tbody>
+              <% listadoSorteo.postulantes.forEach(postulante => { %>
+                <tr><td><%= postulante.numeroSorteo %></td><td><%= postulante.nombres %></td><td><%= postulante.apellido %></td></tr>
+              <% }) %>
+              <% if (!listadoSorteo.postulantes.length) { %><tr><td colspan="3">No hay preinscripciones confirmadas para este ciclo.</td></tr><% } %>
+            </tbody>
+          </table>
+        </div>
+      <% } %>
+      <% textosSorteo.filter(s => !['Presentación','Listado','Espera'].includes(s.grupo)).forEach(s => { %>
+        <section><h2><%= s.titulo %></h2><% s.contenido.split(/\r?\n/).filter(Boolean).forEach(linea => { %><p><%= linea %></p><% }) %></section>
+      <% }) %>
+    </div>
+  </section>
+</main>
+<%- include('partials/footer') %>
+

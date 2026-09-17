@@ -1,0 +1,18 @@
+<%- include('partials/header') %>
+<% const bloques = seccionesVerde.filter(s => s.activo); const grupo = nombre => bloques.filter(s => s.grupo === nombre); %>
+<main class="community-page community-page--green"><div class="community-shell">
+ <% grupo('Encabezado').forEach(s => { %><h1><%= s.titulo %></h1><% }) %>
+ <section class="community-hero-card">
+  <% grupo('Encabezado').forEach(s => { %><p class="community-eyebrow"><%= s.contenido %></p><% }) %>
+  <% grupo('Programa').forEach(s => { %><h2><%= s.titulo %></h2><p><%= s.contenido %></p><% }) %>
+  <div id="participar" class="green-participation">
+   <% grupo('Convocatoria').forEach(s => { %><h3><%= s.titulo %></h3><p><%= s.contenido %></p><% }) %>
+   <% grupo('Equipo').forEach(s => { %><p class="community-feature"><%= s.titulo %></p><% }) %>
+  </div>
+  <% if (grupo('Acciones').length) { %><div class="community-stats"><% grupo('Acciones').forEach((s,i) => { %><article class="green-action-card"><span class="green-action-icon" aria-hidden="true"><%= ['♻️','🌎','🌱'][i] || '🌿' %></span><h3><%= s.titulo %></h3><% if(s.contenido) { %><p><%= s.contenido %></p><% } %></article><% }) %></div><% } %>
+  <% grupo('Lanzamiento').forEach(s => { %><p class="community-notice"><%= s.contenido %></p><% }) %>
+  <% grupo('Botón').filter(s => enlaceVerdeValido(s.contenido.trim())).forEach(s => { %><a class="community-button" href="<%= s.contenido.trim() %>"><%= s.titulo %></a><% }) %>
+ </section>
+ <% bloques.filter(s => !['Encabezado','Programa','Convocatoria','Equipo','Acciones','Lanzamiento','Botón'].includes(s.grupo)).forEach(s => { %><section class="community-hero-card"><h2><%= s.titulo %></h2><% s.contenido.split(/\r?\n/).filter(Boolean).forEach(linea => { %><p><%= linea %></p><% }) %></section><% }) %>
+</div></main>
+<%- include('partials/footer') %>

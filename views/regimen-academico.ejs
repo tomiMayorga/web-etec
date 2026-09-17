@@ -1,0 +1,529 @@
+<%- include('partials/header') %>
+
+<% const academico = Array.isArray(seccionesAcademico) ? seccionesAcademico : []; const porClave = new Map(academico.map(s => [s.titulo,s])); const academicoVisible = k => Boolean(porClave.get(k)?.activo); const academicoTexto = k => porClave.get(k)?.contenido || ''; const indiceAcademico = {"titulo-1":["Encabezado: TÍTULO I","Encabezado: ENSEÑANZA"],"titulo-2":["Encabezado: TÍTULO II","Encabezado: RÉGIMEN DE INSCRIPCIÓN"],"titulo-3":["Encabezado: TÍTULO III","Encabezado: DEFINICIÓN DE LAS CONDICIONES DE LAS Y LOS ESTUDIANTES"],"titulo-4":["Encabezado: TÍTULO IV","Encabezado: DERECHOS Y OBLIGACIONES DE LAS Y LOS ESTUDIANTES Y SUS REPRESENTANTES"],"titulo-5":["Encabezado: TÍTULO V","Encabezado: RÉGIMEN DE ASISTENCIA"],"titulo-6":["Encabezado: TÍTULO VI","Encabezado: CONDICIONES DE APROBACIÓN DE LOS ESPACIOS CURRICULARES"],"titulo-7":["Encabezado: TÍTULO VII","Encabezado: COMUNICACIÓN DEL LOGRO DE LOS APRENDIZAJES"],"titulo-8":["Encabezado: TÍTULO VIII","Encabezado: ACOMPAÑAMIENTO A LAS TRAYECTORIAS EDUCATIVAS"],"anexo-1":["Encabezado: ANEXO I","Encabezado: CURSO DE INGRESO"],"anexo-2":["Encabezado: ANEXO II","Encabezado: PROGRAMA DE REGULARIZACIÓN DE MATERIAS PREVIAS (PREP)"]}; %>
+<main class="academic-regulations-page">
+  <section class="academic-regulations-layout">
+    <article class="academic-regulations-document">
+
+      <% if (academicoVisible("Encabezado: Régimen Académico")) { %><h1><%= academicoTexto("Encabezado: Régimen Académico") %></h1><% } %>
+
+      <% if (academicoVisible("Presentación · Párrafo 1")) { %><p class="academic-regulations-introduction"><%= academicoTexto("Presentación · Párrafo 1") %></p><% } %>
+
+      <nav class="academic-regulations-index" aria-label="Índice del régimen académico"><h2>Índice</h2><ol><% Object.entries(indiceAcademico).forEach(([id, claves]) => { const visibles = claves.filter(academicoVisible); if (visibles.length) { %><li><a href="#<%= id %>"><%= visibles.map(academicoTexto).join(': ') %></a></li><% } }); %></ol></nav>
+
+      <section id="titulo-1" class="academic-regulations-section">
+        <% if (academicoVisible("Encabezado: TÍTULO I")) { %><h2><%= academicoTexto("Encabezado: TÍTULO I") %></h2><% } %>
+        <% if (academicoVisible("Encabezado: ENSEÑANZA")) { %><h3><%= academicoTexto("Encabezado: ENSEÑANZA") %></h3><% } %>
+
+        <% if (academicoVisible("Encabezado: Artículo 1°: Pautas curriculares")) { %><h4><%= academicoTexto("Encabezado: Artículo 1°: Pautas curriculares") %></h4><% } %>
+
+        <% if (academicoVisible("Artículo 1°: Pautas curriculares · Párrafo 1")) { %><p><%= academicoTexto("Artículo 1°: Pautas curriculares · Párrafo 1") %></p><% } %>
+
+        <% if (academicoVisible("Artículo 1°: Pautas curriculares · Párrafo 2")) { %><p><%= academicoTexto("Artículo 1°: Pautas curriculares · Párrafo 2") %></p><% } %>
+      </section>
+
+      <section id="titulo-2" class="academic-regulations-section">
+        <% if (academicoVisible("Encabezado: TÍTULO II")) { %><h2><%= academicoTexto("Encabezado: TÍTULO II") %></h2><% } %>
+        <% if (academicoVisible("Encabezado: RÉGIMEN DE INSCRIPCIÓN")) { %><h3><%= academicoTexto("Encabezado: RÉGIMEN DE INSCRIPCIÓN") %></h3><% } %>
+
+        <% if (academicoVisible("Encabezado: Artículo 2°: Calendario de inscripción y vacantes")) { %><h4><%= academicoTexto("Encabezado: Artículo 2°: Calendario de inscripción y vacantes") %></h4><% } %>
+
+        <% if (academicoVisible("Artículo 2°: Calendario de inscripción y vacantes · Párrafo 1")) { %><p><%= academicoTexto("Artículo 2°: Calendario de inscripción y vacantes · Párrafo 1") %></p><% } %>
+
+        <% if (academicoVisible("Encabezado: Artículo 3°: Condiciones de ingreso")) { %><h4><%= academicoTexto("Encabezado: Artículo 3°: Condiciones de ingreso") %></h4><% } %>
+
+        <% if (academicoVisible("Artículo 3°: Condiciones de ingreso · Párrafo 2")) { %><p><%= academicoTexto("Artículo 3°: Condiciones de ingreso · Párrafo 2") %></p><% } %>
+
+        <% if (academicoVisible("Artículo 3°: Condiciones de ingreso · Párrafo 3")) { %><p><%= academicoTexto("Artículo 3°: Condiciones de ingreso · Párrafo 3") %></p><% } %>
+
+        <% if (academicoVisible("Encabezado: Artículo 4°: Ingreso a primer año")) { %><h4><%= academicoTexto("Encabezado: Artículo 4°: Ingreso a primer año") %></h4><% } %>
+
+        <% if (academicoVisible("Artículo 4°: Ingreso a primer año · Párrafo 4")) { %><p><%= academicoTexto("Artículo 4°: Ingreso a primer año · Párrafo 4") %></p><% } %>
+      </section>
+
+      <section id="titulo-3" class="academic-regulations-section">
+        <% if (academicoVisible("Encabezado: TÍTULO III")) { %><h2><%= academicoTexto("Encabezado: TÍTULO III") %></h2><% } %>
+        <% if (academicoVisible("Encabezado: DEFINICIÓN DE LAS CONDICIONES DE LAS Y LOS ESTUDIANTES")) { %><h3><%= academicoTexto("Encabezado: DEFINICIÓN DE LAS CONDICIONES DE LAS Y LOS ESTUDIANTES") %></h3><% } %>
+
+        <% if (academicoVisible("Encabezado: Artículo 5°: Condición de las y los estudiantes")) { %><h4><%= academicoTexto("Encabezado: Artículo 5°: Condición de las y los estudiantes") %></h4><% } %>
+
+        <% if (academicoVisible("Artículo 5°: Condición de las y los estudiantes · Párrafo 1")) { %><p><%= academicoTexto("Artículo 5°: Condición de las y los estudiantes · Párrafo 1") %></p><% } %>
+
+        <% if (academicoVisible("Encabezado: Artículo 6°: Estudiantes regulares")) { %><h4><%= academicoTexto("Encabezado: Artículo 6°: Estudiantes regulares") %></h4><% } %>
+
+        <% if (academicoVisible("Artículo 6°: Estudiantes regulares · Párrafo 2")) { %><p><%= academicoTexto("Artículo 6°: Estudiantes regulares · Párrafo 2") %></p><% } %>
+
+        <% if (academicoVisible("Encabezado: Artículo 7°: Estudiantes libres")) { %><h4><%= academicoTexto("Encabezado: Artículo 7°: Estudiantes libres") %></h4><% } %>
+
+        <% if (academicoVisible("Artículo 7°: Estudiantes libres · Párrafo 3")) { %><p><%= academicoTexto("Artículo 7°: Estudiantes libres · Párrafo 3") %></p><% } %>
+
+        <% if (academicoVisible("Encabezado: Artículo 8°: Representación de las y los estudiantes menores")) { %><h4><%= academicoTexto("Encabezado: Artículo 8°: Representación de las y los estudiantes menores") %></h4><% } %>
+
+        <% if (academicoVisible("Artículo 8°: Representación de las y los estudiantes menores · Párrafo 4")) { %><p><%= academicoTexto("Artículo 8°: Representación de las y los estudiantes menores · Párrafo 4") %></p><% } %>
+
+        <% if (academicoVisible("Encabezado: Artículo 9°: Acreditación de la representación de menores")) { %><h4><%= academicoTexto("Encabezado: Artículo 9°: Acreditación de la representación de menores") %></h4><% } %>
+
+        <% if (academicoVisible("Artículo 9°: Acreditación de la representación de menores · Párrafo 5")) { %><p><%= academicoTexto("Artículo 9°: Acreditación de la representación de menores · Párrafo 5") %></p><% } %>
+      </section>
+
+      <section id="titulo-4" class="academic-regulations-section">
+        <% if (academicoVisible("Encabezado: TÍTULO IV")) { %><h2><%= academicoTexto("Encabezado: TÍTULO IV") %></h2><% } %>
+      
+        <% if (academicoVisible("Encabezado: DERECHOS Y OBLIGACIONES DE LAS Y LOS ESTUDIANTES Y SUS REPRESENTANTES")) { %><h3><%= academicoTexto("Encabezado: DERECHOS Y OBLIGACIONES DE LAS Y LOS ESTUDIANTES Y SUS REPRESENTANTES") %></h3><% } %>
+      
+        <% if (academicoVisible("Encabezado: ESTUDIANTES")) { %><h3><%= academicoTexto("Encabezado: ESTUDIANTES") %></h3><% } %>
+      
+        <% if (academicoVisible("Encabezado: Artículo 10°: Conocimiento y observancia de las normas escolares")) { %><h4><%= academicoTexto("Encabezado: Artículo 10°: Conocimiento y observancia de las normas escolares") %></h4><% } %>
+      
+        <% if (academicoVisible("Artículo 10°: Conocimiento y observancia de las normas escolares · Párrafo 1")) { %><p><%= academicoTexto("Artículo 10°: Conocimiento y observancia de las normas escolares · Párrafo 1") %></p><% } %>
+      
+        <% if (academicoVisible("Encabezado: Artículo 11°: Derechos de las y los estudiantes")) { %><h4><%= academicoTexto("Encabezado: Artículo 11°: Derechos de las y los estudiantes") %></h4><% } %>
+      
+        <% if (academicoVisible("Artículo 11°: Derechos de las y los estudiantes · Párrafo 2")) { %><p><%= academicoTexto("Artículo 11°: Derechos de las y los estudiantes · Párrafo 2") %></p><% } %>
+      
+        <ul>
+          <% if (academicoVisible("Artículo 11°: Derechos de las y los estudiantes · Punto 3")) { %><li><%= academicoTexto("Artículo 11°: Derechos de las y los estudiantes · Punto 3") %></li><% } %>
+      
+          <% if (academicoVisible("Artículo 11°: Derechos de las y los estudiantes · Punto 4")) { %><li><%= academicoTexto("Artículo 11°: Derechos de las y los estudiantes · Punto 4") %></li><% } %>
+      
+          <% if (academicoVisible("Artículo 11°: Derechos de las y los estudiantes · Punto 5")) { %><li><%= academicoTexto("Artículo 11°: Derechos de las y los estudiantes · Punto 5") %></li><% } %>
+      
+          <% if (academicoVisible("Artículo 11°: Derechos de las y los estudiantes · Punto 6")) { %><li><%= academicoTexto("Artículo 11°: Derechos de las y los estudiantes · Punto 6") %></li><% } %>
+      
+          <% if (academicoVisible("Artículo 11°: Derechos de las y los estudiantes · Punto 7")) { %><li><%= academicoTexto("Artículo 11°: Derechos de las y los estudiantes · Punto 7") %></li><% } %>
+      
+          <% if (academicoVisible("Artículo 11°: Derechos de las y los estudiantes · Punto 8")) { %><li><%= academicoTexto("Artículo 11°: Derechos de las y los estudiantes · Punto 8") %></li><% } %>
+      
+          <% if (academicoVisible("Artículo 11°: Derechos de las y los estudiantes · Punto 9")) { %><li><%= academicoTexto("Artículo 11°: Derechos de las y los estudiantes · Punto 9") %></li><% } %>
+      
+          <% if (academicoVisible("Artículo 11°: Derechos de las y los estudiantes · Punto 10")) { %><li><%= academicoTexto("Artículo 11°: Derechos de las y los estudiantes · Punto 10") %></li><% } %>
+      
+          <% if (academicoVisible("Artículo 11°: Derechos de las y los estudiantes · Punto 11")) { %><li><%= academicoTexto("Artículo 11°: Derechos de las y los estudiantes · Punto 11") %></li><% } %>
+      
+          <% if (academicoVisible("Artículo 11°: Derechos de las y los estudiantes · Punto 12")) { %><li><%= academicoTexto("Artículo 11°: Derechos de las y los estudiantes · Punto 12") %></li><% } %>
+      
+          <% if (academicoVisible("Artículo 11°: Derechos de las y los estudiantes · Punto 13")) { %><li><%= academicoTexto("Artículo 11°: Derechos de las y los estudiantes · Punto 13") %></li><% } %>
+      
+          <% if (academicoVisible("Artículo 11°: Derechos de las y los estudiantes · Punto 14")) { %><li><%= academicoTexto("Artículo 11°: Derechos de las y los estudiantes · Punto 14") %></li><% } %>
+      
+          <% if (academicoVisible("Artículo 11°: Derechos de las y los estudiantes · Punto 15")) { %><li><%= academicoTexto("Artículo 11°: Derechos de las y los estudiantes · Punto 15") %></li><% } %>
+        </ul>
+      
+        <% if (academicoVisible("Encabezado: Artículo 12°: Obligaciones de las y los estudiantes")) { %><h4><%= academicoTexto("Encabezado: Artículo 12°: Obligaciones de las y los estudiantes") %></h4><% } %>
+      
+        <% if (academicoVisible("Artículo 12°: Obligaciones de las y los estudiantes · Párrafo 16")) { %><p><%= academicoTexto("Artículo 12°: Obligaciones de las y los estudiantes · Párrafo 16") %></p><% } %>
+      
+        <ul>
+          <% if (academicoVisible("Artículo 12°: Obligaciones de las y los estudiantes · Punto 17")) { %><li><%= academicoTexto("Artículo 12°: Obligaciones de las y los estudiantes · Punto 17") %></li><% } %>
+      
+          <% if (academicoVisible("Artículo 12°: Obligaciones de las y los estudiantes · Punto 18")) { %><li><%= academicoTexto("Artículo 12°: Obligaciones de las y los estudiantes · Punto 18") %></li><% } %>
+      
+          <% if (academicoVisible("Artículo 12°: Obligaciones de las y los estudiantes · Punto 19")) { %><li><%= academicoTexto("Artículo 12°: Obligaciones de las y los estudiantes · Punto 19") %></li><% } %>
+      
+          <% if (academicoVisible("Artículo 12°: Obligaciones de las y los estudiantes · Punto 20")) { %><li><%= academicoTexto("Artículo 12°: Obligaciones de las y los estudiantes · Punto 20") %></li><% } %>
+      
+          <% if (academicoVisible("Artículo 12°: Obligaciones de las y los estudiantes · Punto 21")) { %><li><%= academicoTexto("Artículo 12°: Obligaciones de las y los estudiantes · Punto 21") %></li><% } %>
+      
+          <% if (academicoVisible("Artículo 12°: Obligaciones de las y los estudiantes · Punto 22")) { %><li><%= academicoTexto("Artículo 12°: Obligaciones de las y los estudiantes · Punto 22") %></li><% } %>
+      
+          <% if (academicoVisible("Artículo 12°: Obligaciones de las y los estudiantes · Punto 23")) { %><li><%= academicoTexto("Artículo 12°: Obligaciones de las y los estudiantes · Punto 23") %></li><% } %>
+      
+          <% if (academicoVisible("Artículo 12°: Obligaciones de las y los estudiantes · Punto 24")) { %><li><%= academicoTexto("Artículo 12°: Obligaciones de las y los estudiantes · Punto 24") %></li><% } %>
+      
+          <% if (academicoVisible("Artículo 12°: Obligaciones de las y los estudiantes · Punto 25")) { %><li><%= academicoTexto("Artículo 12°: Obligaciones de las y los estudiantes · Punto 25") %></li><% } %>
+        </ul>
+      
+        <% if (academicoVisible("Encabezado: PADRES, MADRES Y REPRESENTANTES LEGALES DE LOS/AS ESTUDIANTES")) { %><h3><%= academicoTexto("Encabezado: PADRES, MADRES Y REPRESENTANTES LEGALES DE LOS/AS ESTUDIANTES") %></h3><% } %>
+      
+        <% if (academicoVisible("Encabezado: Artículo 13°: Derechos de los representantes de las y los estudiantes")) { %><h4><%= academicoTexto("Encabezado: Artículo 13°: Derechos de los representantes de las y los estudiantes") %></h4><% } %>
+      
+        <% if (academicoVisible("Artículo 13°: Derechos de los representantes de las y los estudiantes · Párrafo 26")) { %><p><%= academicoTexto("Artículo 13°: Derechos de los representantes de las y los estudiantes · Párrafo 26") %></p><% } %>
+      
+        <ul>
+          <% if (academicoVisible("Artículo 13°: Derechos de los representantes de las y los estudiantes · Punto 27")) { %><li><%= academicoTexto("Artículo 13°: Derechos de los representantes de las y los estudiantes · Punto 27") %></li><% } %>
+      
+          <% if (academicoVisible("Artículo 13°: Derechos de los representantes de las y los estudiantes · Punto 28")) { %><li><%= academicoTexto("Artículo 13°: Derechos de los representantes de las y los estudiantes · Punto 28") %></li><% } %>
+      
+          <% if (academicoVisible("Artículo 13°: Derechos de los representantes de las y los estudiantes · Punto 29")) { %><li><%= academicoTexto("Artículo 13°: Derechos de los representantes de las y los estudiantes · Punto 29") %></li><% } %>
+      
+          <% if (academicoVisible("Artículo 13°: Derechos de los representantes de las y los estudiantes · Punto 30")) { %><li><%= academicoTexto("Artículo 13°: Derechos de los representantes de las y los estudiantes · Punto 30") %></li><% } %>
+        </ul>
+      
+        <% if (academicoVisible("Encabezado: Artículo 14°: Obligaciones de las y los representantes")) { %><h4><%= academicoTexto("Encabezado: Artículo 14°: Obligaciones de las y los representantes") %></h4><% } %>
+      
+        <% if (academicoVisible("Artículo 14°: Obligaciones de las y los representantes · Párrafo 31")) { %><p><%= academicoTexto("Artículo 14°: Obligaciones de las y los representantes · Párrafo 31") %></p><% } %>
+      
+        <ul>
+          <% if (academicoVisible("Artículo 14°: Obligaciones de las y los representantes · Punto 32")) { %><li><%= academicoTexto("Artículo 14°: Obligaciones de las y los representantes · Punto 32") %></li><% } %>
+      
+          <% if (academicoVisible("Artículo 14°: Obligaciones de las y los representantes · Punto 33")) { %><li><%= academicoTexto("Artículo 14°: Obligaciones de las y los representantes · Punto 33") %></li><% } %>
+      
+          <% if (academicoVisible("Artículo 14°: Obligaciones de las y los representantes · Punto 34")) { %><li><%= academicoTexto("Artículo 14°: Obligaciones de las y los representantes · Punto 34") %></li><% } %>
+      
+          <% if (academicoVisible("Artículo 14°: Obligaciones de las y los representantes · Punto 35")) { %><li><%= academicoTexto("Artículo 14°: Obligaciones de las y los representantes · Punto 35") %></li><% } %>
+        </ul>
+      </section>
+      
+      <section id="titulo-5" class="academic-regulations-section">
+        <% if (academicoVisible("Encabezado: TÍTULO V")) { %><h2><%= academicoTexto("Encabezado: TÍTULO V") %></h2><% } %>
+        <% if (academicoVisible("Encabezado: RÉGIMEN DE ASISTENCIA")) { %><h3><%= academicoTexto("Encabezado: RÉGIMEN DE ASISTENCIA") %></h3><% } %>
+      
+        <% if (academicoVisible("Encabezado: Artículo 15°: Obligatoriedad de asistencia a la Escuela")) { %><h4><%= academicoTexto("Encabezado: Artículo 15°: Obligatoriedad de asistencia a la Escuela") %></h4><% } %>
+      
+        <% if (academicoVisible("Artículo 15°: Obligatoriedad de asistencia a la Escuela · Párrafo 1")) { %><p><%= academicoTexto("Artículo 15°: Obligatoriedad de asistencia a la Escuela · Párrafo 1") %></p><% } %>
+      
+        <% if (academicoVisible("Artículo 15°: Obligatoriedad de asistencia a la Escuela · Párrafo 2")) { %><p><%= academicoTexto("Artículo 15°: Obligatoriedad de asistencia a la Escuela · Párrafo 2") %></p><% } %>
+      
+        <% if (academicoVisible("Encabezado: Artículo 16°: Horarios de ingreso y egreso a la Escuela")) { %><h4><%= academicoTexto("Encabezado: Artículo 16°: Horarios de ingreso y egreso a la Escuela") %></h4><% } %>
+      
+        <% if (academicoVisible("Artículo 16°: Horarios de ingreso y egreso a la Escuela · Párrafo 3")) { %><p><%= academicoTexto("Artículo 16°: Horarios de ingreso y egreso a la Escuela · Párrafo 3") %></p><% } %>
+      
+        <% if (academicoVisible("Artículo 16°: Horarios de ingreso y egreso a la Escuela · Párrafo 4")) { %><p><%= academicoTexto("Artículo 16°: Horarios de ingreso y egreso a la Escuela · Párrafo 4") %></p><% } %>
+      
+        <% if (academicoVisible("Artículo 16°: Horarios de ingreso y egreso a la Escuela · Párrafo 5")) { %><p><%= academicoTexto("Artículo 16°: Horarios de ingreso y egreso a la Escuela · Párrafo 5") %></p><% } %>
+      
+        <% if (academicoVisible("Encabezado: Artículo 17°: Excepciones")) { %><h4><%= academicoTexto("Encabezado: Artículo 17°: Excepciones") %></h4><% } %>
+      
+        <% if (academicoVisible("Artículo 17°: Excepciones · Párrafo 6")) { %><p><%= academicoTexto("Artículo 17°: Excepciones · Párrafo 6") %></p><% } %>
+      
+        <% if (academicoVisible("Encabezado: Artículo 18°: Festividades y conmemoraciones religiosas")) { %><h4><%= academicoTexto("Encabezado: Artículo 18°: Festividades y conmemoraciones religiosas") %></h4><% } %>
+      
+        <% if (academicoVisible("Artículo 18°: Festividades y conmemoraciones religiosas · Párrafo 7")) { %><p><%= academicoTexto("Artículo 18°: Festividades y conmemoraciones religiosas · Párrafo 7") %></p><% } %>
+      
+        <% if (academicoVisible("Encabezado: Artículo 19°: Ausencia por enfermedad")) { %><h4><%= academicoTexto("Encabezado: Artículo 19°: Ausencia por enfermedad") %></h4><% } %>
+      
+        <% if (academicoVisible("Artículo 19°: Ausencia por enfermedad · Párrafo 8")) { %><p><%= academicoTexto("Artículo 19°: Ausencia por enfermedad · Párrafo 8") %></p><% } %>
+      
+        <% if (academicoVisible("Artículo 19°: Ausencia por enfermedad · Párrafo 9")) { %><p><%= academicoTexto("Artículo 19°: Ausencia por enfermedad · Párrafo 9") %></p><% } %>
+      
+        <% if (academicoVisible("Encabezado: Artículo 20°: Inasistencia por fuerza mayor")) { %><h4><%= academicoTexto("Encabezado: Artículo 20°: Inasistencia por fuerza mayor") %></h4><% } %>
+      
+        <% if (academicoVisible("Artículo 20°: Inasistencia por fuerza mayor · Párrafo 10")) { %><p><%= academicoTexto("Artículo 20°: Inasistencia por fuerza mayor · Párrafo 10") %></p><% } %>
+      
+        <ul>
+          <li><% if (academicoVisible("Título V · Punto 11")) { %><span><%= academicoTexto("Título V · Punto 11") %></span><% } %><ul>
+              <% if (academicoVisible("Título V · Punto 12")) { %><li><%= academicoTexto("Título V · Punto 12") %></li><% } %>
+              <% if (academicoVisible("Artículo 20°: Inasistencia por fuerza mayor · Punto 13")) { %><li><%= academicoTexto("Artículo 20°: Inasistencia por fuerza mayor · Punto 13") %></li><% } %>
+              <% if (academicoVisible("Artículo 20°: Inasistencia por fuerza mayor · Punto 14")) { %><li><%= academicoTexto("Artículo 20°: Inasistencia por fuerza mayor · Punto 14") %></li><% } %>
+            </ul>
+          </li>
+      
+          <% if (academicoVisible("Artículo 20°: Inasistencia por fuerza mayor · Punto 15")) { %><li><%= academicoTexto("Artículo 20°: Inasistencia por fuerza mayor · Punto 15") %></li><% } %>
+          <% if (academicoVisible("Artículo 20°: Inasistencia por fuerza mayor · Punto 16")) { %><li><%= academicoTexto("Artículo 20°: Inasistencia por fuerza mayor · Punto 16") %></li><% } %>
+      
+          <% if (academicoVisible("Artículo 20°: Inasistencia por fuerza mayor · Punto 17")) { %><li><%= academicoTexto("Artículo 20°: Inasistencia por fuerza mayor · Punto 17") %></li><% } %>
+        </ul>
+      
+        <% if (academicoVisible("Artículo 20°: Inasistencia por fuerza mayor · Párrafo 18")) { %><p><%= academicoTexto("Artículo 20°: Inasistencia por fuerza mayor · Párrafo 18") %></p><% } %>
+      
+        <% if (academicoVisible("Artículo 20°: Inasistencia por fuerza mayor · Párrafo 19")) { %><p><%= academicoTexto("Artículo 20°: Inasistencia por fuerza mayor · Párrafo 19") %></p><% } %>
+      
+        <ul>
+          <% if (academicoVisible("Artículo 20°: Inasistencia por fuerza mayor · Punto 20")) { %><li><%= academicoTexto("Artículo 20°: Inasistencia por fuerza mayor · Punto 20") %></li><% } %>
+      
+          <% if (academicoVisible("Artículo 20°: Inasistencia por fuerza mayor · Punto 21")) { %><li><%= academicoTexto("Artículo 20°: Inasistencia por fuerza mayor · Punto 21") %></li><% } %>
+      
+          <% if (academicoVisible("Artículo 20°: Inasistencia por fuerza mayor · Punto 22")) { %><li><%= academicoTexto("Artículo 20°: Inasistencia por fuerza mayor · Punto 22") %></li><% } %>
+        </ul>
+      
+        <% if (academicoVisible("Artículo 20°: Inasistencia por fuerza mayor · Párrafo 23")) { %><p><%= academicoTexto("Artículo 20°: Inasistencia por fuerza mayor · Párrafo 23") %></p><% } %>
+      
+        <% if (academicoVisible("Encabezado: Artículo 21°: Pérdida de regularidad y reincorporación")) { %><h4><%= academicoTexto("Encabezado: Artículo 21°: Pérdida de regularidad y reincorporación") %></h4><% } %>
+      
+        <% if (academicoVisible("Artículo 21°: Pérdida de regularidad y reincorporación · Párrafo 24")) { %><p><%= academicoTexto("Artículo 21°: Pérdida de regularidad y reincorporación · Párrafo 24") %></p><% } %>
+      
+        <% if (academicoVisible("Artículo 21°: Pérdida de regularidad y reincorporación · Párrafo 25")) { %><p><%= academicoTexto("Artículo 21°: Pérdida de regularidad y reincorporación · Párrafo 25") %></p><% } %>
+      
+        <% if (academicoVisible("Artículo 21°: Pérdida de regularidad y reincorporación · Párrafo 26")) { %><p><%= academicoTexto("Artículo 21°: Pérdida de regularidad y reincorporación · Párrafo 26") %></p><% } %>
+      
+        <% if (academicoVisible("Artículo 21°: Pérdida de regularidad y reincorporación · Párrafo 27")) { %><p><%= academicoTexto("Artículo 21°: Pérdida de regularidad y reincorporación · Párrafo 27") %></p><% } %>
+      
+        <% if (academicoVisible("Encabezado: Artículo 22°: Salida anticipada al horario de egreso")) { %><h4><%= academicoTexto("Encabezado: Artículo 22°: Salida anticipada al horario de egreso") %></h4><% } %>
+      
+        <% if (academicoVisible("Artículo 22°: Salida anticipada al horario de egreso · Párrafo 28")) { %><p><%= academicoTexto("Artículo 22°: Salida anticipada al horario de egreso · Párrafo 28") %></p><% } %>
+      
+        <% if (academicoVisible("Encabezado: Artículo 23°: Abordaje del Equipo de Orientación Tutorial")) { %><h4><%= academicoTexto("Encabezado: Artículo 23°: Abordaje del Equipo de Orientación Tutorial") %></h4><% } %>
+      
+        <% if (academicoVisible("Artículo 23°: Abordaje del Equipo de Orientación Tutorial · Párrafo 29")) { %><p><%= academicoTexto("Artículo 23°: Abordaje del Equipo de Orientación Tutorial · Párrafo 29") %></p><% } %>
+      
+        <% if (academicoVisible("Artículo 23°: Abordaje del Equipo de Orientación Tutorial · Párrafo 30")) { %><p><%= academicoTexto("Artículo 23°: Abordaje del Equipo de Orientación Tutorial · Párrafo 30") %></p><% } %>
+      
+        <% if (academicoVisible("Artículo 23°: Abordaje del Equipo de Orientación Tutorial · Párrafo 31")) { %><p><%= academicoTexto("Artículo 23°: Abordaje del Equipo de Orientación Tutorial · Párrafo 31") %></p><% } %>
+      
+        <% if (academicoVisible("Artículo 23°: Abordaje del Equipo de Orientación Tutorial · Párrafo 32")) { %><p><%= academicoTexto("Artículo 23°: Abordaje del Equipo de Orientación Tutorial · Párrafo 32") %></p><% } %>
+      </section>
+      
+      <section id="titulo-6" class="academic-regulations-section">
+        <% if (academicoVisible("Encabezado: TÍTULO VI")) { %><h2><%= academicoTexto("Encabezado: TÍTULO VI") %></h2><% } %>
+        <% if (academicoVisible("Encabezado: CONDICIONES DE APROBACIÓN DE LOS ESPACIOS CURRICULARES")) { %><h3><%= academicoTexto("Encabezado: CONDICIONES DE APROBACIÓN DE LOS ESPACIOS CURRICULARES") %></h3><% } %>
+      
+        <% if (academicoVisible("Encabezado: Artículo 24°")) { %><h4><%= academicoTexto("Encabezado: Artículo 24°") %></h4><% } %>
+      
+        <% if (academicoVisible("Artículo 24° · Párrafo 1")) { %><p><%= academicoTexto("Artículo 24° · Párrafo 1") %></p><% } %>
+      
+        <div class="academic-regulations-table-wrapper">
+          <table class="academic-regulations-table">
+            <tbody>
+              <tr>
+                <td>Calificación nominal</td>
+                <td>Calificación numérica</td>
+                <td>Calificación nominal</td>
+                <td>Calificación numérica</td>
+                <td>Calificación numérica</td>
+              </tr>
+      
+              <tr>
+                <td>Abril</td>
+                <td>Julio</td>
+                <td>Agosto</td>
+                <td>Diciembre</td>
+                <td>Nota final</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      
+        <% if (academicoVisible("Artículo 24° · Párrafo 2")) { %><p><%= academicoTexto("Artículo 24° · Párrafo 2") %></p><% } %>
+      
+        <ul>
+          <% if (academicoVisible("Artículo 24° · Punto 3")) { %><li><%= academicoTexto("Artículo 24° · Punto 3") %></li><% } %>
+      
+          <% if (academicoVisible("Artículo 24° · Punto 4")) { %><li><%= academicoTexto("Artículo 24° · Punto 4") %></li><% } %>
+      
+          <% if (academicoVisible("Artículo 24° · Punto 5")) { %><li><%= academicoTexto("Artículo 24° · Punto 5") %></li><% } %>
+      
+          <% if (academicoVisible("Artículo 24° · Punto 6")) { %><li><%= academicoTexto("Artículo 24° · Punto 6") %></li><% } %>
+        </ul>
+      
+        <% if (academicoVisible("Artículo 24° · Párrafo 7")) { %><p><%= academicoTexto("Artículo 24° · Párrafo 7") %></p><% } %>
+      
+        <% if (academicoVisible("Encabezado: Artículo 25°: Categorías nominales")) { %><h4><%= academicoTexto("Encabezado: Artículo 25°: Categorías nominales") %></h4><% } %>
+      
+        <% if (academicoVisible("Artículo 25°: Categorías nominales · Párrafo 8")) { %><p><%= academicoTexto("Artículo 25°: Categorías nominales · Párrafo 8") %></p><% } %>
+      
+        <% if (academicoVisible("Artículo 25°: Categorías nominales · Párrafo 9")) { %><p><%= academicoTexto("Artículo 25°: Categorías nominales · Párrafo 9") %></p><% } %>
+      
+        <% if (academicoVisible("Encabezado: Artículo 26°: Categorías numéricas")) { %><h4><%= academicoTexto("Encabezado: Artículo 26°: Categorías numéricas") %></h4><% } %>
+      
+        <% if (academicoVisible("Artículo 26°: Categorías numéricas · Párrafo 10")) { %><p><%= academicoTexto("Artículo 26°: Categorías numéricas · Párrafo 10") %></p><% } %>
+      
+        <% if (academicoVisible("Encabezado: Artículo 27°")) { %><h4><%= academicoTexto("Encabezado: Artículo 27°") %></h4><% } %>
+      
+        <% if (academicoVisible("Artículo 27° · Párrafo 11")) { %><p><%= academicoTexto("Artículo 27° · Párrafo 11") %></p><% } %>
+      
+        <ul>
+          <% if (academicoVisible("Artículo 27° · Punto 12")) { %><li><%= academicoTexto("Artículo 27° · Punto 12") %></li><% } %>
+      
+          <% if (academicoVisible("Artículo 27° · Punto 13")) { %><li><%= academicoTexto("Artículo 27° · Punto 13") %></li><% } %>
+      
+          <% if (academicoVisible("Artículo 27° · Punto 14")) { %><li><%= academicoTexto("Artículo 27° · Punto 14") %></li><% } %>
+      
+          <% if (academicoVisible("Artículo 27° · Punto 15")) { %><li><%= academicoTexto("Artículo 27° · Punto 15") %></li><% } %>
+        </ul>
+      
+        <% if (academicoVisible("Encabezado: Artículo 28°: Definición de aprobado")) { %><h4><%= academicoTexto("Encabezado: Artículo 28°: Definición de aprobado") %></h4><% } %>
+      
+        <% if (academicoVisible("Artículo 28°: Definición de aprobado · Párrafo 16")) { %><p><%= academicoTexto("Artículo 28°: Definición de aprobado · Párrafo 16") %></p><% } %>
+      
+        <% if (academicoVisible("Encabezado: Artículo 29°: Período de recuperación de los aprendizajes")) { %><h4><%= academicoTexto("Encabezado: Artículo 29°: Período de recuperación de los aprendizajes") %></h4><% } %>
+      
+        <% if (academicoVisible("Artículo 29°: Período de recuperación de los aprendizajes · Párrafo 17")) { %><p><%= academicoTexto("Artículo 29°: Período de recuperación de los aprendizajes · Párrafo 17") %></p><% } %>
+      
+        <% if (academicoVisible("Encabezado: Artículo 30°: Mesa de examen")) { %><h4><%= academicoTexto("Encabezado: Artículo 30°: Mesa de examen") %></h4><% } %>
+      
+        <% if (academicoVisible("Artículo 30°: Mesa de examen · Párrafo 18")) { %><p><%= academicoTexto("Artículo 30°: Mesa de examen · Párrafo 18") %></p><% } %>
+      
+        <% if (academicoVisible("Artículo 30°: Mesa de examen · Párrafo 19")) { %><p><%= academicoTexto("Artículo 30°: Mesa de examen · Párrafo 19") %></p><% } %>
+      
+        <% if (academicoVisible("Encabezado: Artículo 31°: Promoción del año lectivo")) { %><h4><%= academicoTexto("Encabezado: Artículo 31°: Promoción del año lectivo") %></h4><% } %>
+      
+        <% if (academicoVisible("Artículo 31°: Promoción del año lectivo · Párrafo 20")) { %><p><%= academicoTexto("Artículo 31°: Promoción del año lectivo · Párrafo 20") %></p><% } %>
+      </section>
+      
+      <section id="titulo-7" class="academic-regulations-section">
+        <% if (academicoVisible("Encabezado: TÍTULO VII")) { %><h2><%= academicoTexto("Encabezado: TÍTULO VII") %></h2><% } %>
+        <% if (academicoVisible("Encabezado: COMUNICACIÓN DEL LOGRO DE LOS APRENDIZAJES")) { %><h3><%= academicoTexto("Encabezado: COMUNICACIÓN DEL LOGRO DE LOS APRENDIZAJES") %></h3><% } %>
+      
+        <% if (academicoVisible("Encabezado: Artículo 32°")) { %><h4><%= academicoTexto("Encabezado: Artículo 32°") %></h4><% } %>
+      
+        <% if (academicoVisible("Artículo 32° · Párrafo 1")) { %><p><%= academicoTexto("Artículo 32° · Párrafo 1") %></p><% } %>
+      
+        <ul>
+          <% if (academicoVisible("Artículo 32° · Punto 2")) { %><li><%= academicoTexto("Artículo 32° · Punto 2") %></li><% } %>
+      
+          <% if (academicoVisible("Artículo 32° · Punto 3")) { %><li><%= academicoTexto("Artículo 32° · Punto 3") %></li><% } %>
+      
+          <% if (academicoVisible("Artículo 32° · Punto 4")) { %><li><%= academicoTexto("Artículo 32° · Punto 4") %></li><% } %>
+        </ul>
+      </section>
+      
+      <section id="titulo-8" class="academic-regulations-section">
+        <% if (academicoVisible("Encabezado: TÍTULO VIII")) { %><h2><%= academicoTexto("Encabezado: TÍTULO VIII") %></h2><% } %>
+        <% if (academicoVisible("Encabezado: ACOMPAÑAMIENTO A LAS TRAYECTORIAS EDUCATIVAS")) { %><h3><%= academicoTexto("Encabezado: ACOMPAÑAMIENTO A LAS TRAYECTORIAS EDUCATIVAS") %></h3><% } %>
+      
+        <% if (academicoVisible("Encabezado: Artículo 33°")) { %><h4><%= academicoTexto("Encabezado: Artículo 33°") %></h4><% } %>
+      
+        <% if (academicoVisible("Artículo 33° · Párrafo 1")) { %><p><%= academicoTexto("Artículo 33° · Párrafo 1") %></p><% } %>
+      
+        <% if (academicoVisible("Artículo 33° · Párrafo 2")) { %><p><%= academicoTexto("Artículo 33° · Párrafo 2") %></p><% } %>
+      
+        <% if (academicoVisible("Encabezado: Artículo 34°: Itinerario Pedagógico Personalizado (IPP)")) { %><h4><%= academicoTexto("Encabezado: Artículo 34°: Itinerario Pedagógico Personalizado (IPP)") %></h4><% } %>
+      
+        <% if (academicoVisible("Artículo 34°: Itinerario Pedagógico Personalizado (IPP) · Párrafo 3")) { %><p><%= academicoTexto("Artículo 34°: Itinerario Pedagógico Personalizado (IPP) · Párrafo 3") %></p><% } %>
+      
+        <% if (academicoVisible("Artículo 34°: Itinerario Pedagógico Personalizado (IPP) · Párrafo 4")) { %><p><%= academicoTexto("Artículo 34°: Itinerario Pedagógico Personalizado (IPP) · Párrafo 4") %></p><% } %>
+      
+        <% if (academicoVisible("Encabezado: Artículo 35°: Alcance del Itinerario Pedagógico Personalizado")) { %><h4><%= academicoTexto("Encabezado: Artículo 35°: Alcance del Itinerario Pedagógico Personalizado") %></h4><% } %>
+      
+        <% if (academicoVisible("Artículo 35°: Alcance del Itinerario Pedagógico Personalizado · Párrafo 5")) { %><p><%= academicoTexto("Artículo 35°: Alcance del Itinerario Pedagógico Personalizado · Párrafo 5") %></p><% } %>
+      
+        <% if (academicoVisible("Artículo 35°: Alcance del Itinerario Pedagógico Personalizado · Párrafo 6")) { %><p><%= academicoTexto("Artículo 35°: Alcance del Itinerario Pedagógico Personalizado · Párrafo 6") %></p><% } %>
+      
+        <% if (academicoVisible("Encabezado: Artículo 36°: Programa de regularización para estudiantes con materias previas")) { %><h4><%= academicoTexto("Encabezado: Artículo 36°: Programa de regularización para estudiantes con materias previas") %></h4><% } %>
+      
+        <% if (academicoVisible("Artículo 36°: Programa de regularización para estudiantes con materias previas · Párrafo 7")) { %><p><%= academicoTexto("Artículo 36°: Programa de regularización para estudiantes con materias previas · Párrafo 7") %></p><% } %>
+      
+        <% if (academicoVisible("Artículo 36°: Programa de regularización para estudiantes con materias previas · Párrafo 8")) { %><p><%= academicoTexto("Artículo 36°: Programa de regularización para estudiantes con materias previas · Párrafo 8") %></p><% } %>
+      
+        <% if (academicoVisible("Artículo 36°: Programa de regularización para estudiantes con materias previas · Párrafo 9")) { %><p><%= academicoTexto("Artículo 36°: Programa de regularización para estudiantes con materias previas · Párrafo 9") %></p><% } %>
+      
+        <% if (academicoVisible("Artículo 36°: Programa de regularización para estudiantes con materias previas · Párrafo 10")) { %><p><%= academicoTexto("Artículo 36°: Programa de regularización para estudiantes con materias previas · Párrafo 10") %></p><% } %>
+      
+        <% if (academicoVisible("Encabezado: Artículo 37°: Titulación")) { %><h4><%= academicoTexto("Encabezado: Artículo 37°: Titulación") %></h4><% } %>
+      
+        <% if (academicoVisible("Artículo 37°: Titulación · Párrafo 11")) { %><p><%= academicoTexto("Artículo 37°: Titulación · Párrafo 11") %></p><% } %>
+      
+        <% if (academicoVisible("Artículo 37°: Titulación · Párrafo 12")) { %><p><%= academicoTexto("Artículo 37°: Titulación · Párrafo 12") %></p><% } %>
+      
+        <% if (academicoVisible("Artículo 37°: Titulación · Párrafo 13")) { %><p><%= academicoTexto("Artículo 37°: Titulación · Párrafo 13") %></p><% } %>
+      </section>
+      
+      <section id="anexo-1" class="academic-regulations-section">
+        <% if (academicoVisible("Encabezado: ANEXO I")) { %><h2><%= academicoTexto("Encabezado: ANEXO I") %></h2><% } %>
+        <% if (academicoVisible("Encabezado: CURSO DE INGRESO")) { %><h3><%= academicoTexto("Encabezado: CURSO DE INGRESO") %></h3><% } %>
+      
+        <% if (academicoVisible("Anexo I · Párrafo 1")) { %><p><%= academicoTexto("Anexo I · Párrafo 1") %></p><% } %>
+      
+        <% if (academicoVisible("Anexo I · Párrafo 2")) { %><p><%= academicoTexto("Anexo I · Párrafo 2") %></p><% } %>
+      
+        <% if (academicoVisible("Encabezado: Características generales")) { %><h4><%= academicoTexto("Encabezado: Características generales") %></h4><% } %>
+      
+        <% if (academicoVisible("Características generales · Párrafo 3")) { %><p><%= academicoTexto("Características generales · Párrafo 3") %></p><% } %>
+      
+        <% if (academicoVisible("Características generales · Párrafo 4")) { %><p><%= academicoTexto("Características generales · Párrafo 4") %></p><% } %>
+      
+        <% if (academicoVisible("Características generales · Párrafo 5")) { %><p><%= academicoTexto("Características generales · Párrafo 5") %></p><% } %>
+      
+        <% if (academicoVisible("Características generales · Párrafo 6")) { %><p><%= academicoTexto("Características generales · Párrafo 6") %></p><% } %>
+      
+        <% if (academicoVisible("Características generales · Párrafo 7")) { %><p><%= academicoTexto("Características generales · Párrafo 7") %></p><% } %>
+      
+        <% if (academicoVisible("Encabezado: Organización de la cursada")) { %><h4><%= academicoTexto("Encabezado: Organización de la cursada") %></h4><% } %>
+      
+        <% if (academicoVisible("Organización de la cursada · Párrafo 8")) { %><p><%= academicoTexto("Organización de la cursada · Párrafo 8") %></p><% } %>
+      
+        <% if (academicoVisible("Organización de la cursada · Párrafo 9")) { %><p><%= academicoTexto("Organización de la cursada · Párrafo 9") %></p><% } %>
+      
+        <% if (academicoVisible("Organización de la cursada · Párrafo 10")) { %><p><%= academicoTexto("Organización de la cursada · Párrafo 10") %></p><% } %>
+      
+        <% if (academicoVisible("Organización de la cursada · Párrafo 11")) { %><p><%= academicoTexto("Organización de la cursada · Párrafo 11") %></p><% } %>
+      
+        <% if (academicoVisible("Organización de la cursada · Párrafo 12")) { %><p><%= academicoTexto("Organización de la cursada · Párrafo 12") %></p><% } %>
+      
+        <% if (academicoVisible("Encabezado: Evaluación del Curso de Ingreso")) { %><h4><%= academicoTexto("Encabezado: Evaluación del Curso de Ingreso") %></h4><% } %>
+      
+        <% if (academicoVisible("Evaluación del Curso de Ingreso · Párrafo 13")) { %><p><%= academicoTexto("Evaluación del Curso de Ingreso · Párrafo 13") %></p><% } %>
+      
+        <% if (academicoVisible("Encabezado: Asignación de la vacante a la Escuela")) { %><h4><%= academicoTexto("Encabezado: Asignación de la vacante a la Escuela") %></h4><% } %>
+      
+        <% if (academicoVisible("Asignación de la vacante a la Escuela · Párrafo 14")) { %><p><%= academicoTexto("Asignación de la vacante a la Escuela · Párrafo 14") %></p><% } %>
+      
+        <% if (academicoVisible("Asignación de la vacante a la Escuela · Párrafo 15")) { %><p><%= academicoTexto("Asignación de la vacante a la Escuela · Párrafo 15") %></p><% } %>
+      </section>
+      
+      <section id="anexo-2" class="academic-regulations-section">
+        <% if (academicoVisible("Encabezado: ANEXO II")) { %><h2><%= academicoTexto("Encabezado: ANEXO II") %></h2><% } %>
+      
+        <% if (academicoVisible("Encabezado: PROGRAMA DE REGULARIZACIÓN DE MATERIAS PREVIAS (PREP)")) { %><h3><%= academicoTexto("Encabezado: PROGRAMA DE REGULARIZACIÓN DE MATERIAS PREVIAS (PREP)") %></h3><% } %>
+      
+        <% if (academicoVisible("Encabezado: Fundamentación")) { %><h4><%= academicoTexto("Encabezado: Fundamentación") %></h4><% } %>
+      
+        <% if (academicoVisible("Fundamentación · Párrafo 1")) { %><p><%= academicoTexto("Fundamentación · Párrafo 1") %></p><% } %>
+      
+        <% if (academicoVisible("Fundamentación · Párrafo 2")) { %><p><%= academicoTexto("Fundamentación · Párrafo 2") %></p><% } %>
+      
+        <% if (academicoVisible("Fundamentación · Párrafo 3")) { %><p><%= academicoTexto("Fundamentación · Párrafo 3") %></p><% } %>
+      
+        <% if (academicoVisible("Fundamentación · Párrafo 4")) { %><p><%= academicoTexto("Fundamentación · Párrafo 4") %></p><% } %>
+      
+        <% if (academicoVisible("Fundamentación · Párrafo 5")) { %><p><%= academicoTexto("Fundamentación · Párrafo 5") %></p><% } %>
+      
+        <% if (academicoVisible("Fundamentación · Párrafo 6")) { %><p><%= academicoTexto("Fundamentación · Párrafo 6") %></p><% } %>
+      
+        <% if (academicoVisible("Fundamentación · Párrafo 7")) { %><p><%= academicoTexto("Fundamentación · Párrafo 7") %></p><% } %>
+      
+        <% if (academicoVisible("Encabezado: Objetivos del programa")) { %><h4><%= academicoTexto("Encabezado: Objetivos del programa") %></h4><% } %>
+      
+        <ul>
+          <% if (academicoVisible("Objetivos del programa · Punto 8")) { %><li><%= academicoTexto("Objetivos del programa · Punto 8") %></li><% } %>
+      
+          <% if (academicoVisible("Objetivos del programa · Punto 9")) { %><li><%= academicoTexto("Objetivos del programa · Punto 9") %></li><% } %>
+      
+          <% if (academicoVisible("Objetivos del programa · Punto 10")) { %><li><%= academicoTexto("Objetivos del programa · Punto 10") %></li><% } %>
+        </ul>
+      
+        <% if (academicoVisible("Encabezado: Condiciones de ingreso al programa")) { %><h4><%= academicoTexto("Encabezado: Condiciones de ingreso al programa") %></h4><% } %>
+      
+        <ul>
+          <% if (academicoVisible("Condiciones de ingreso al programa · Punto 11")) { %><li><%= academicoTexto("Condiciones de ingreso al programa · Punto 11") %></li><% } %>
+      
+          <% if (academicoVisible("Condiciones de ingreso al programa · Punto 12")) { %><li><%= academicoTexto("Condiciones de ingreso al programa · Punto 12") %></li><% } %>
+      
+          <% if (academicoVisible("Condiciones de ingreso al programa · Punto 13")) { %><li><%= academicoTexto("Condiciones de ingreso al programa · Punto 13") %></li><% } %>
+        </ul>
+      
+        <% if (academicoVisible("Encabezado: Organización del programa")) { %><h4><%= academicoTexto("Encabezado: Organización del programa") %></h4><% } %>
+      
+        <% if (academicoVisible("Organización del programa · Párrafo 14")) { %><p><%= academicoTexto("Organización del programa · Párrafo 14") %></p><% } %>
+      
+        <% if (academicoVisible("Organización del programa · Párrafo 15")) { %><p><%= academicoTexto("Organización del programa · Párrafo 15") %></p><% } %>
+      
+        <% if (academicoVisible("Organización del programa · Párrafo 16")) { %><p><%= academicoTexto("Organización del programa · Párrafo 16") %></p><% } %>
+      
+        <% if (academicoVisible("Organización del programa · Párrafo 17")) { %><p><%= academicoTexto("Organización del programa · Párrafo 17") %></p><% } %>
+      
+        <ul>
+          <% if (academicoVisible("Organización del programa · Punto 18")) { %><li><%= academicoTexto("Organización del programa · Punto 18") %></li><% } %>
+      
+          <% if (academicoVisible("Organización del programa · Punto 19")) { %><li><%= academicoTexto("Organización del programa · Punto 19") %></li><% } %>
+      
+          <% if (academicoVisible("Organización del programa · Punto 20")) { %><li><%= academicoTexto("Organización del programa · Punto 20") %></li><% } %>
+      
+          <% if (academicoVisible("Organización del programa · Punto 21")) { %><li><%= academicoTexto("Organización del programa · Punto 21") %></li><% } %>
+      
+          <% if (academicoVisible("Organización del programa · Punto 22")) { %><li><%= academicoTexto("Organización del programa · Punto 22") %></li><% } %>
+      
+          <% if (academicoVisible("Organización del programa · Punto 23")) { %><li><%= academicoTexto("Organización del programa · Punto 23") %></li><% } %>
+        </ul>
+      
+        <% if (academicoVisible("Encabezado: Condiciones para la aprobación de materias")) { %><h4><%= academicoTexto("Encabezado: Condiciones para la aprobación de materias") %></h4><% } %>
+      
+        <ul>
+          <% if (academicoVisible("Condiciones para la aprobación de materias · Punto 24")) { %><li><%= academicoTexto("Condiciones para la aprobación de materias · Punto 24") %></li><% } %>
+      
+          <% if (academicoVisible("Condiciones para la aprobación de materias · Punto 25")) { %><li><%= academicoTexto("Condiciones para la aprobación de materias · Punto 25") %></li><% } %>
+      
+          <% if (academicoVisible("Condiciones para la aprobación de materias · Punto 26")) { %><li><%= academicoTexto("Condiciones para la aprobación de materias · Punto 26") %></li><% } %>
+      
+          <% if (academicoVisible("Condiciones para la aprobación de materias · Punto 27")) { %><li><%= academicoTexto("Condiciones para la aprobación de materias · Punto 27") %></li><% } %>
+        </ul>
+      </section>
+      
+      <% if (academicoVisible("Condiciones para la aprobación de materias · Párrafo 28")) { %><p class="academic-regulations-resolution"><%= academicoTexto("Condiciones para la aprobación de materias · Párrafo 28") %></p><% } %>
+
+<% academico.filter(s => s.grupo === 'Información adicional' && s.activo).forEach(s => { %><section class="academic-regulations-section"><h2><%= s.titulo %></h2><% s.contenido.split(/\r?\n/).filter(Boolean).forEach(linea => { %><p><%= linea %></p><% }) %></section><% }) %>
+    </article>
+  </section>
+</main>
+
+<%- include('partials/footer') %>

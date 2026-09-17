@@ -1,0 +1,334 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+enum RolUsuario {
+  SUPER_ADMIN
+  OPERADOR_INGRESO
+}
+
+enum EstadoCiclo {
+  BORRADOR
+  ABIERTO
+  CERRADO
+  ARCHIVADO
+}
+
+enum EstadoPreinscripcion {
+  CONFIRMADA
+  ANULADA
+  ELIMINADA
+}
+
+enum EstadoEmail {
+  PENDIENTE
+  ENVIANDO
+  ENVIADO
+  ERROR
+}
+
+enum TipoAuditoria {
+  INICIO_SESION
+  CIERRE_SESION
+  CREACION_USUARIO
+  EXPORTACION_XLSX
+  MODIFICACION_INSCRIPCION
+  REENVIO_CONFIRMACION
+  CAMBIO_ESTADO_CICLO
+  SOLICITUD_ELIMINACION
+  ELIMINACION_DATOS
+  CREACION_EVENTO
+  MODIFICACION_EVENTO
+  ELIMINACION_EVENTO
+  MODIFICACION_CHATBOT
+  MODIFICACION_REMATRICULACION
+  MODIFICACION_CONTENIDO
+}
+
+enum EstadoEvento {
+  BORRADOR
+  PUBLICADO
+  CANCELADO
+}
+
+enum CategoriaEvento {
+  INSTITUCIONAL
+  ACADEMICO
+  CURSO_INGRESO
+  COMUNIDAD
+  EXTRACURRICULAR
+}
+
+enum TipoDestinoChatbot {
+  PAGINA_INTERNA
+  WHATSAPP
+}
+
+model CicloIngreso {
+  id                 Int              @id @default(autoincrement())
+  anio               Int              @unique
+  estado             EstadoCiclo      @default(BORRADOR)
+  proximoNumero      Int              @default(1)
+  inscripcionesDesde DateTime?
+  inscripcionesHasta DateTime?
+  retencionHasta     DateTime?
+  creadoEn           DateTime         @default(now())
+  actualizadoEn      DateTime         @updatedAt
+  preinscripciones   Preinscripcion[]
+}
+
+model Preinscripcion {
+  id                       String                 @id @default(cuid())
+  cicloId                  Int
+  numeroSorteo             Int
+  nombres                  String
+  apellido                 String
+  dniCifrado               String
+  dniHuella                String
+  fechaNacimiento          DateTime
+  escuelaOrigen            String?
+  emailContacto            String
+  telefonoContacto         String
+  estado                   EstadoPreinscripcion   @default(CONFIRMADA)
+  versionAvisoPrivacidad   String
+  consentimientoAceptadoEn DateTime
+  creadoEn                 DateTime               @default(now())
+  actualizadoEn            DateTime               @updatedAt
+  eliminadoEn              DateTime?
+  ciclo                    CicloIngreso           @relation(fields: [cicloId], references: [id], onDelete: Restrict)
+  responsables             Responsable[]
+  emails                   EmailPendiente[]
+  solicitudesEliminacion   SolicitudEliminacion[]
+
+  @@unique([cicloId, numeroSorteo])
+  @@unique([cicloId, dniHuella])
+  @@index([cicloId, apellido, nombres])
+}
+
+model Responsable {
+  id               String         @id @default(cuid())
+  preinscripcionId String
+  orden            Int
+  nombres          String
+  apellido         String
+  vinculo          String
+  dniCifrado       String?
+  telefono         String
+  email            String?
+  preinscripcion   Preinscripcion @relation(fields: [preinscripcionId], references: [id], onDelete: Cascade)
+
+  @@unique([preinscripcionId, orden])
+}
+
+model UsuarioAdministrativo {
+  id                    String                 @id @default(cuid())
+  email                 String                 @unique
+  nombreUsuario         String?                @unique
+  nombreMostrado        String
+  passwordHash          String
+  rol                   RolUsuario
+  activo                Boolean                @default(true)
+  intentosFallidos      Int                    @default(0)
+  bloqueadoHasta        DateTime?
+  ultimoAccesoEn        DateTime?
+  passwordActualizadoEn DateTime               @default(now())
+  creadoEn              DateTime               @default(now())
+  actualizadoEn         DateTime               @updatedAt
+  auditorias            EventoAuditoria[]
+  eliminaciones         SolicitudEliminacion[]
+  eventosCreados        Evento[]               @relation("EventoCreadoPor")
+  eventosActualizados   Evento[]               @relation("EventoActualizadoPor")
+  ordenMeritoImportaciones OrdenMeritoImportacion[] @relation("OrdenMeritoImportadoPor")
+}
+
+model EmailPendiente {
+  id                String         @id @default(cuid())
+  preinscripcionId  String
+  destinatario      String
+  plantilla         String
+  estado            EstadoEmail    @default(PENDIENTE)
+  intentos          Int            @default(0)
+  proximoIntentoEn  DateTime?
+  enviadoEn         DateTime?
+  ultimoErrorCodigo String?
+  creadoEn          DateTime       @default(now())
+  actualizadoEn     DateTime       @updatedAt
+  preinscripcion    Preinscripcion @relation(fields: [preinscripcionId], references: [id], onDelete: Cascade)
+
+  @@index([estado, proximoIntentoEn])
+}
+
+model EventoAuditoria {
+  id        String                 @id @default(cuid())
+  usuarioId String?
+  tipo      TipoAuditoria
+  entidad   String?
+  entidadId String?
+  detalles  String?
+  ipHuella  String?
+  creadoEn  DateTime               @default(now())
+  usuario   UsuarioAdministrativo? @relation(fields: [usuarioId], references: [id], onDelete: SetNull)
+
+  @@index([tipo, creadoEn])
+  @@index([usuarioId, creadoEn])
+}
+
+model SolicitudEliminacion {
+  id               String                @id @default(cuid())
+  preinscripcionId String
+  solicitadaPorId  String
+  motivo           String
+  ejecutadaEn      DateTime?
+  creadaEn         DateTime              @default(now())
+  preinscripcion   Preinscripcion        @relation(fields: [preinscripcionId], references: [id], onDelete: Restrict)
+  solicitadaPor    UsuarioAdministrativo @relation(fields: [solicitadaPorId], references: [id], onDelete: Restrict)
+}
+
+model Evento {
+  id               String          @id @default(cuid())
+  titulo           String
+  descripcion      String
+  fechaInicio      DateTime
+  fechaFin         DateTime?
+  todoElDia        Boolean         @default(true)
+  ubicacion        String?
+  categoria        CategoriaEvento
+  estado           EstadoEvento    @default(BORRADOR)
+  creadoPorId      String
+  actualizadoPorId String?
+  creadoEn         DateTime        @default(now())
+  actualizadoEn    DateTime        @updatedAt
+
+  creadoPor UsuarioAdministrativo @relation("EventoCreadoPor", fields: [creadoPorId], references: [id], onDelete: Restrict)
+
+  actualizadoPor UsuarioAdministrativo? @relation("EventoActualizadoPor", fields: [actualizadoPorId], references: [id], onDelete: SetNull)
+
+  @@index([estado, fechaInicio])
+  @@index([categoria, fechaInicio])
+}
+
+model ConfiguracionChatbot {
+  id                 Int      @id @default(1)
+  activo             Boolean  @default(true)
+  modoPrueba         Boolean  @default(true)
+  mensajeBienvenida  String
+  mensajeNoEntendido String
+  actualizadoEn      DateTime @updatedAt
+}
+
+model ConfiguracionRematriculacion {
+  id                Int      @id @default(1)
+  activo            Boolean  @default(false)
+  cicloLectivo      Int      @default(2026)
+  fechaInicio       DateTime?
+  fechaFin          DateTime?
+  mensajeAptoFisico String   @default("Aquellos estudiantes que no presentaron apto físico ninguna vez durante el año. No podrán realizar Educación Física el año siguiente.")
+  actualizadoEn     DateTime @updatedAt
+}
+
+model PaginaContenido {
+  id               String   @id @default(cuid())
+  clave            String   @unique
+  ruta             String   @unique
+  nombre           String
+  titulo           String
+  texto            String   @default("")
+  mostrarAviso     Boolean  @default(false)
+  actualizadoEn    DateTime @updatedAt
+}
+
+model SeccionPagina {
+  id          String   @id @default(cuid())
+  paginaClave String
+  grupo       String
+  subgrupo    String?
+  titulo      String
+  contenido   String
+  orden       Int      @default(0)
+  activo      Boolean  @default(true)
+  creadoEn    DateTime @default(now())
+  actualizadoEn DateTime @updatedAt
+
+  @@index([paginaClave, grupo, orden])
+}
+
+model OrdenMeritoImportacion {
+  id            String                 @id @default(cuid())
+  cicloLectivo  Int
+  nombreArchivo String
+  columnasJson  String
+  creadoPorId   String
+  creadoEn      DateTime               @default(now())
+  creadoPor     UsuarioAdministrativo @relation("OrdenMeritoImportadoPor", fields: [creadoPorId], references: [id], onDelete: Restrict)
+  registros     OrdenMeritoRegistro[]
+
+  @@index([cicloLectivo, creadoEn])
+}
+
+model OrdenMeritoRegistro {
+  id            String                 @id @default(cuid())
+  importacionId String
+  posicion      Int
+  datosJson     String
+  importacion   OrdenMeritoImportacion @relation(fields: [importacionId], references: [id], onDelete: Cascade)
+
+  @@unique([importacionId, posicion])
+  @@index([importacionId, posicion])
+}
+
+model AreaContacto {
+  id               String             @id @default(cuid())
+  nombre           String
+  slug             String             @unique
+  telefonoWhatsapp String?
+  mensajeInicial   String
+  activo           Boolean            @default(true)
+  orden            Int                @default(0)
+  creadoEn         DateTime           @default(now())
+  actualizadoEn    DateTime           @updatedAt
+  intenciones      IntencionChatbot[]
+}
+
+model IntencionChatbot {
+  id             String             @id @default(cuid())
+  clave          String             @unique
+  titulo         String
+  respuesta      String
+  tipoDestino    TipoDestinoChatbot
+  rutaInterna    String?
+  areaContactoId String?
+  activo         Boolean            @default(true)
+  orden          Int                @default(0)
+  creadoEn       DateTime           @default(now())
+  actualizadoEn  DateTime           @updatedAt
+  areaContacto   AreaContacto?      @relation(fields: [areaContactoId], references: [id], onDelete: SetNull)
+  frases         FraseChatbot[]
+
+  @@index([activo, orden])
+}
+
+model FraseChatbot {
+  id               String           @id @default(cuid())
+  intencionId      String
+  texto            String
+  textoNormalizado String           @unique
+  intencion        IntencionChatbot @relation(fields: [intencionId], references: [id], onDelete: Cascade)
+
+  @@index([intencionId])
+}
+
+// Las sesiones se guardan fuera de la memoria del proceso para que un reinicio
+// del servidor no cierre las sesiones administrativas activas.
+model SesionAplicacion {
+  id            String   @id
+  datos         String
+  venceEn       DateTime
+  actualizadoEn DateTime @updatedAt
+
+  @@index([venceEn])
+}

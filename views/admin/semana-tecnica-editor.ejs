@@ -1,0 +1,43 @@
+<%
+ const destinos = {
+   'Presentación': ['1. Presentación', 'Título y descripción de la franja superior.'],
+   'Carrusel': ['2. Fotos de Semana Técnica', 'Galería central: título del carrusel y textos sobre cada foto.'],
+   'Cierre': ['3. Mensaje de cierre', 'Título y descripción que aparecen debajo de las fotos.']
+ };
+%>
+<section class="admin-authorities-editor">
+  <div class="admin-section-heading"><div><h2>Semana Técnica</h2><p>Abrí la sección que quieras modificar. Los campos contienen los textos y fotos guardados.</p></div><a class="form-button form-button-secondary" href="/semana-tecnica" target="_blank" rel="noopener">Ver página pública</a></div>
+  <div class="admin-collapsible-grid">
+  <% secciones.forEach(s => { const galeria = s.grupo === 'Carrusel'; const destino = destinos[s.grupo] || [s.titulo, 'Apartado adicional al final de Semana Técnica.']; const filas = String(s.contenido || '').split(/\r?\n/).filter(l => l.trim()).map(l => l.split('|').map(p => p.trim())); %>
+    <details class="admin-editable-section">
+      <summary><span><strong><%= destino[0] %></strong><small><%= s.activo ? 'Visible' : 'Oculto' %> · <%= destino[1] %></small></span><span>Editar</span></summary>
+      <form method="post" action="/admin/contenidos/secciones" class="admin-settings-card admin-settings-form" <%= galeria ? 'data-media-form' : '' %>>
+        <input type="hidden" name="_csrf" value="<%= csrfToken %>"><input type="hidden" name="id" value="<%= s.id %>"><input type="hidden" name="grupo" value="<%= s.grupo %>">
+        <div class="form-field"><label for="semana-titulo-<%= s.id %>"><%= galeria ? 'Título encima del carrusel' : 'Título visible' %></label><input id="semana-titulo-<%= s.id %>" name="titulo" value="<%= s.titulo %>" minlength="2" maxlength="160" required></div>
+        <% if (galeria) { %>
+          <p>Las fotos aparecen en el orden de estas filas. Podés subir archivos JPG, PNG o WebP de hasta 8 MB. Guardá el carrusel después de subir o quitar fotos.</p>
+          <div data-media-rows class="admin-media-rows"><% filas.forEach(fila => { %><div data-media-row class="admin-settings-card"><%- include('semana-tecnica-foto', { fila }) %></div><% }) %></div>
+          <template data-media-template><%- include('semana-tecnica-foto', { fila: [] }) %></template>
+          <button type="button" data-media-add class="form-button form-button-secondary">Agregar foto</button>
+          <textarea name="contenido" data-media-value hidden><%= s.contenido %></textarea>
+          <small>Si quitás todas las fotos y guardás, la galería deja de mostrarse. Quitar una foto no elimina el archivo de la computadora.</small>
+        <% } else { %>
+          <div class="form-field"><label for="semana-texto-<%= s.id %>">Descripción visible</label><textarea id="semana-texto-<%= s.id %>" name="contenido" rows="5" maxlength="2000"><%= s.contenido %></textarea></div>
+        <% } %>
+        <div class="admin-toggle-row"><label><input type="checkbox" name="activo" <%= s.activo ? 'checked' : '' %>> Mostrar esta sección en Semana Técnica</label></div>
+        <div class="form-actions"><button type="submit" class="form-button form-button-primary"><%= galeria ? 'Guardar carrusel' : 'Guardar esta sección' %></button></div>
+      </form>
+    </details>
+  <% }) %>
+  </div>
+  <details class="admin-create-panel admin-create-section-panel"><summary>Agregar apartado informativo</summary>
+    <form method="post" action="/admin/contenidos/secciones/nueva" class="admin-settings-form">
+      <input type="hidden" name="_csrf" value="<%= csrfToken %>"><input type="hidden" name="paginaClave" value="semana-tecnica"><input type="hidden" name="grupo" value="Información adicional">
+      <p>Se publica después del mensaje de cierre. Para sumar fotos, abrí el carrusel.</p>
+      <div class="form-field"><label for="semana-nuevo-titulo">Título del apartado</label><input id="semana-nuevo-titulo" name="titulo" minlength="2" maxlength="160" required></div>
+      <div class="form-field"><label for="semana-nuevo-texto">Descripción</label><textarea id="semana-nuevo-texto" name="contenido" rows="4" maxlength="2000" required></textarea></div>
+      <button type="submit" class="form-button form-button-primary">Agregar y publicar apartado</button>
+    </form>
+  </details>
+</section>
+

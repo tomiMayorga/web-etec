@@ -1,0 +1,76 @@
+<%- include('partials/header') %>
+
+<%
+  const bloquesInicio = Array.isArray(seccionesInicio) ? seccionesInicio : [];
+  const inicioLineas = (contenido) => String(contenido || '').split(/\r?\n/).map((linea) => linea.trim()).filter(Boolean);
+  const mediaValida = (valor) => /^(https?:\/\/|\/)/i.test(String(valor || '').trim());
+  const parsearMedia = (contenido) => inicioLineas(contenido).map((linea) => linea.split('|').map((parte) => parte.trim())).filter((partes) => mediaValida(partes[0]));
+  const hero = bloquesInicio.find((bloque) => bloque.grupo === 'Carrusel principal');
+  const bienvenida = bloquesInicio.find((bloque) => bloque.grupo === 'Presentación');
+  const actividadesBloque = bloquesInicio.find((bloque) => bloque.grupo === 'Actividades');
+  const heroItems = hero ? parsearMedia(hero.contenido) : [
+    ['/img/home-etec-1.jpg', 'Vista exterior de la ETEC'],
+    ['/img/home-etec-2.jpg', 'Comunidad ETEC'],
+    ['/img/home-etec-3.jpg', 'Escuela Técnica de la UBA'],
+  ];
+  const actividadesItems = actividadesBloque ? parsearMedia(actividadesBloque.contenido) : [
+    ['/img/taller-radio.svg', 'Taller de Radio y Streaming', 'Un espacio para aprender a comunicar, producir contenido y crear proyectos de radio y streaming.', '02 septiembre 2024'],
+    ['/img/taller-musica.svg', 'Taller de Ensamble Musical', 'Un espacio para tocar, crear y hacer música junto a tus compañeras y compañeros.', '14 junio 2024'],
+    ['/img/actividad-estudiantes.jpg', 'Taller de Olimpiadas de Matemática Argentina', 'La Escuela ofrece talleres para entrenar y participar de las Olimpiadas de Matemática.', '14 junio 2024'],
+    ['/img/taller-filosofia.svg', 'Taller de Filosofía', 'Un espacio para pensar, debatir y cuestionar, abierto a todos los estudiantes.', '14 junio 2024'],
+    ['/img/taller-voley.svg', 'Voley Mixto', 'Un espacio para jugar, aprender y compartir abierto a todos los estudiantes de la ETEC.', '31 mayo 2024'],
+    ['/img/actividad-deporte.jpg', 'Fútbol Femenino', 'Taller de Fútbol Femenino, todos los martes de 17:20 a 19 h en la ETEC.', '31 mayo 2024'],
+    ['/img/actividad-taller.jpg', 'Taller de chino', 'Una oportunidad para iniciarte en uno de los idiomas más hablados del mundo.', '29 agosto 2023'],
+    ['/img/actividad-angostura.jpg', 'Fútbol Masculino', 'Taller de fútbol, todos los sábados de 8:00 a 11:30 h en la ETEC.', '29 agosto 2023'],
+  ];
+%>
+
+<section class="home-slider" aria-label="Imágenes de la ETEC UBA">
+  <% heroItems.forEach((imagen, indice) => { %>
+    <div class="home-slide <%= indice === 0 ? 'active' : '' %>" style="background-image: url('<%= imagen[0] %>')" role="img" aria-label="<%= imagen[1] || 'Imagen de la ETEC UBA' %>"></div>
+  <% }) %>
+
+  <div class="home-intro">
+    <div class="home-intro-inner">
+      <% if (bienvenida) { %>
+        <% const bienvenidaLineas = inicioLineas(bienvenida.contenido); %>
+        <h1><%= bienvenidaLineas[0] || 'BIENVENIDOS A LA ESCUELA TÉCNICA DE LA UNIVERSIDAD DE BUENOS AIRES' %></h1>
+        <p><%= bienvenidaLineas.slice(1).join(' ') %></p>
+      <% } else { %>
+        <h1>BIENVENIDOS A LA ESCUELA TÉCNICA<br />DE LA UNIVERSIDAD DE BUENOS AIRES</h1>
+        <p>La Escuela Técnica es el colegio técnico pre-universitario de la Universidad de Buenos Aires.<br />Cuenta con más de 500 alumnos y alumnas que se forman día a día con amplios conocimientos prácticos y teóricos en TIC y Mecatrónica.</p>
+      <% } %>
+    </div>
+  </div>
+</section>
+
+<% if (rematriculacionActiva) { %>
+  <section class="rematriculacion-home-alert" aria-label="Aviso de rematriculación">
+    <div class="rematriculacion-home-alert-inner">
+      <div><span class="rematriculacion-home-kicker">Rematriculación <%= rematriculacion.cicloLectivo %></span><h2>Período de rematriculación activo</h2><p><%= rematriculacion.mensajeAptoFisico %></p></div>
+      <a class="form-button form-button-primary" href="/rematriculacion">Ver documentación</a>
+    </div>
+  </section>
+<% } %>
+
+<section class="home-activities" aria-labelledby="home-activities-title">
+  <div class="home-activities-heading"><div><span>Comunidad ETEC</span><h2 id="home-activities-title">Actividades extracurriculares</h2><p>Conocé los talleres, deportes y viajes de estudio que forman parte de la experiencia de nuestra Escuela.</p></div><a href="/actividades-extracurriculares">Ver todas las actividades</a></div>
+  <div class="home-activities-carousel">
+    <button class="home-activities-control home-activities-prev" type="button" aria-label="Actividad anterior">‹</button>
+    <div class="home-activities-track" id="home-activities-track" tabindex="0">
+      <% actividadesItems.forEach((actividad) => { %>
+        <article class="home-activity-card">
+          <img src="<%= actividad[0] %>" alt="<%= actividad[1] || 'Actividad ETEC' %>" loading="lazy">
+          <div><time><%= actividad[3] || '' %></time><h3><%= actividad[1] || 'Actividad extracurricular' %></h3><p><%= actividad[2] || '' %></p><a href="/actividades-extracurriculares">Conocé más</a></div>
+        </article>
+      <% }) %>
+    </div>
+    <button class="home-activities-control home-activities-next" type="button" aria-label="Actividad siguiente">›</button>
+  </div>
+</section>
+
+<section class="alert-section">
+  <div class="alert-box"><div class="alert-header"><h3>Importante</h3><button class="alert-close" id="alert-close" aria-label="Cerrar">&times;</button></div><div class="alert-body" id="alert-body"><img src="/img/marcha-uba-etec.jpeg" alt="Marcha UBA ETEC" class="alert-img" /><div class="alert-counter"><div class="counter-block"><span id="c-days">0</span><label>Días</label></div><div class="counter-block"><span id="c-hours">00</span><label>Horas</label></div><div class="counter-block"><span id="c-min">00</span><label>Min</label></div><div class="counter-block"><span id="c-sec">00</span><label>Seg</label></div></div><p class="alert-text">SIN APLICAR LA LEY DE FINANCIAMIENTO UNIVERSITARIO</p></div></div>
+</section>
+
+<%- include('partials/footer') %>

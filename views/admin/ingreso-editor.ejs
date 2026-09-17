@@ -1,0 +1,47 @@
+<%
+  const destinos = {
+    'Presentación': 'Título principal e introducción al comienzo de la página.',
+    'Pilares': 'Tarjetas de Enseñanza, Investigación y Extensión, y el texto debajo.',
+    'Propuesta': 'Frase destacada debajo de los pilares.',
+    'Calidad Educativa y Diversidad': 'Recuadro de calidad educativa, después de la frase destacada.',
+    'Cierre': 'Mensaje final de la presentación.'
+  };
+  const orden = Object.keys(destinos);
+  const grupos = [...orden.filter((g) => secciones.some((s) => s.grupo === g)), ...new Set(secciones.filter((s) => !orden.includes(s.grupo)).map((s) => s.grupo))];
+%>
+<section class="admin-authorities-editor">
+  <div class="admin-section-heading"><div><h2>Presentación del Curso de Ingreso</h2><p>Abrí la sección que querés modificar. Los campos contienen los datos guardados y se muestran en el orden de la página pública.</p></div><a class="form-button form-button-secondary" href="/presentacion" target="_blank" rel="noopener">Ver página pública</a></div>
+  <div class="admin-content-location"><strong>Qué estás editando</strong><p>Esta pantalla modifica la presentación del curso. Las fechas de preinscripción y su apertura se configuran en Preinscripciones, no aquí.</p></div>
+  <div class="admin-collapsible-grid">
+    <% grupos.forEach((grupo) => { %>
+      <details class="admin-editable-section">
+        <summary><span><strong><%= grupo %></strong><small><%= destinos[grupo] || 'Información adicional al final de la presentación.' %></small></span><span>Editar</span></summary>
+        <% secciones.filter((s) => s.grupo === grupo).forEach((s) => { const sinTituloVisible = ['Propuesta', 'Cierre'].includes(grupo); %>
+          <form method="post" action="/admin/contenidos/secciones" class="admin-settings-card admin-settings-form">
+            <input type="hidden" name="_csrf" value="<%= csrfToken %>"><input type="hidden" name="id" value="<%= s.id %>"><input type="hidden" name="grupo" value="<%= s.grupo %>">
+            <% if (sinTituloVisible) { %>
+              <input type="hidden" name="titulo" value="<%= s.titulo %>">
+              <p>En este espacio se muestra solamente el texto, sin un título separado.</p>
+            <% } else { %>
+              <div class="form-field"><label for="ingreso-titulo-<%= s.id %>"><%= grupo === 'Pilares' ? 'Nombres de las tarjetas (separados con ·)' : 'Título visible' %></label><input id="ingreso-titulo-<%= s.id %>" name="titulo" value="<%= s.titulo %>" minlength="2" maxlength="160" required>
+              <% if (grupo === 'Pilares') { %><small>Ejemplo: Enseñanza · Investigación · Extensión. Cada nombre se muestra en una tarjeta.</small><% } %></div>
+            <% } %>
+            <div class="form-field"><label for="ingreso-texto-<%= s.id %>"><%= grupo === 'Propuesta' ? 'Frase destacada' : grupo === 'Cierre' ? 'Mensaje de cierre' : grupo === 'Pilares' ? 'Texto debajo de las tarjetas' : 'Descripción' %></label><textarea id="ingreso-texto-<%= s.id %>" name="contenido" rows="5" maxlength="2000"><%= s.contenido %></textarea></div>
+            <div class="admin-toggle-row"><label><input type="checkbox" name="activo" <%= s.activo ? 'checked' : '' %>> Mostrar esta sección en la página pública</label></div>
+            <div class="form-actions"><button class="form-button form-button-primary" type="submit">Guardar esta sección</button></div>
+          </form>
+        <% }) %>
+      </details>
+    <% }) %>
+  </div>
+  <details class="admin-create-panel admin-create-section-panel"><summary>Agregar información al final de la presentación</summary>
+    <form method="post" action="/admin/contenidos/secciones/nueva" class="admin-settings-form">
+      <input type="hidden" name="_csrf" value="<%= csrfToken %>"><input type="hidden" name="paginaClave" value="ingreso"><input type="hidden" name="grupo" value="Información adicional">
+      <p>El nuevo apartado aparecerá después del mensaje de cierre. Para cambiar un texto existente, editá su sección arriba.</p>
+      <div class="form-field"><label for="ingreso-nuevo-titulo">Título visible</label><input id="ingreso-nuevo-titulo" name="titulo" minlength="2" maxlength="160" required></div>
+      <div class="form-field"><label for="ingreso-nuevo-texto">Texto del apartado</label><textarea id="ingreso-nuevo-texto" name="contenido" rows="5" maxlength="2000" required></textarea></div>
+      <button class="form-button form-button-primary" type="submit">Agregar y publicar apartado</button>
+    </form>
+  </details>
+</section>
+

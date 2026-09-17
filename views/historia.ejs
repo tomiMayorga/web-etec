@@ -1,0 +1,22 @@
+<%- include('partials/header') %>
+
+<main class="history-page">
+  <section class="history-page-banner"><div class="history-page-banner-inner"><h1><%= (typeof contenidoPagina !== 'undefined' && contenidoPagina?.titulo) || 'HISTORIA' %></h1></div></section>
+  <section class="history-layout"><article class="history-card">
+    <header class="history-card-hero"><h2>NUESTRA HISTORIA</h2><p>Innovación técnica con compromiso social</p></header>
+    <div class="history-content"><div class="timeline" aria-label="Línea de tiempo de la ETEC UBA">
+      <% if (seccionesHistoria?.length) { %>
+        <% seccionesHistoria.forEach((seccion) => { %>
+          <section class="timeline-item"><span class="timeline-date"><%= seccion.grupo %></span><div class="timeline-text"><h3><%= seccion.titulo %></h3><p><%= seccion.contenido %></p></div></section>
+        <% }) %>
+      <% } else { %>
+        <section class="timeline-item"><span class="timeline-date">Diciembre 2014</span><div class="timeline-text"><h3>El Origen</h3><p>Bajo un convenio entre el Ministerio de Educación de la Nación y la UBA, nace el proyecto de crear una escuela secundaria técnica en Villa Lugano, CABA.</p></div></section>
+        <section class="timeline-item"><span class="timeline-date">Excelencia Académica</span><div class="timeline-text"><h3>Un Plan de Estudios de Élite</h3><p>Para garantizar el máximo nivel, los planes de estudio fueron diseñados por una comisión experta de las facultades más prestigiosas de la Universidad.</p></div></section>
+        <section class="timeline-item"><span class="timeline-date">Justicia Educativa</span><div class="timeline-text"><h3>Nuestra Misión</h3><p>“Garantizar las mejores condiciones pedagógicas y materiales para los jóvenes, transformando el entorno productivo a través del conocimiento.”</p></div></section>
+        <section class="timeline-item"><span class="timeline-date">2024</span><div class="timeline-text"><h3>Una Década Formando el Futuro</h3><p>Consolidamos dos especialidades de alta demanda laboral: Mecatrónica y TIC, orientando vocaciones tempranas hacia las carreras de ingeniería y tecnología.</p></div></section>
+      <% } %>
+    </div></div>
+  </article></section>
+</main>
+
+<%- include('partials/footer') %>

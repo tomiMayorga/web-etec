@@ -1,0 +1,46 @@
+<%- include('partials/header') %>
+<%
+  const bloquesBecas = Array.isArray(seccionesBecas) ? seccionesBecas : [];
+  const lineasBeca = (contenido) => String(contenido || '').split(/\r?\n/).map((linea) => linea.trim()).filter(Boolean);
+  const esEnlaceBeca = (linea) => /^https:\/\//i.test(linea);
+%>
+<main class="community-page community-page--scholarship">
+  <div class="community-shell">
+    <h1>Beca “Rector Ricardo Rojas”</h1>
+    <section class="community-hero-card">
+      <% if (bloquesBecas.length) { %>
+        <% bloquesBecas.forEach((bloque, indice) => { %>
+          <% const lineas = lineasBeca(bloque.contenido); const referencia = `${bloque.grupo} ${bloque.titulo}`; %>
+          <% if (bloque.grupo === 'Presentación') { %>
+            <p class="community-eyebrow"><%= bloque.titulo %></p>
+            <% lineas.forEach((linea, lineaIndice) => { %><% if (lineaIndice === 0) { %><h2><%= linea %></h2><% } else { %><p><%= linea %></p><% } %><% }) %>
+          <% } else if (bloque.grupo === 'Requisitos') { %>
+            <h3><%= bloque.titulo %></h3>
+            <ul class="requirements-list"><% lineas.forEach((linea) => { %><li><%= linea %></li><% }) %></ul>
+          <% } else if (bloque.grupo === 'Postulación') { %>
+            <% const postulacion = leerPostulacionBeca(bloque.contenido); %>
+            <div class="application-panel"><h3><%= bloque.titulo %></h3>
+              <% lineasBeca(postulacion.instrucciones).forEach((linea) => { %><p><%= linea %></p><% }) %>
+              <% if (esEnlaceBeca(postulacion.botonUrl)) { %>
+                <a class="community-button" href="<%= postulacion.botonUrl %>" target="_blank" rel="noopener"><%= postulacion.botonTexto %></a>
+              <% } %>
+            </div>
+          <% } else if (/aviso|informaci[oó]n/i.test(referencia)) { %>
+            <p class="community-notice"><% lineas.forEach((linea, lineaIndice) => { %><%= linea %><% if (lineaIndice < lineas.length - 1) { %><br><% } %><% }) %></p>
+          <% } else { %>
+            <div class="community-dynamic-block"><h3><%= bloque.titulo %></h3><% lineas.forEach((linea) => { %><p><%= linea %></p><% }) %></div>
+          <% } %>
+        <% }) %>
+      <% } else { %>
+        <p class="community-eyebrow">Ayuda económica para tu formación secundaria</p>
+        <h2>Beca “Rector Ricardo Rojas”</h2>
+        <p>Garantizamos tu derecho a la educación brindando apoyo a estudiantes en situación de vulnerabilidad socioeconómica.</p>
+        <h3>Requisitos de Postulación</h3>
+        <ul class="requirements-list"><li>🏫 Ser alumno regular de colegios dependientes de la UBA.</li><li>🇦🇷 Tener nacionalidad argentina o residencia permanente.</li><li>🚫 No poseer otra beca de monto similar o superior.</li><li>📄 Acreditar dificultades socioeconómicas ante la Dirección de Becas.</li></ul>
+        <div class="application-panel"><h3>¿Cómo postularse?</h3><p>La postulación es anual y se realiza de forma digital.</p><a class="community-button" href="https://tramitesadistancia.uba.ar/" target="_blank" rel="noopener">Ir a Trámites a Distancia (TAD)</a></div>
+        <p class="community-notice">📢 Las fechas se informarán con un mes de anticipación.<br>📍 ¿Dudas? Acercate a la oficina de Extensión y Bienestar Estudiantil.</p>
+      <% } %>
+    </section>
+  </div>
+</main>
+<%- include('partials/footer') %>

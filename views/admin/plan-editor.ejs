@@ -1,0 +1,44 @@
+<%
+  const destinos = {
+    'Título de página': 'Título grande sobre la imagen de cabecera.',
+    'Características': 'Tarjetas superiores: Universidad, jornada y servicio alimentario.',
+    'Introducción': 'Presentación del recorrido académico, debajo de las tarjetas.',
+    'Ciclos': 'Descripción de los ciclos inicial, intermedio y superior.',
+    'Materias por año': 'Tarjetas de primer, segundo y tercer año. Una materia por línea.',
+    'Aviso de orientación': 'Mensaje de la tarjeta de tercer año sobre la elección de orientación.',
+    'Título especializaciones': 'Encabezado sobre las dos especialidades.',
+    'Título Mecatrónica': 'Título de la columna de Mecatrónica.',
+    'Mecatrónica': 'Materias por año dentro de Mecatrónica. Una materia por línea.',
+    'Título TIC': 'Título de la columna de TIC.',
+    'TIC': 'Materias por año dentro de TIC. Una materia por línea.',
+    'Materias comunes': 'Texto final sobre las materias compartidas por ambas especialidades.'
+  };
+  const grupos = [...new Set(secciones.map((s) => s.grupo))];
+%>
+<section class="admin-authorities-editor">
+  <div class="admin-section-heading"><div><h2>Plan de estudio</h2><p>Editá las tarjetas, ciclos y materias que ya aparecen en la página. Cada bloque indica su ubicación.</p></div><a class="form-button form-button-secondary" href="/plan_de_estudio" target="_blank" rel="noopener">Ver página pública</a></div>
+  <div class="admin-collapsible-grid">
+    <% grupos.forEach((nombre) => { %><details class="admin-editable-section">
+      <summary><span><strong><%= nombre %></strong><small><%= destinos[nombre] || 'Apartado del plan de estudio.' %></small></span><span>Editar</span></summary>
+      <% secciones.filter((s) => s.grupo === nombre).forEach((s) => { const soloTitulo = nombre.startsWith('Título') || nombre === 'Aviso de orientación'; %>
+        <form method="post" action="/admin/contenidos/secciones" class="admin-settings-card admin-settings-form">
+          <input type="hidden" name="_csrf" value="<%= csrfToken %>"><input type="hidden" name="id" value="<%= s.id %>"><input type="hidden" name="grupo" value="<%= nombre %>">
+          <div class="form-field"><label for="plan-titulo-<%= s.id %>">Título visible</label><input id="plan-titulo-<%= s.id %>" name="titulo" value="<%= s.titulo %>" maxlength="160" required></div>
+          <% if (soloTitulo) { %><input type="hidden" name="contenido" value="<%= s.contenido %>"><% } else { %><div class="form-field"><label for="plan-texto-<%= s.id %>"><%= ['Materias por año', 'Mecatrónica', 'TIC'].includes(nombre) ? 'Materias (una por línea)' : 'Descripción visible' %></label><textarea id="plan-texto-<%= s.id %>" name="contenido" maxlength="2000" rows="5"><%= s.contenido %></textarea></div><% } %>
+          <div class="admin-toggle-row"><label><input type="checkbox" name="activo" <%= s.activo ? 'checked' : '' %>> Visible en la página pública</label></div>
+          <div class="form-actions"><button class="form-button form-button-primary" type="submit">Guardar este bloque</button></div>
+        </form>
+      <% }) %>
+    </details><% }) %>
+  </div>
+  <details class="admin-create-panel admin-create-section-panel"><summary>Agregar tarjeta, ciclo o año de materias</summary>
+    <form method="post" action="/admin/contenidos/secciones/nueva" class="admin-settings-form">
+      <input type="hidden" name="_csrf" value="<%= csrfToken %>"><input type="hidden" name="paginaClave" value="plan">
+      <p>Se agrega al final de la sección elegida. Para sumar una materia a un año existente, editá su lista arriba.</p>
+      <div class="form-field"><label for="plan-grupo-nuevo">Dónde aparecerá</label><select id="plan-grupo-nuevo" name="grupo"><% ['Características', 'Ciclos', 'Materias por año', 'Mecatrónica', 'TIC', 'Materias comunes'].forEach((g) => { %><option value="<%= g %>"><%= g %></option><% }) %></select></div>
+      <div class="form-field"><label for="plan-nuevo-titulo">Título</label><input id="plan-nuevo-titulo" name="titulo" maxlength="160" required></div>
+      <div class="form-field"><label for="plan-nuevo-contenido">Descripción o materias (una por línea)</label><textarea id="plan-nuevo-contenido" name="contenido" rows="5" maxlength="2000" required></textarea></div>
+      <button class="form-button form-button-primary" type="submit">Agregar y publicar</button>
+    </form>
+  </details>
+</section>

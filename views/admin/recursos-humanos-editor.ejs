@@ -1,0 +1,31 @@
+<%
+  const destinos = {
+    'Introducción': 'Encabezado de la página, debajo del banner.',
+    'Autogestión UBA': 'Tarjeta de autogestión, en la grilla principal.',
+    'Legajo Digital': 'Tarjeta de legajo digital (TAD), junto a Autogestión.',
+    'Justificaciones Médicas': 'Pasos de justificaciones médicas.',
+    'Postulaciones': 'Bloque final para enviar el CV.'
+  };
+  const orden = ['Introducción', 'Autogestión UBA', 'Legajo Digital', 'Justificaciones Médicas', 'Postulaciones'];
+  const grupos = [...orden.filter((g) => secciones.some((s) => s.grupo === g)), ...new Set(secciones.filter((s) => !orden.includes(s.grupo)).map((s) => s.grupo))];
+%>
+<section class="admin-authorities-editor">
+  <div class="admin-section-heading"><div><h2>Recursos Humanos</h2><p>Editá las tarjetas y textos actuales. Cada bloque indica exactamente dónde aparece en la página pública.</p></div><a class="form-button form-button-secondary" href="/recursos-humanos" target="_blank" rel="noopener">Ver página pública</a></div>
+  <div class="admin-content-location"><strong>Qué estás editando</strong><p>Los cambios se aplican al contenido de Recursos Humanos. Los enlaces y el correo se detectan desde el texto guardado; podés editarlos directamente.</p></div>
+  <div class="admin-collapsible-grid">
+    <% grupos.forEach((grupo) => { %><details class="admin-editable-section"><summary><span><strong><%= grupo %></strong><small><%= destinos[grupo] || 'Información adicional al final de la página.' %></small></span><span>Editar</span></summary>
+      <% secciones.filter((s) => s.grupo === grupo).forEach((s) => { const soloTitulo = grupo === 'Justificaciones Médicas' && s.titulo === 'Advertencia'; %>
+      <form method="post" action="/admin/contenidos/secciones" class="admin-settings-card admin-settings-form">
+        <input type="hidden" name="_csrf" value="<%= csrfToken %>"><input type="hidden" name="id" value="<%= s.id %>"><input type="hidden" name="grupo" value="<%= s.grupo %>">
+        <% if (soloTitulo) { %><input type="hidden" name="titulo" value="<%= s.titulo %>"><p>Este texto aparece como advertencia debajo de los pasos médicos.</p><% } else { %><div class="form-field"><label for="rrhh-titulo-<%= s.id %>">Título visible</label><input id="rrhh-titulo-<%= s.id %>" name="titulo" value="<%= s.titulo %>" minlength="2" maxlength="160" required></div><% } %>
+        <div class="form-field"><label for="rrhh-texto-<%= s.id %>"><%= grupo === 'Introducción' ? 'Descripción introductoria' : grupo === 'Postulaciones' ? 'Texto y correo de contacto' : grupo === 'Justificaciones Médicas' && !soloTitulo ? 'Pasos (uno por línea)' : 'Contenido de la tarjeta (una línea por elemento)' %></label><textarea id="rrhh-texto-<%= s.id %>" name="contenido" rows="5" maxlength="2000"><%= s.contenido %></textarea></div>
+        <% if (grupo === 'Justificaciones Médicas' && !soloTitulo) { %><p>Escribí un paso por línea con el formato «Título | Indicaciones». El título aparece destacado y las indicaciones debajo; los correos se convierten en enlaces.</p><% } %>
+        <div class="admin-toggle-row"><label><input type="checkbox" name="activo" <%= s.activo ? 'checked' : '' %>> Mostrar esta sección en la página pública</label></div>
+        <div class="form-actions"><button class="form-button form-button-primary" type="submit">Guardar esta sección</button></div>
+      </form><% }) %>
+    </details><% }) %>
+  </div>
+  <details class="admin-create-panel admin-create-section-panel"><summary>Agregar información de Recursos Humanos</summary>
+    <form method="post" action="/admin/contenidos/secciones/nueva" class="admin-settings-form"><input type="hidden" name="_csrf" value="<%= csrfToken %>"><input type="hidden" name="paginaClave" value="recursos-humanos"><input type="hidden" name="grupo" value="Información adicional"><p>El nuevo apartado aparecerá al final de la página.</p><div class="form-field"><label for="rrhh-nuevo-titulo">Título visible</label><input id="rrhh-nuevo-titulo" name="titulo" minlength="2" maxlength="160" required></div><div class="form-field"><label for="rrhh-nuevo-texto">Texto</label><textarea id="rrhh-nuevo-texto" name="contenido" rows="5" maxlength="2000" required></textarea></div><button class="form-button form-button-primary" type="submit">Agregar y publicar apartado</button></form>
+  </details>
+</section>

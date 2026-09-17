@@ -1,0 +1,24 @@
+<%- include('partials/header') %>
+<main class="faq-page">
+  <article class="faq-container">
+    <h1>Preguntas Frecuentes</h1>
+    <% const visibles = preguntasFrecuentes.filter((p) => p.activo); %>
+    <% visibles.forEach((pregunta) => {
+      const bloques = [];
+      pregunta.contenido.split(/\r?\n/).map((l) => l.trim()).filter(Boolean).forEach((linea) => {
+        if (linea.startsWith('• ')) {
+          if (bloques[ bloques.length - 1 ]?.tipo !== 'lista') bloques.push({ tipo: 'lista', lineas: [] });
+          bloques[bloques.length - 1].lineas.push(linea.slice(2));
+        } else bloques.push({ tipo: 'parrafo', texto: linea });
+      });
+    %>
+      <section><h2><%= pregunta.titulo %></h2>
+        <% bloques.forEach((bloque) => { %>
+          <% if (bloque.tipo === 'lista') { %><ul><% bloque.lineas.forEach((linea) => { %><li><%= linea %></li><% }) %></ul><% } else { %><p><%= bloque.texto %></p><% } %>
+        <% }) %>
+      </section>
+    <% }) %>
+    <% if (!visibles.length) { %><p>En este momento no hay preguntas frecuentes publicadas.</p><% } %>
+  </article>
+</main>
+<%- include('partials/footer') %>

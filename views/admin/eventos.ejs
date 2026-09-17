@@ -1,0 +1,63 @@
+<%- include('../partials/header') %>
+<main class="admin-management-page">
+  <header class="admin-management-header"><div class="admin-dashboard-container"><div><p class="preinscripcion-kicker">SuperAdmin</p><h1>Eventos y actividades</h1><p>Elegí un mes y cargá todas las actividades de cada fecha. Podés agregar varias para el mismo día.</p></div><a class="form-button form-button-secondary" href="/admin">Volver al panel</a></div></header>
+  <div class="admin-dashboard-container admin-management-content">
+    <% if (guardado) { %><div class="admin-save-message" role="status">Actividad guardada correctamente.</div><% } %>
+    <% if (typeof eliminado !== 'undefined' && eliminado) { %><div class="admin-save-message" role="status">La actividad se eliminó del panel y del calendario público.</div><% } %>
+    <% if (error) { %><div class="form-alert" role="alert"><%= error %></div><% } %>
+    <section class="admin-event-month-picker">
+      <form method="get" action="/admin/eventos" class="admin-edit-grid">
+        <div class="form-field"><label for="eventos-anio">Año</label><input id="eventos-anio" type="number" name="anio" min="2020" max="2100" value="<%= anio %>" required></div>
+        <div class="form-field"><label for="eventos-mes">Mes</label><select id="eventos-mes" name="mes"><% mesesEventos.forEach((nombre, i) => { %><option value="<%= i + 1 %>" <%= mes === i + 1 ? 'selected' : '' %>><%= nombre %></option><% }) %></select></div>
+        <button class="form-button form-button-primary" type="submit">Ver actividades</button>
+      </form>
+      <a class="form-button form-button-secondary" href="/eventos?anio=<%= anio %>#mes-<%= mes %>" target="_blank" rel="noopener">Ver mes en la página pública</a>
+    </section>
+    <section class="admin-event-editor">
+      <h2><%= formulario.id ? 'Editar actividad' : 'Agregar actividad' %></h2>
+      <p>Los eventos publicados aparecen en el calendario. Un borrador o un evento cancelado no se muestra al público. Los horarios son de Argentina.</p>
+      <form class="admin-settings-form" method="post" action="/admin/eventos?anio=<%= anio %>&amp;mes=<%= mes %>">
+        <input type="hidden" name="_csrf" value="<%= csrfToken %>"><input type="hidden" name="id" value="<%= formulario.id || '' %>">
+        <div class="form-field"><label for="evento-titulo">Nombre de la actividad</label><input id="evento-titulo" name="titulo" value="<%= formulario.titulo || '' %>" maxlength="160" required></div>
+        <div class="admin-edit-grid">
+          <div class="form-field"><label for="evento-fecha">Fecha de inicio</label><input id="evento-fecha" name="fechaInicio" type="date" min="2020-01-01" max="2100-12-31" value="<%= formulario.fechaInicio || '' %>" required></div>
+          <div class="form-field"><label for="evento-fin">Fecha de finalización (opcional)</label><input id="evento-fin" name="fechaFin" type="date" min="2020-01-01" max="2100-12-31" value="<%= formulario.fechaFin || '' %>"><span class="admin-field-help">Dejala vacía si dura un solo día.</span></div>
+        </div>
+        <div class="admin-toggle-row"><label><input type="checkbox" name="todoElDia" <%= formulario.todoElDia === 'on' ? 'checked' : '' %>> Todo el día (no se usan los horarios)</label></div>
+        <div class="admin-edit-grid">
+          <div class="form-field"><label for="evento-hora">Hora de inicio</label><input id="evento-hora" name="horaInicio" type="time" value="<%= formulario.horaInicio || '' %>"></div>
+          <div class="form-field"><label for="evento-hora-fin">Hora de finalización (opcional si no indicás fecha de fin)</label><input id="evento-hora-fin" name="horaFin" type="time" value="<%= formulario.horaFin || '' %>"></div>
+        </div>
+        <div class="form-field"><label for="evento-descripcion">Descripción que verá el visitante en el recuadro</label><textarea id="evento-descripcion" name="descripcion" rows="5" maxlength="4000" required><%= formulario.descripcion || '' %></textarea></div>
+        <div class="form-field"><label for="evento-ubicacion">Lugar (opcional)</label><input id="evento-ubicacion" name="ubicacion" maxlength="200" value="<%= formulario.ubicacion || '' %>"></div>
+        <div class="admin-edit-grid">
+          <div class="form-field"><label for="evento-categoria">Categoría</label><select id="evento-categoria" name="categoria"><% Object.entries(categoriasEventos).forEach(([valor, etiqueta]) => { %><option value="<%= valor %>" <%= formulario.categoria === valor ? 'selected' : '' %>><%= etiqueta %></option><% }) %></select></div>
+          <div class="form-field"><label for="evento-estado">Visibilidad</label><select id="evento-estado" name="estado"><% [['BORRADOR', 'Borrador (oculto)'], ['PUBLICADO', 'Publicado (visible)'], ['CANCELADO', 'Cancelado (oculto)']].forEach(([valor, etiqueta]) => { %><option value="<%= valor %>" <%= formulario.estado === valor ? 'selected' : '' %>><%= etiqueta %></option><% }) %></select></div>
+        </div>
+        <div class="form-actions"><button class="form-button form-button-primary" type="submit">Guardar actividad</button><% if (formulario.id) { %><a class="form-button form-button-secondary" href="/admin/eventos?anio=<%= anio %>&amp;mes=<%= mes %>">Salir de la edición</a><% } %></div>
+      </form>
+    </section>
+    <section class="admin-event-editor">
+      <h2>Actividades de <%= mesesEventos[mes - 1] %> de <%= anio %></h2>
+      <% if (!eventos.length) { %><p>No hay actividades cargadas para este mes.</p><% } else { %>
+        <div class="admin-table-wrapper"><table class="admin-table"><thead><tr><th>Fecha / período</th><th>Actividad</th><th>Horario</th><th>Visibilidad</th><th>Acción</th></tr></thead><tbody>
+          <% eventos.forEach(evento => { %><tr>
+            <td><%= fechaArgentina(evento.fechaInicio) %><% if (evento.fechaFin && fechaArgentina(evento.fechaFin) !== fechaArgentina(evento.fechaInicio)) { %> al <%= fechaArgentina(evento.fechaFin) %><% } %></td>
+            <td><%= evento.titulo %></td><td><%= evento.todoElDia ? 'Todo el día' : horaArgentina(evento.fechaInicio) %></td>
+            <td><%= { PUBLICADO: 'Publicado', BORRADOR: 'Borrador', CANCELADO: 'Cancelado' }[evento.estado] %></td>
+            <td>
+              <details class="admin-event-actions" data-event-actions>
+                <summary aria-label="Acciones de la actividad: <%= evento.titulo %>" title="Acciones"><span aria-hidden="true">⋯</span></summary>
+                <div class="admin-event-actions-list">
+                  <a href="/admin/eventos?anio=<%= anio %>&amp;mes=<%= mes %>&amp;editar=<%= evento.id %>">Editar</a>
+                  <a class="admin-event-actions-delete" href="/admin/eventos/eliminar?id=<%= evento.id %>&amp;anio=<%= anio %>&amp;mes=<%= mes %>">Eliminar</a>
+                </div>
+              </details>
+            </td>
+          </tr><% }) %>
+        </tbody></table></div>
+      <% } %>
+    </section>
+  </div>
+</main>
+<%- include('../partials/footer') %>

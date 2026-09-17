@@ -1,0 +1,18 @@
+<%- include('../partials/header') %>
+<main class="admin-management-page">
+  <header class="admin-management-header"><div class="admin-dashboard-container"><div><p class="preinscripcion-kicker">SuperAdmin</p><h1>Eliminar actividad</h1></div><a class="form-button form-button-secondary" href="/admin/eventos?anio=<%= anio %>&amp;mes=<%= mes %>">Volver sin eliminar</a></div></header>
+  <div class="admin-dashboard-container admin-management-content">
+    <section class="admin-event-editor">
+      <h2><%= evento.titulo %></h2>
+      <p><strong>Fecha:</strong> <%= fechaArgentina(evento.fechaInicio) %><% if (evento.fechaFin && fechaArgentina(evento.fechaFin) !== fechaArgentina(evento.fechaInicio)) { %> al <%= fechaArgentina(evento.fechaFin) %><% } %></p>
+      <p><strong>Estado:</strong> <%= { PUBLICADO: 'Publicado', BORRADOR: 'Borrador', CANCELADO: 'Cancelado' }[evento.estado] %></p>
+      <div class="form-alert">Esta acción elimina definitivamente la actividad del panel y del calendario público, en todas las fechas que abarque. No se puede deshacer desde el panel. Si solo querés ocultarla, volvé y cambiala a Borrador o Cancelado.</div>
+      <form method="post" action="/admin/eventos/eliminar?anio=<%= anio %>&amp;mes=<%= mes %>">
+        <input type="hidden" name="_csrf" value="<%= csrfToken %>"><input type="hidden" name="id" value="<%= evento.id %>">
+        <div class="admin-toggle-row"><label><input type="checkbox" name="confirmar" required> Confirmo que quiero eliminar esta actividad definitivamente.</label></div>
+        <div class="form-actions"><a class="form-button form-button-secondary" href="/admin/eventos?anio=<%= anio %>&amp;mes=<%= mes %>">Volver sin eliminar</a><button class="form-button admin-event-delete" type="submit">Eliminar definitivamente</button></div>
+      </form>
+    </section>
+  </div>
+</main>
+<%- include('../partials/footer') %>

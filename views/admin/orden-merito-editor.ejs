@@ -1,0 +1,35 @@
+<section class="admin-authorities-editor">
+  <div class="admin-section-heading">
+    <div><h2>Listado de orden de mérito</h2><p>La tabla pública se genera con el archivo CSV que cargás aquí.</p></div>
+    <a class="form-button form-button-secondary" href="/orden-de-merito" target="_blank" rel="noopener">Ver página pública</a>
+  </div>
+  <% if (meritoGuardado) { %><div class="admin-save-message" role="status">El listado se importó y quedó publicado.</div><% } %>
+  <% if (errorMerito) { %><div class="form-alert form-alert-error" role="alert"><%= errorMerito %></div><% } %>
+  <div class="admin-content-location">
+    <strong>Qué cambia en la página</strong>
+    <p>El ciclo lectivo aparece encima de la tabla. Las columnas y los datos se toman del CSV. Para corregir nombres, puntajes o posiciones, corregí el archivo y volvé a cargarlo.</p>
+    <small>Importar publica el listado inmediatamente. Reemplaza la importación anterior del mismo ciclo y muestra esta nueva lista en la página pública.</small>
+  </div>
+  <form method="post" action="/admin/orden-de-merito" enctype="multipart/form-data" class="admin-settings-form">
+    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+    <div class="admin-edit-grid">
+      <div class="form-field"><label for="merito-ciclo">Ciclo lectivo del listado</label><input id="merito-ciclo" name="cicloLectivo" type="number" min="2020" max="2100" value="<%= ordenMerito?.cicloLectivo || cicloActual %>" required></div>
+      <div class="form-field"><label for="merito-archivo">Seleccionar archivo CSV</label><input id="merito-archivo" name="archivo" type="file" accept=".csv,text/csv" required><span class="admin-field-help">Máximo 2 MB. Encabezados en la primera fila; una fila por estudiante.</span></div>
+    </div>
+    <p class="form-help">Usá columnas como Posición, Apellido, Nombre y Puntaje. Se admiten comas, punto y coma o tabulaciones. No incluyas DNI, correos, teléfonos ni domicilios.</p>
+    <div class="form-actions"><button class="form-button form-button-primary" type="submit"><%= ordenMerito ? 'Reemplazar listado y publicar' : 'Importar y publicar listado' %></button></div>
+  </form>
+  <details class="admin-editable-section" open>
+    <summary><span><strong>Listado actualmente publicado</strong><small><%= ordenMerito ? 'Ciclo ' + ordenMerito.cicloLectivo + ' · ' + ordenMerito.filas.length + ' registros' : 'Todavía no hay un listado publicado' %></small></span><span>Ver tabla</span></summary>
+    <div class="admin-settings-form">
+      <% if (ordenMerito) { %>
+        <p>Archivo: <%= ordenMerito.nombreArchivo %></p>
+        <div class="admin-table-wrapper"><table class="admin-table">
+          <thead><tr><% ordenMerito.columnas.forEach((columna) => { %><th scope="col"><%= columna %></th><% }) %></tr></thead>
+          <tbody><% ordenMerito.filas.slice(0, 200).forEach((fila) => { %><tr><% ordenMerito.columnas.forEach((columna) => { %><td><%= fila[columna] ?? '' %></td><% }) %></tr><% }) %></tbody>
+        </table></div>
+        <% if (ordenMerito.filas.length > 200) { %><p>Vista previa de los primeros 200 registros. La página pública muestra la lista completa.</p><% } %>
+      <% } else { %><p>Cargá el CSV para generar la tabla de Orden de mérito.</p><% } %>
+    </div>
+  </details>
+</section>

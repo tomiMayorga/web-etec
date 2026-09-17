@@ -1,0 +1,86 @@
+<section class="admin-authorities-editor admin-admission-schedule-editor">
+  <div class="admin-section-heading">
+    <h2>Contenido de Empresas</h2>
+    <p>Los desplegables siguen el recorrido de la página: presentación, opciones de vinculación y contacto.</p>
+    <a class="form-button form-button-secondary" href="/empresas" target="_blank" rel="noopener">Ver página de Empresas</a>
+  </div>
+  <% if (!empresas) { %>
+    <div class="form-alert" role="alert">No se pudo cargar el contenido de Empresas. Recargá la página para volver a intentarlo.</div>
+  <% } else { %>
+    <%
+      const bloques = [
+        { fila: empresas.presentacion, nombre: '1. Presentación', ubicacion: 'Arriba de la página: título principal y presentación sobre el vínculo con empresas.', campos: [
+          ['titulo', 'Título de la página', empresas.presentacion.titulo, 160],
+          ['antetitulo', 'Texto breve sobre el encabezado', empresas.presentacion.datos.antetitulo, 160],
+          ['encabezado', 'Encabezado de la presentación', empresas.presentacion.datos.encabezado, 160],
+          ['descripcion', 'Descripción de la vinculación', empresas.presentacion.datos.descripcion, 2000],
+        ] },
+        { fila: empresas.contacto, nombre: '3. Contacto y botón', ubicacion: 'Debajo de las opciones de vinculación: instrucciones y botón que abre el correo del visitante.', campos: [
+          ['titulo', 'Título del contacto', empresas.contacto.titulo, 160],
+          ['instrucciones', 'Instrucciones para enviar una propuesta', empresas.contacto.datos.instrucciones, 2000],
+          ['boton', 'Texto del botón', empresas.contacto.datos.boton, 100],
+          ['email', 'Correo que recibe las propuestas', empresas.contacto.datos.email, 254],
+          ['asunto', 'Asunto sugerido del correo', empresas.contacto.datos.asunto, 160],
+        ] },
+      ];
+      const siguienteOrden = Math.min(9999, Math.max(0, ...empresas.propuestas.map(fila => fila.orden)) + 10);
+    %>
+    <% for (const indice of [0, 1, 2]) { %>
+      <% if (indice !== 1) { const bloque = bloques[indice === 0 ? 0 : 1]; %>
+        <details class="admin-editable-section">
+          <summary><span><strong><%= bloque.nombre %></strong><small><%= bloque.ubicacion %></small></span><span>Editar</span></summary>
+          <form class="admin-settings-form" method="post" action="/admin/contenidos/empresas">
+            <input type="hidden" name="_csrf" value="<%= csrfToken %>"><input type="hidden" name="id" value="<%= bloque.fila.id %>"><input type="hidden" name="grupo" value="<%= bloque.fila.grupo %>">
+            <% bloque.campos.forEach(([nombre, etiqueta, valor, limite]) => { %>
+              <div class="form-field">
+                <label for="empresas-<%= bloque.fila.id %>-<%= nombre %>"><%= etiqueta %></label>
+                <% if (limite === 2000) { %>
+                  <textarea id="empresas-<%= bloque.fila.id %>-<%= nombre %>" name="<%= nombre %>" maxlength="<%= limite %>" rows="4" required><%= valor %></textarea>
+                <% } else { %>
+                  <input id="empresas-<%= bloque.fila.id %>-<%= nombre %>" name="<%= nombre %>" type="<%= nombre === 'email' ? 'email' : 'text' %>" maxlength="<%= limite %>" value="<%= valor %>" required>
+                <% } %>
+              </div>
+            <% }) %>
+            <% if (bloque.fila.grupo === 'Contacto') { %><div class="admin-toggle-row"><label><input type="checkbox" name="activo" <%= bloque.fila.activo ? 'checked' : '' %>> Mostrar el contacto y su botón</label></div><% } %>
+            <button class="form-button form-button-primary" type="submit">Guardar <%= bloque.fila.grupo === 'Contacto' ? 'contacto' : 'presentación' %></button>
+          </form>
+        </details>
+      <% } else { %>
+        <details class="admin-calendar-block">
+          <summary><h3>2. Opciones de vinculación (<%= empresas.propuestas.length %>)</h3><span>Editar tabla</span></summary>
+          <p class="admin-schedule-help">Estas opciones aparecen como tarjetas entre la presentación y el contacto. La posición define su orden de lectura. Usamos saltos de 10 (10, 20, 30…) para intercalar opciones: con 15, una tarjeta queda entre 10 y 20 sin renumerar las demás. Desmarcá «Visible» y guardá para ocultarla.</p>
+          <% empresas.propuestas.forEach(fila => { %>
+            <form id="empresa-fila-<%= fila.id %>" class="admin-calendar-row-form" method="post" action="/admin/contenidos/empresas"><input type="hidden" name="_csrf" value="<%= csrfToken %>"><input type="hidden" name="id" value="<%= fila.id %>"><input type="hidden" name="grupo" value="Propuesta"></form>
+          <% }) %>
+          <div class="admin-table-wrapper">
+            <table class="admin-table admin-schedule-table">
+              <thead><tr><th scope="col">Ícono / emoji</th><th scope="col">Título de la tarjeta</th><th scope="col">Posición</th><th scope="col">Visible</th><th scope="col">Acción</th></tr></thead>
+              <tbody>
+                <% empresas.propuestas.forEach(fila => { %>
+                  <tr>
+                    <td><input form="empresa-fila-<%= fila.id %>" name="icono" aria-label="Ícono o emoji" maxlength="16" value="<%= fila.contenido %>" required></td>
+                    <td><input form="empresa-fila-<%= fila.id %>" name="titulo" aria-label="Título de la tarjeta" maxlength="160" value="<%= fila.titulo %>" required></td>
+                    <td><input form="empresa-fila-<%= fila.id %>" name="orden" aria-label="Posición de la tarjeta" type="number" min="0" max="9999" value="<%= fila.orden %>" required></td>
+                    <td><label class="admin-calendar-visible"><input form="empresa-fila-<%= fila.id %>" name="activo" type="checkbox" <%= fila.activo ? 'checked' : '' %>> Sí</label></td>
+                    <td><button form="empresa-fila-<%= fila.id %>" class="form-button form-button-primary" type="submit">Guardar tarjeta</button></td>
+                  </tr>
+                <% }) %>
+              </tbody>
+            </table>
+          </div>
+          <details class="admin-create-panel admin-create-section-panel">
+            <summary>+ Agregar opción de vinculación</summary>
+            <form class="admin-settings-form" method="post" action="/admin/contenidos/empresas">
+              <input type="hidden" name="_csrf" value="<%= csrfToken %>"><input type="hidden" name="grupo" value="Propuesta">
+              <div class="form-field"><label for="empresa-nuevo-titulo">Título de la nueva tarjeta</label><input id="empresa-nuevo-titulo" name="titulo" maxlength="160" placeholder="Ej. Visitas a empresas" required></div>
+              <div class="form-field"><label for="empresa-nuevo-icono">Ícono / emoji</label><input id="empresa-nuevo-icono" name="icono" maxlength="16" placeholder="Ej. 🏭" required><span class="admin-field-help">Pegá un emoji o usá Windows + punto para elegirlo. No hace falta escribir código.</span></div>
+              <div class="form-field"><label for="empresa-nuevo-orden">Posición</label><input id="empresa-nuevo-orden" name="orden" type="number" min="0" max="9999" value="<%= siguienteOrden %>" required><span class="admin-field-help">Se propone agregar al final con un salto de 10. Usá 15 para intercalar entre 10 y 20.</span></div>
+              <div class="admin-toggle-row"><label><input name="activo" type="checkbox" checked> Mostrar en la página pública</label></div>
+              <button class="form-button form-button-primary" type="submit">Agregar tarjeta</button>
+            </form>
+          </details>
+        </details>
+      <% } %>
+    <% } %>
+  <% } %>
+</section>

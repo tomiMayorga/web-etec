@@ -1,0 +1,51 @@
+<%- include('../partials/header') %>
+
+<main class="admin-management-page">
+  <header class="admin-management-header">
+    <div class="admin-dashboard-container">
+      <div>
+        <p class="preinscripcion-kicker">SuperAdmin</p>
+        <h1>Orden de Mérito</h1>
+        <p>Importá un CSV validado para publicar la lista del ciclo lectivo correspondiente.</p>
+      </div>
+      <a class="form-button form-button-secondary" href="/admin">Volver al panel</a>
+    </div>
+  </header>
+
+  <div class="admin-dashboard-container admin-management-content">
+    <% if (guardado) { %><div class="admin-save-message" role="status">La lista se importó y quedó publicada correctamente.</div><% } %>
+    <% if (error) { %><div class="form-alert form-alert-error" role="alert"><%= error %></div><% } %>
+
+    <section class="admin-settings-card admin-settings-form">
+      <h2>Importar archivo CSV</h2>
+      <p class="form-help">El archivo debe tener una fila de encabezados y luego una fila por estudiante. Se aceptan comas, punto y coma o tabulaciones como separador.</p>
+      <p class="form-help">Usá columnas como <code>Posición</code>, <code>Apellido</code>, <code>Nombre</code> y <code>Puntaje</code>. No incluyas DNI, correos, teléfonos ni domicilios.</p>
+      <form method="post" action="/admin/orden-de-merito" enctype="multipart/form-data">
+        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+        <div class="admin-edit-grid">
+          <div class="form-field"><label for="cicloLectivo">Ciclo lectivo</label><input id="cicloLectivo" name="cicloLectivo" type="number" min="2020" max="2100" value="<%= ordenMerito?.cicloLectivo || cicloActual %>" required></div>
+          <div class="form-field"><label for="archivo">Archivo CSV</label><input id="archivo" name="archivo" type="file" accept=".csv,text/csv" required></div>
+        </div>
+        <div class="form-actions"><button class="form-button form-button-primary" type="submit">Importar y publicar</button></div>
+      </form>
+    </section>
+
+    <% if (ordenMerito) { %>
+      <section class="admin-settings-card admin-settings-form">
+        <h2>Lista publicada: <%= ordenMerito.cicloLectivo %></h2>
+        <p class="form-help">Archivo: <%= ordenMerito.nombreArchivo %> · <%= ordenMerito.filas.length %> registros</p>
+        <div class="admin-table-wrapper">
+          <table class="admin-table">
+            <thead><tr><% ordenMerito.columnas.forEach((columna) => { %><th scope="col"><%= columna %></th><% }) %></tr></thead>
+            <tbody><% ordenMerito.filas.slice(0, 200).forEach((fila) => { %><tr><% ordenMerito.columnas.forEach((columna) => { %><td><%= fila[columna] || '' %></td><% }) %></tr><% }) %></tbody>
+          </table>
+        </div>
+        <% if (ordenMerito.filas.length > 200) { %><p class="form-help">Se muestran los primeros 200 registros en el panel. La página pública publica la lista completa.</p><% } %>
+      </section>
+    <% } else { %>
+      <div class="form-alert">Todavía no hay una lista de orden de mérito publicada.</div>
+    <% } %>
+  </div>
+</main>
+
+<%- include('../partials/footer') %>

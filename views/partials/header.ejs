@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>
+    <%= (typeof contenidoPagina !== 'undefined' && contenidoPagina?.titulo) || title %>
+  </title>
+  <meta name="description" content="Bienvenidos a la Escuela Técnica de la Universidad de Buenos Aires" />
+  <link rel="icon"
+    href="https://etec.uba.ar/wp-content/uploads/2023/11/cropped-LOGO_ETEC_Mesa-de-trabajo-1-270x270.png" />
+  <link rel="stylesheet" href="/css/style.css?v=20260915-9" />
+  <link rel="stylesheet" href="/css/site-components.css?v=17" />
+  <link rel="stylesheet" href="/css/chatbot.css?v=1" />
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+    integrity="sha384-/o6I2CkkWC//PSjvWC/eYN7l3xM3tJm8ZzVkCOfp//W05QcE3mlGskpoHB6XqI+B"
+    crossorigin="anonymous"
+    referrerpolicy="no-referrer"
+  />
+  <link
+  rel="stylesheet"
+  href="https://fonts.googleapis.com/css2?family=Manjari:wght@100;400;700&family=Montserrat:wght@400;500;600;700;800&family=Open+Sans:wght@300;400;500;600&display=swap"
+/>
+</head>
+
+<body>
+
+  <% if (typeof contenidoPagina !== 'undefined' && contenidoPagina?.mostrarAviso && contenidoPagina.texto) { %>
+    <aside class="site-managed-banner" role="note">
+      <div class="site-managed-banner-inner">
+        <strong><%= contenidoPagina.titulo %></strong>
+        <p><%= contenidoPagina.texto %></p>
+      </div>
+    </aside>
+  <% } %>
+
+  <% if (typeof seccionesPagina !== 'undefined' && seccionesPagina?.length && !['reglamento-convivencial', 'reglamento-ingreso', 'regimen-academico', 'tramites-alumnos', 'rematriculacion', 'sorteo', 'orden-de-merito', 'uba-verde', 'uba-en-accion', 'condiciones-de-postulacion', 'plan', 'autoridades', 'historia', 'genero', 'ingreso', 'beca-ricardo-rojas', 'contrataciones', 'novedades', 'odontologia-estudiantes', 'recursos-humanos', 'home', 'orientaciones', 'calendario', 'informacion-general', 'cronograma-curso-ingreso', 'empresas', 'eventos', 'ingresantes', 'actividades-extracurriculares', 'semana-tecnica'].includes(page)) { %>
+    <section class="site-managed-sections" aria-label="Información actualizada">
+      <div class="site-managed-sections-inner">
+        <% seccionesPagina.forEach((seccion) => { %>
+          <article class="site-managed-section-card">
+            <span><%= seccion.grupo %></span>
+            <h2><%= seccion.titulo %></h2>
+            <% seccion.contenido.split(/\r?\n/).filter(Boolean).forEach((linea) => { %><p><%= linea %></p><% }) %>
+          </article>
+        <% }) %>
+      </div>
+    </section>
+  <% } %>
+
+  <div class="topbar">
+    <div class="topbar-inner">
+      <a href="https://tramitesadistancia.uba.ar" target="_blank" rel="noopener">
+        Trámites a Distancia
+      </a>
+      <a href="https://forms.gle/K8UxZBtctDm8ST9S8" target="_blank" rel="noopener">
+        Donaciones
+      </a>
+      <a href="/admin/login" class="topbar-login">
+        <i class="fa-solid fa-lock" aria-hidden="true"></i>
+        Acceso administrativo
+      </a>
+    </div>
+  </div>
+
+  <header class="site-header">
+    <div class="header-inner">
+      <a href="/" class="logo-link">
+        <img src="/img/logo-etec.png" alt="ETEC UBA" class="logo" />
+      </a>
+
+      <button class="hamburger" id="hamburger" aria-label="Abrir menú" aria-expanded="false">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+
+      <nav class="main-nav" id="main-nav">
+        <ul class="nav-list">
+
+          <li class="has-dropdown">
+            <a href="#">
+              Información Institucional
+              <i class="fa fa-chevron-down"></i>
+            </a>
+            <ul class="dropdown">
+              <li><a href="/historia">Historia</a></li>
+              <li><a href="/autoridades">Autoridades</a></li>
+              <li class="has-dropdown">
+                <a href="#">
+                  Administración
+                  <i class="fa fa-chevron-right"></i>
+                </a>
+                <ul class="dropdown sub-dropdown">
+                  <li><a href="/contrataciones">Compras</a></li>
+                  <li><a href="/recursos-humanos">Recursos Humanos</a></li>
+                </ul>
+              </li>
+            </ul>
+          </li>
+
+          <li class="has-dropdown">
+            <a href="#">
+              Académico
+              <i class="fa fa-chevron-down"></i>
+            </a>
+            <ul class="dropdown">
+              <li><a href="/plan_de_estudio">Plan de estudio</a></li>
+              <li><a href="/orientaciones">Orientaciones</a></li>
+              <li><a href="/reglamento_convivencial">Reglamento Convivencial</a></li>
+              <li><a href="/calendario-escolar">Calendario Académico</a></li>
+              <li><a href="/tramites-para-alumnos-as">Trámites</a></li>
+              <li><a href="/rematriculacion">Rematriculación</a></li>
+              <li><a href="/regimen-academico">Régimen Académico</a></li>
+
+              <li class="has-dropdown">
+                <a href="#">
+                  Prácticas Profesionalizantes
+                  <i class="fa fa-chevron-right"></i>
+                </a>
+
+                <ul class="dropdown sub-dropdown">
+                  <li><a href="/ega-imagen">EGA IMAGEN</a></li>
+                  <li><a href="/tesacom">TESACOM</a></li>
+                  <li><a href="/iadev">IADEV</a></li>
+                  <li><a href="/laser">LASER</a></li>
+                  <li><a href="/doit">DOIT+</a></li>
+                  <li><a href="/green4t">GREEN4T</a></li>
+                </ul>
+              </li>
+            </ul>
+          </li>
+
+          <li class="has-dropdown">
+            <a href="#">
+              Curso de Ingreso
+              <i class="fa fa-chevron-down"></i>
+            </a>
+            <ul class="dropdown">
+              <li><a href="/presentacion">Presentación</a></li>
+              <li><a href="/informaciongeneral">Informacion General</a></li>
+              <li>
+                <a href="/reglamento">
+                  Reglamento Curso de Ingreso Evaluatorio
+                </a>
+              </li>
+              <li><a href="/cronograma-curso-ingreso">Cronograma</a></li>
+              <li><a href="/formulario-de-inscripcion">Pre-Inscripcion</a></li>
+
+              <li class="has-dropdown">
+                <a href="#">
+                  Postulantes
+                  <i class="fa fa-chevron-right"></i>
+                </a>
+
+                <ul class="dropdown sub-dropdown">
+                  <li><a href="/sorteo">Sorteo</a></li>
+                  <li><a href="/ingresantes">Ingresantes</a></li>
+                </ul>
+              </li>
+
+              <li><a href="/orden-de-merito">Orden de Mérito</a></li>
+              <li>
+                <a href="/condiciones-de-postulacion">
+                  Preguntas Frecuentes
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <li class="has-dropdown">
+            <a href="#">
+              Comunidad
+              <i class="fa fa-chevron-down"></i>
+            </a>
+            <ul class="dropdown">
+              <li><a href="/uba-verde">UBA VERDE</a></li>
+              <li><a href="/empresas">Empresas</a></li>
+              <li><a href="/uba-en-accion">UBA en acción</a></li>
+            </ul>
+          </li>
+          <li class="has-dropdown">
+            <a href="#">
+              Extracurricular
+              <i class="fa fa-chevron-down"></i>
+            </a>
+          
+            <ul class="dropdown">
+              <li>
+                <a href="/actividades-extracurriculares">
+                  Actividades Extracurriculares
+                </a>
+              </li>
+          
+              <li>
+                <a href="/servicio-de-odontologia-para-estudiantes">
+                  Odontología
+                </a>
+              </li>
+          
+              <li>
+                <a href="/beca-rector-ricardo-rojas">
+                  Becas
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <li>
+            <a href="/oficina-de-genero">Oficina de Género</a>
+          </li>
+
+          <li>
+            <a href="/novedades-institucionales">Novedades Institucionales</a>
+          </li>
+
+          <li>
+            <a href="/eventos">Eventos</a>
+          </li>
+
+          <li>
+            <a href="/semana-tecnica">Semana Técnica</a>
+          </li>
+        </ul>
+      </nav>
+    </div>
+  </header>

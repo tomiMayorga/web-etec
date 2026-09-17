@@ -1,0 +1,29 @@
+<button class="chatbot-launcher" type="button" aria-expanded="false" aria-controls="etec-chatbot" data-chatbot-launcher hidden>
+  <i class="fa-solid fa-comments" aria-hidden="true"></i>
+  <span>¿Necesitás ayuda?</span>
+</button>
+
+<aside class="chatbot-panel" id="etec-chatbot" aria-label="Asistente de ETEC UBA" data-chatbot-panel hidden>
+  <header class="chatbot-header">
+    <div>
+      <strong>Asistente ETEC UBA</strong>
+      <span>Orientación automática</span>
+    </div>
+    <button type="button" aria-label="Cerrar asistente" data-chatbot-close>
+      <i class="fa-solid fa-xmark" aria-hidden="true"></i>
+    </button>
+  </header>
+
+  <div class="chatbot-messages" aria-live="polite" data-chatbot-messages></div>
+  <div class="chatbot-options" data-chatbot-options></div>
+
+  <form class="chatbot-form" data-chatbot-form>
+    <label class="sr-only" for="chatbot-message">Escribí tu consulta</label>
+    <input id="chatbot-message" name="mensaje" type="text" minlength="2" maxlength="300" placeholder="Escribí tu consulta..." autocomplete="off" required data-chatbot-input>
+    <button type="submit" aria-label="Enviar consulta">
+      <i class="fa-solid fa-paper-plane" aria-hidden="true"></i>
+    </button>
+  </form>
+
+  <p class="chatbot-privacy">No ingreses DNI, contraseñas ni documentación personal.</p>
+</aside>

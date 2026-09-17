@@ -1,0 +1,17 @@
+<%- include('partials/header') %>
+<% const tramites = seccionesTramites.filter(s => s.activo); const grupo = nombre => tramites.filter(s => s.grupo === nombre); %>
+<main class="student-procedures-page">
+  <section class="student-procedures-layout"><article class="student-procedures-document">
+    <% grupo('Presentación').forEach(s => { %><h1><%= s.titulo %></h1><p class="student-procedures-introduction"><%= s.contenido %></p><% }) %>
+    <% grupo('Constancia').forEach(s => { %><section class="student-procedure-section procedure-regular-card"><span class="procedure-category">Con tu preceptor/a</span><h2><%= s.titulo %></h2><p><%= s.contenido %></p></section><% }) %>
+    <section class="student-procedure-section procedure-online-card">
+      <span class="procedure-category">Gestión online</span><h2>Trámites a Distancia UBA</h2>
+      <% if(grupo('Trámites TAD').length) { %><ul><% grupo('Trámites TAD').forEach(s => { %><li><strong><%= s.titulo %></strong><% if(s.contenido) { %> <%= s.contenido %><% } %></li><% }) %></ul><% } %>
+      <div class="procedure-access-grid"><% grupo('Enlaces').forEach(s => { const enlace = leerEnlaceTramite(s.contenido); const esInstructivo = /instructivo/i.test(enlace.textoTramite || ''); const etiqueta = /^https?:\/\//i.test(s.titulo) ? 'Iniciar trámite en TAD' : /^ac[aá]$/i.test(s.titulo.trim()) && esInstructivo ? 'Ver instructivo de TAD' : s.titulo; %><div class="procedure-access"><p><%= enlace.textoTramite %></p><% if(enlace.urlTramite) { %><a class="procedure-button" href="<%= enlace.urlTramite %>" target="_blank" rel="noopener"><%= etiqueta %><span aria-hidden="true">↗</span><span class="procedure-sr-only"> (abre en otra pestaña)</span></a><% } %></div><% }) %></div>
+      <% grupo('Aviso').forEach(s => { %><p class="student-procedures-warning"><%= s.contenido %></p><% }) %>
+    </section>
+    <% grupo('Legalización').forEach(s => { const enlace = leerEnlaceTramite(s.contenido); %><section class="student-procedure-section procedure-legal-card"><span class="procedure-category">Documentación académica</span><h2>Legalización de certificados</h2><p><%= enlace.textoTramite %></p><% if(enlace.urlTramite) { %><a class="procedure-button procedure-button-secondary" href="<%= enlace.urlTramite %>" target="_blank" rel="noopener"><%= /^instructivo$/i.test(s.titulo.trim()) ? 'Ver instructivo de legalización' : s.titulo %><span aria-hidden="true">↗</span><span class="procedure-sr-only"> (abre en otra pestaña)</span></a><% } %></section><% }) %>
+    <% tramites.filter(s => !['Presentación','Constancia','Enlaces','Trámites TAD','Legalización','Aviso'].includes(s.grupo)).forEach(s => { %><section class="student-procedure-section"><h2><%= s.titulo %></h2><% s.contenido.split(/\r?\n/).filter(Boolean).forEach(linea => { %><p><%= linea %></p><% }) %></section><% }) %>
+  </article></section>
+</main>
+<%- include('partials/footer') %>

@@ -1,0 +1,536 @@
+<%- include('../partials/header') %>
+
+<%
+  const obtenerValor = (...ruta) => {
+    let actual = valores;
+
+    for (const parte of ruta) {
+      if (!actual || typeof actual !== 'object') return '';
+      actual = actual[parte];
+    }
+
+    return typeof actual === 'string' ? actual : '';
+  };
+
+  const mensajesError = [
+    ...(errores?.formErrors ?? []),
+    ...Object.values(errores?.fieldErrors ?? {}).flat(),
+  ].filter(Boolean);
+%>
+
+<main class="preinscripcion-page">
+  <section class="preinscripcion-hero">
+    <div class="preinscripcion-container">
+      <p class="preinscripcion-kicker">Curso de ingreso</p>
+      <h1>PREINSCRIPCIÓN</h1>
+
+      <p>
+        Completá los datos solicitados para obtener el número que será
+        utilizado en el sorteo.
+      </p>
+    </div>
+  </section>
+
+  <section class="preinscripcion-content">
+    <div class="preinscripcion-container">
+      <ol class="preinscripcion-progress" aria-label="Progreso">
+        <li class="is-active" data-progress-step="1">
+          <span>1</span>
+          Aspirante
+        </li>
+
+        <li data-progress-step="2">
+          <span>2</span>
+          Responsables
+        </li>
+
+        <li data-progress-step="3">
+          <span>3</span>
+          Contacto
+        </li>
+
+        <li data-progress-step="4">
+          <span>4</span>
+          Revisión
+        </li>
+      </ol>
+
+      <% if (mensajesError.length > 0) { %>
+        <div
+          class="form-alert form-alert-error"
+          role="alert"
+          aria-labelledby="errores-titulo"
+        >
+          <h2 id="errores-titulo">
+            Revisá los siguientes datos
+          </h2>
+
+          <ul>
+            <% mensajesError.forEach((mensaje) => { %>
+              <li><%= mensaje %></li>
+            <% }) %>
+          </ul>
+        </div>
+      <% } %>
+
+      <form
+        class="preinscripcion-form"
+        method="post"
+        action="/formulario-de-inscripcion"
+        data-preinscripcion-form
+      >
+        <input
+          type="hidden"
+          name="_csrf"
+          value="<%= csrfToken %>"
+        >
+
+        <fieldset
+          class="preinscripcion-step is-active"
+          data-form-step="1"
+        >
+          <legend>Datos del aspirante</legend>
+
+          <p class="form-required-note">
+            Los campos marcados con * son obligatorios.
+          </p>
+
+          <div class="form-grid">
+            <div class="form-field">
+              <label for="aspirante-nombres">Nombres *</label>
+              <input
+                id="aspirante-nombres"
+                name="aspirante[nombres]"
+                type="text"
+                value="<%= obtenerValor('aspirante', 'nombres') %>"
+                maxlength="120"
+                autocomplete="given-name"
+                required
+              >
+            </div>
+
+            <div class="form-field">
+              <label for="aspirante-apellido">Apellido *</label>
+              <input
+                id="aspirante-apellido"
+                name="aspirante[apellido]"
+                type="text"
+                value="<%= obtenerValor('aspirante', 'apellido') %>"
+                maxlength="120"
+                autocomplete="family-name"
+                required
+              >
+            </div>
+
+            <div class="form-field">
+              <label for="aspirante-dni">DNI *</label>
+              <input
+                id="aspirante-dni"
+                name="aspirante[dni]"
+                type="text"
+                value="<%= obtenerValor('aspirante', 'dni') %>"
+                minlength="7"
+                maxlength="10"
+                inputmode="numeric"
+                autocomplete="off"
+                aria-describedby="aspirante-dni-ayuda"
+                required
+              >
+
+              <small id="aspirante-dni-ayuda">
+                Ingresalo sin puntos ni espacios.
+              </small>
+            </div>
+
+            <div class="form-field">
+              <label for="aspirante-fecha">
+                Fecha de nacimiento *
+              </label>
+
+              <input
+                id="aspirante-fecha"
+                name="aspirante[fechaNacimiento]"
+                type="date"
+                value="<%= obtenerValor('aspirante', 'fechaNacimiento') %>"
+                autocomplete="bday"
+                required
+              >
+            </div>
+
+            <div class="form-field form-field-full">
+              <label for="aspirante-escuela">
+                Escuela de procedencia
+              </label>
+
+              <input
+                id="aspirante-escuela"
+                name="aspirante[escuelaOrigen]"
+                type="text"
+                value="<%= obtenerValor('aspirante', 'escuelaOrigen') %>"
+                maxlength="160"
+                autocomplete="organization"
+              >
+            </div>
+          </div>
+
+          <div class="form-actions">
+            <button
+              class="form-button form-button-primary"
+              type="button"
+              data-next-step
+            >
+              Continuar
+            </button>
+          </div>
+        </fieldset>
+
+        <fieldset
+          class="preinscripcion-step"
+          data-form-step="2"
+          hidden
+        >
+          <legend>Responsables adultos</legend>
+
+          <section class="responsable-section">
+            <h2>Responsable 1</h2>
+            <p>Este responsable es obligatorio.</p>
+
+            <div class="form-grid">
+              <div class="form-field">
+                <label for="responsable1-nombres">Nombres *</label>
+                <input
+                  id="responsable1-nombres"
+                  name="responsable1[nombres]"
+                  type="text"
+                  value="<%= obtenerValor('responsable1', 'nombres') %>"
+                  maxlength="120"
+                  autocomplete="given-name"
+                  required
+                >
+              </div>
+
+              <div class="form-field">
+                <label for="responsable1-apellido">Apellido *</label>
+                <input
+                  id="responsable1-apellido"
+                  name="responsable1[apellido]"
+                  type="text"
+                  value="<%= obtenerValor('responsable1', 'apellido') %>"
+                  maxlength="120"
+                  autocomplete="family-name"
+                  required
+                >
+              </div>
+
+              <div class="form-field">
+                <label for="responsable1-vinculo">Vínculo *</label>
+                <input
+                  id="responsable1-vinculo"
+                  name="responsable1[vinculo]"
+                  type="text"
+                  value="<%= obtenerValor('responsable1', 'vinculo') %>"
+                  maxlength="60"
+                  placeholder="Madre, padre, tutor/a..."
+                  required
+                >
+              </div>
+
+              <div class="form-field">
+                <label for="responsable1-dni">DNI</label>
+                <input
+                  id="responsable1-dni"
+                  name="responsable1[dni]"
+                  type="text"
+                  value="<%= obtenerValor('responsable1', 'dni') %>"
+                  maxlength="10"
+                  inputmode="numeric"
+                  autocomplete="off"
+                >
+              </div>
+
+              <div class="form-field">
+                <label for="responsable1-telefono">Teléfono *</label>
+                <input
+                  id="responsable1-telefono"
+                  name="responsable1[telefono]"
+                  type="tel"
+                  value="<%= obtenerValor('responsable1', 'telefono') %>"
+                  maxlength="30"
+                  autocomplete="tel"
+                  required
+                >
+              </div>
+
+              <div class="form-field">
+                <label for="responsable1-email">Correo electrónico</label>
+                <input
+                  id="responsable1-email"
+                  name="responsable1[email]"
+                  type="email"
+                  value="<%= obtenerValor('responsable1', 'email') %>"
+                  maxlength="254"
+                  autocomplete="email"
+                >
+              </div>
+            </div>
+          </section>
+
+          <section class="responsable-section">
+            <h2>Responsable 2</h2>
+            <p>Este responsable es opcional.</p>
+
+            <div class="form-grid">
+              <div class="form-field">
+                <label for="responsable2-nombres">Nombres</label>
+                <input
+                  id="responsable2-nombres"
+                  name="responsable2[nombres]"
+                  type="text"
+                  value="<%= obtenerValor('responsable2', 'nombres') %>"
+                  maxlength="120"
+                >
+              </div>
+
+              <div class="form-field">
+                <label for="responsable2-apellido">Apellido</label>
+                <input
+                  id="responsable2-apellido"
+                  name="responsable2[apellido]"
+                  type="text"
+                  value="<%= obtenerValor('responsable2', 'apellido') %>"
+                  maxlength="120"
+                >
+              </div>
+
+              <div class="form-field">
+                <label for="responsable2-vinculo">Vínculo</label>
+                <input
+                  id="responsable2-vinculo"
+                  name="responsable2[vinculo]"
+                  type="text"
+                  value="<%= obtenerValor('responsable2', 'vinculo') %>"
+                  maxlength="60"
+                >
+              </div>
+
+              <div class="form-field">
+                <label for="responsable2-dni">DNI</label>
+                <input
+                  id="responsable2-dni"
+                  name="responsable2[dni]"
+                  type="text"
+                  value="<%= obtenerValor('responsable2', 'dni') %>"
+                  maxlength="10"
+                  inputmode="numeric"
+                  autocomplete="off"
+                >
+              </div>
+
+              <div class="form-field">
+                <label for="responsable2-telefono">Teléfono</label>
+                <input
+                  id="responsable2-telefono"
+                  name="responsable2[telefono]"
+                  type="tel"
+                  value="<%= obtenerValor('responsable2', 'telefono') %>"
+                  maxlength="30"
+                >
+              </div>
+
+              <div class="form-field">
+                <label for="responsable2-email">
+                  Correo electrónico
+                </label>
+
+                <input
+                  id="responsable2-email"
+                  name="responsable2[email]"
+                  type="email"
+                  value="<%= obtenerValor('responsable2', 'email') %>"
+                  maxlength="254"
+                >
+              </div>
+            </div>
+          </section>
+
+          <div class="form-actions">
+            <button
+              class="form-button form-button-secondary"
+              type="button"
+              data-previous-step
+            >
+              Volver
+            </button>
+
+            <button
+              class="form-button form-button-primary"
+              type="button"
+              data-next-step
+            >
+              Continuar
+            </button>
+          </div>
+        </fieldset>
+
+        <fieldset
+          class="preinscripcion-step"
+          data-form-step="3"
+          hidden
+        >
+          <legend>Contacto y consentimiento</legend>
+
+          <div class="form-grid">
+            <div class="form-field">
+              <label for="contacto-email">
+                Correo de confirmación *
+              </label>
+
+              <input
+                id="contacto-email"
+                name="contacto[email]"
+                type="email"
+                value="<%= obtenerValor('contacto', 'email') %>"
+                maxlength="254"
+                autocomplete="email"
+                required
+              >
+            </div>
+
+            <div class="form-field">
+              <label for="contacto-email-confirmacion">
+                Repetir correo *
+              </label>
+
+              <input
+                id="contacto-email-confirmacion"
+                name="contacto[confirmarEmail]"
+                type="email"
+                value="<%= obtenerValor('contacto', 'confirmarEmail') %>"
+                maxlength="254"
+                autocomplete="off"
+                required
+              >
+            </div>
+
+            <div class="form-field form-field-full">
+              <label for="contacto-telefono">
+                Teléfono de contacto *
+              </label>
+
+              <input
+                id="contacto-telefono"
+                name="contacto[telefono]"
+                type="tel"
+                value="<%= obtenerValor('contacto', 'telefono') %>"
+                maxlength="30"
+                autocomplete="tel"
+                required
+              >
+            </div>
+          </div>
+
+          <aside class="privacy-notice">
+            <h2>Aviso de privacidad</h2>
+
+            <p>
+              Los datos serán utilizados exclusivamente para gestionar
+              la preinscripción, el sorteo y las comunicaciones relacionadas
+              con el ingreso a la Escuela Técnica de la Universidad de
+              Buenos Aires.
+            </p>
+
+            <p>
+              El DNI será almacenado de forma cifrada y se utilizará una
+              huella criptográfica para evitar inscripciones duplicadas.
+              Los datos no serán incorporados a registros públicos.
+            </p>
+
+            <p>
+              Este texto deberá ser revisado y aprobado por la autoridad
+              correspondiente de ETEC/UBA antes de habilitar el formulario
+              públicamente.
+            </p>
+          </aside>
+
+          <label class="privacy-consent">
+            <input
+              type="checkbox"
+              name="consentimiento"
+              value="aceptado"
+              <%= obtenerValor('consentimiento') === 'aceptado'
+                ? 'checked'
+                : '' %>
+              required
+            >
+
+            <span>
+              Leí y acepto el aviso de privacidad y declaro que los datos
+              ingresados son correctos. *
+            </span>
+          </label>
+
+          <div class="form-actions">
+            <button
+              class="form-button form-button-secondary"
+              type="button"
+              data-previous-step
+            >
+              Volver
+            </button>
+
+            <button
+              class="form-button form-button-primary"
+              type="button"
+              data-next-step
+            >
+              Revisar datos
+            </button>
+          </div>
+        </fieldset>
+
+        <fieldset
+          class="preinscripcion-step"
+          data-form-step="4"
+          hidden
+        >
+          <legend>Revisión final</legend>
+
+          <p>
+            Revisá cuidadosamente los datos antes de confirmar.
+            Una vez enviada la preinscripción recibirás un número para
+            participar del sorteo.
+          </p>
+
+          <div
+            class="preinscripcion-review"
+            data-form-review
+          ></div>
+
+          <div class="form-alert">
+            El número asignado confirma la preinscripción, pero no implica
+            el otorgamiento de una vacante.
+          </div>
+
+          <div class="form-actions">
+            <button
+              class="form-button form-button-secondary"
+              type="button"
+              data-previous-step
+            >
+              Corregir datos
+            </button>
+
+            <button
+              class="form-button form-button-primary"
+              type="submit"
+            >
+              Confirmar preinscripción
+            </button>
+          </div>
+        </fieldset>
+      </form>
+    </div>
+  </section>
+</main>
+
+<%- include('../partials/footer') %>

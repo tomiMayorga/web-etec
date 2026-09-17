@@ -1,0 +1,36 @@
+<%- include('../partials/header') %>
+
+<main class="admin-management-page">
+  <header class="admin-management-header">
+    <div class="admin-dashboard-container">
+      <div>
+        <p class="preinscripcion-kicker">SuperAdmin</p>
+        <h1>Rematriculación</h1>
+        <p>Configurá el período y el aviso que se mostrará en la portada.</p>
+      </div>
+      <a class="form-button form-button-secondary" href="/admin">Volver al panel</a>
+    </div>
+  </header>
+
+  <div class="admin-dashboard-container admin-management-content">
+    <% if (guardado === 'ok') { %><div class="admin-save-message" role="status">La configuración se guardó correctamente.</div><% } %>
+    <% if (guardado === 'error') { %><div class="form-alert form-alert-error" role="alert">Revisá las fechas y los datos ingresados.</div><% } %>
+    <section class="admin-settings-card">
+      <h2>Período y aviso público</h2>
+      <p class="admin-help-text">El alerta de la portada se muestra solamente cuando está habilitado y la fecha actual se encuentra dentro del período indicado.</p>
+      <form method="post" action="/admin/rematriculacion" class="admin-settings-form">
+        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+        <div class="admin-toggle-row"><label><input type="checkbox" name="activo" <%= configuracion.activo ? 'checked' : '' %>> Activar aviso en la portada</label></div>
+        <div class="admin-edit-grid">
+          <div class="form-field"><label for="rematric-ciclo">Ciclo lectivo</label><input id="rematric-ciclo" name="cicloLectivo" type="number" min="2020" max="2100" value="<%= configuracion.cicloLectivo %>" required></div>
+          <div class="form-field"><label for="rematric-inicio">Desde</label><input id="rematric-inicio" name="fechaInicio" type="datetime-local" value="<%= configuracion.fechaInicio ? new Intl.DateTimeFormat('sv-SE', { timeZone: 'America/Argentina/Buenos_Aires', dateStyle: 'short', timeStyle: 'medium' }).format(new Date(configuracion.fechaInicio)).replace(' ', 'T').slice(0, 16) : '' %>"></div>
+          <div class="form-field"><label for="rematric-fin">Hasta</label><input id="rematric-fin" name="fechaFin" type="datetime-local" value="<%= configuracion.fechaFin ? new Intl.DateTimeFormat('sv-SE', { timeZone: 'America/Argentina/Buenos_Aires', dateStyle: 'short', timeStyle: 'medium' }).format(new Date(configuracion.fechaFin)).replace(' ', 'T').slice(0, 16) : '' %>"></div>
+        </div>
+        <div class="form-field"><label for="rematric-mensaje">Mensaje de aviso</label><textarea id="rematric-mensaje" name="mensajeAptoFisico" maxlength="600" rows="4" required><%= configuracion.mensajeAptoFisico %></textarea></div>
+        <div class="form-actions"><button class="form-button form-button-primary" type="submit">Guardar configuración</button></div>
+      </form>
+    </section>
+  </div>
+</main>
+
+<%- include('../partials/footer') %>

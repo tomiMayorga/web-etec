@@ -1,0 +1,68 @@
+<%- include('../partials/header') %>
+
+<main class="preinscripcion-confirmation-page">
+  <section class="preinscripcion-confirmation">
+    <div class="preinscripcion-confirmation-card">
+      <div
+        class="confirmation-icon"
+        aria-hidden="true"
+      >
+        ✓
+      </div>
+
+      <p class="preinscripcion-kicker">
+        Preinscripción confirmada
+      </p>
+
+      <h1>GUARDÁ ESTE NÚMERO</h1>
+
+      <p>
+        La preinscripción para el ciclo lectivo
+        <strong><%= cicloLectivo %></strong>
+        fue registrada correctamente.
+      </p>
+
+      <div
+        class="sorteo-number"
+        aria-label="Número asignado para el sorteo: <%= numeroSorteo %>"
+      >
+        <span>Número para el sorteo</span>
+        <strong><%= numeroSorteo %></strong>
+      </div>
+
+      <div class="form-alert">
+        Este número confirma la preinscripción, pero no implica el
+        otorgamiento de una vacante.
+      </div>
+
+      <p>
+        Enviaremos el número asignado al correo indicado durante
+        la inscripción. Revisá también la carpeta de correo no deseado.
+      </p>
+
+      <p>
+        No compartas públicamente datos personales ni documentación
+        relacionada con la inscripción.
+      </p>
+
+      <div class="confirmation-actions">
+        <button
+          class="form-button form-button-secondary"
+          type="button"
+          data-print-confirmation
+        >
+          Imprimir comprobante
+        </button>
+
+        <a
+          class="form-button form-button-primary"
+          href="/"
+        >
+          Volver al inicio
+        </a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<%- include('../partials/footer') %>

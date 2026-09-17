@@ -1,0 +1,20 @@
+<%- include('partials/header') %>
+
+<main class="simple-official-page merit-page">
+  <div class="simple-official-container">
+    <h1>Orden de Mérito</h1>
+    <% if (ordenMerito) { %>
+      <p class="merit-cycle">Ciclo lectivo <%= ordenMerito.cicloLectivo %></p>
+      <div class="admission-results-table-wrapper merit-table-wrap">
+        <table class="admission-results-table merit-table">
+          <thead><tr><% ordenMerito.columnas.forEach((columna) => { %><th scope="col"><%= columna %></th><% }) %></tr></thead>
+          <tbody><% ordenMerito.filas.forEach((fila) => { %><tr><% ordenMerito.columnas.forEach((columna) => { %><td><%= fila[columna] || '' %></td><% }) %></tr><% }) %></tbody>
+        </table>
+      </div>
+    <% } else { %>
+      <p class="merit-empty">El listado de orden de mérito todavía no fue publicado.</p>
+    <% } %>
+  </div>
+</main>
+
+<%- include('partials/footer') %>

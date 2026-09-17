@@ -1,0 +1,64 @@
+<%- include('partials/header') %>
+
+<%
+  const bloquesNovedades = (Array.isArray(seccionesNovedades) ? seccionesNovedades : []).filter((bloque) => bloque.activo);
+  const novedadesLineas = (contenido) => String(contenido || '').split(/\r?\n/).map((linea) => linea.trim()).filter(Boolean);
+  const extraerUrl = (linea) => {
+    const candidato = String(linea || '').replace(/^PDF:\s*/i, '').split('|')[0].trim();
+    return /^(https:\/\/[^\s]+|\/uploads\/pliegos\/[A-Za-z0-9._/-]+)$/i.test(candidato) ? candidato : '';
+  };
+  const extraerDocumento = (contenido) => {
+    const lineas = novedadesLineas(contenido);
+    const pdf = lineas.map(extraerUrl).find(Boolean) || '';
+    const descripcion = lineas
+      .filter((linea) => !extraerUrl(linea) && !/^PDF:\s*/i.test(linea))
+      .map((linea) => linea.split('|')[0].trim())
+      .filter(Boolean);
+    return { pdf, descripcion };
+  };
+%>
+
+<main class="institutional-news-page">
+  <header class="institutional-news-header">
+    <div class="institutional-news-container">
+      <span class="institutional-news-kicker">ETEC UBA</span>
+      <h1>Novedades institucionales</h1>
+      <p>Documentos y comunicados oficiales de la Escuela Técnica.</p>
+    </div>
+  </header>
+
+  <section class="institutional-news-content">
+    <div class="institutional-news-container">
+      <% if (bloquesNovedades.length) { %>
+        <div class="institutional-news-list">
+          <% bloquesNovedades.forEach((comunicado) => { const documento = extraerDocumento(comunicado.contenido); %>
+            <article class="institutional-news-document">
+              <div class="institutional-news-document-heading">
+                <div>
+                  <span class="institutional-news-document-type"><i class="fa-solid fa-file-lines" aria-hidden="true"></i> Documento institucional</span>
+                  <h2><%= comunicado.titulo %></h2>
+                  <% documento.descripcion.forEach((linea) => { %><p><%= linea %></p><% }) %>
+                </div>
+                <% if (documento.pdf) { %><a class="institutional-news-download" href="<%= documento.pdf %>" target="_blank" rel="noopener"><i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i> Abrir documento</a><% } %>
+              </div>
+              <% if (documento.pdf) { %>
+                <iframe title="<%= comunicado.titulo %> ETEC UBA" src="<%= documento.pdf %>" loading="lazy"></iframe>
+                <p class="institutional-news-note">Si el documento no se visualiza, utilizá el botón «Abrir documento».</p>
+              <% } else if (!documento.descripcion.length) { %>
+                <p class="institutional-news-empty-document">Este documento todavía no tiene un archivo publicado.</p>
+              <% } %>
+            </article>
+          <% }) %>
+        </div>
+      <% } else { %>
+        <article class="institutional-news-document institutional-news-empty-document-card">
+          <i class="fa-solid fa-folder-open" aria-hidden="true"></i>
+          <h2>No hay comunicados publicados</h2>
+          <p>En este momento no hay documentos institucionales disponibles.</p>
+        </article>
+      <% } %>
+    </div>
+  </section>
+</main>
+
+<%- include('partials/footer') %>

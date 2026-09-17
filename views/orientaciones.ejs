@@ -1,0 +1,32 @@
+<%- include('partials/header') %>
+
+<%
+  const bloquesOrientaciones = (Array.isArray(seccionesOrientaciones) ? seccionesOrientaciones : []).filter((bloque) => bloque.activo);
+  const orientacionLineas = (contenido) => String(contenido || '').split(/\r?\n/).map((linea) => linea.trim()).filter(Boolean);
+  const parsearOrientacion = (contenido) => orientacionLineas(contenido).map((linea) => linea.split('|').map((parte) => parte.trim())).filter((partes) => /^(https?:\/\/|\/)/i.test(partes[0] || ''));
+  const heroOrientaciones = bloquesOrientaciones.find((bloque) => bloque.grupo === 'Carrusel principal');
+  const introduccionOrientaciones = bloquesOrientaciones.find((bloque) => bloque.grupo === 'Introducción');
+  const especialidades = bloquesOrientaciones.find((bloque) => bloque.grupo === 'Especialidades');
+  const slides = heroOrientaciones ? parsearOrientacion(heroOrientaciones.contenido) : [];
+  const paneles = especialidades ? parsearOrientacion(especialidades.contenido) : [];
+  const adicionales = bloquesOrientaciones.filter((bloque) => !['Carrusel principal', 'Introducción', 'Especialidades'].includes(bloque.grupo));
+%>
+
+<main class="orientations-page">
+  <section class="orientations-hero"><div class="orientations-slides" aria-hidden="true"><% slides.forEach((slide, indice) => { %><div class="orientations-slide <%= indice === 0 ? 'active' : '' %>" style="background-image: url('<%= slide[0] %>')"></div><% }) %></div><div class="orientations-hero-overlay"></div><div class="orientations-hero-content"><h1>ORIENTACIONES</h1><p>¡Conocelas!</p></div></section>
+  <% if (introduccionOrientaciones) { %><section class="orientations-introduction"><div class="orientations-introduction-overlay"></div><p><%= orientacionLineas(introduccionOrientaciones.contenido).join(' ') %></p></section><% } %>
+  <div class="orientations-divider" aria-hidden="true"><span></span><i class="fas fa-caret-down"></i><span></span></div>
+  <% if (paneles.length) { %><section class="orientations-content"><h2>¡Conocé un poco más!</h2><p class="orientation-explore-help">Elegí una orientación para conocer su propuesta. Podés abrir ambas y compararlas.</p><div class="orientation-explore-grid">
+    <% paneles.forEach((panel) => { %>
+      <details class="orientation-explore-card">
+        <summary>
+          <img src="<%= panel[0] %>" alt="" loading="lazy">
+          <span class="orientation-explore-heading"><span class="orientation-explore-title"><%= panel[1] || 'Orientación' %></span><span class="orientation-explore-action"><span class="orientation-closed-label">Conocer la orientación</span><span class="orientation-open-label">Ocultar información</span><span class="orientation-explore-chevron" aria-hidden="true">⌄</span></span></span>
+        </summary>
+        <div class="orientation-explore-description"><p><%= panel[2] || 'Próximamente compartiremos más información sobre esta orientación.' %></p><a href="/plan_de_estudio">Consultar el plan de estudio <span aria-hidden="true">→</span></a></div>
+      </details>
+    <% }) %>
+  </div></section><% } %>
+  <% adicionales.forEach((bloque) => { %><section class="orientations-content"><h2><%= bloque.titulo %></h2><% orientacionLineas(bloque.contenido).forEach((linea) => { %><p><%= linea %></p><% }) %></section><% }) %>
+</main>
+<%- include('partials/footer') %>

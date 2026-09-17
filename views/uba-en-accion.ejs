@@ -1,0 +1,14 @@
+<%- include('partials/header') %>
+<% const bloques = seccionesAccion.filter(s => s.activo); const grupo = nombre => bloques.filter(s => s.grupo === nombre); %>
+<main class="community-page community-page--health"><div class="community-shell">
+ <% grupo('Encabezado').forEach(s => { %><h1><%= s.titulo %></h1><% }) %>
+ <section class="community-hero-card">
+  <% grupo('Encabezado').forEach(s => { %><p class="community-eyebrow"><%= s.contenido %></p><% }) %>
+  <% grupo('Presentación').forEach(s => { %><h2><%= s.titulo %></h2><p><%= s.contenido %></p><% }) %>
+  <% grupo('Acceso al servicio').forEach(s => { %><div class="service-callout"><span aria-hidden="true">🎟️</span><div><h3><%= s.titulo %></h3><p><%= s.contenido %></p></div></div><% }) %>
+  <% if (grupo('Atención').length) { %><section class="health-attention"><h3>Información para tu visita</h3><dl class="health-facts"><% grupo('Atención').forEach(s => { %><div><dt><%= s.titulo %></dt><dd><%= s.contenido %></dd></div><% }) %></dl></section><% } %>
+  <% grupo('Coordinación').forEach(s => { %><aside class="community-notice"><p><%= s.contenido %></p></aside><% }) %>
+ </section>
+ <% bloques.filter(s => !['Encabezado','Presentación','Acceso al servicio','Atención','Coordinación'].includes(s.grupo)).forEach(s => { %><section class="community-hero-card"><h2><%= s.titulo %></h2><% s.contenido.split(/\r?\n/).filter(Boolean).forEach(linea => { %><p><%= linea %></p><% }) %></section><% }) %>
+</div></main>
+<%- include('partials/footer') %>

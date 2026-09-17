@@ -1,0 +1,343 @@
+<%- include('../partials/header') %>
+
+<main class="admin-management-page">
+  <header class="admin-management-header">
+    <div class="admin-dashboard-container">
+      <div>
+        <p class="preinscripcion-kicker">SuperAdmin</p>
+        <h1>Contenido del sitio</h1>
+        <p>Elegí una página para ver sus secciones reales, editarlas con indicaciones claras y comprobar el resultado.</p>
+      </div>
+      <a class="form-button form-button-secondary" href="/admin">Volver al panel</a>
+    </div>
+  </header>
+
+  <div class="admin-dashboard-container admin-management-content">
+    <% if (guardado === 'ok' || guardado === 'seccion' || guardado === 'seccion-creada') { %><div class="admin-save-message" role="status">El contenido se guardó correctamente.</div><% } %>
+    <div class="form-alert">Esta pantalla edita el contenido real de cada página. Los avisos temporales se administran desde el panel de Rematriculación o desde Ciclos y fechas para Preinscripciones.</div>
+    <section class="admin-content-pages">
+      <% paginas.forEach((pagina) => { %>
+        <details class="admin-content-page-card" id="<%= pagina.clave === 'orden-de-merito' ? 'orden-merito-editor' : 'pagina-' + pagina.clave %>" <%= typeof editorAbierto !== 'undefined' && ((pagina.clave === 'orden-de-merito' && editorAbierto === 'merito') || (pagina.clave === 'cronograma-curso-ingreso' && editorAbierto === 'cronograma') || (pagina.clave === 'empresas' && editorAbierto === 'empresas')) ? 'open' : '' %>>
+          <% const editorEspecializado = ['uba-en-accion', 'uba-verde', 'tramites-alumnos', 'sorteo', 'regimen-academico', 'condiciones-de-postulacion', 'plan', 'autoridades', 'historia', 'genero', 'recursos-humanos', 'ingreso', 'beca-ricardo-rojas', 'contrataciones', 'novedades', 'odontologia-estudiantes', 'home', 'orientaciones', 'calendario', 'informacion-general', 'cronograma-curso-ingreso', 'empresas', 'eventos', 'ingresantes', 'actividades-extracurriculares', 'semana-tecnica', 'reglamento-convivencial', 'reglamento-ingreso', 'rematriculacion'].includes(pagina.clave); %>
+          <summary>
+            <span><strong><%= pagina.nombre %></strong><small><%= pagina.ruta %></small></span>
+            <span class="admin-status-badge <%= editorEspecializado || pagina.clave === 'orden-de-merito' ? '' : (pagina.mostrarAviso ? '' : 'is-disabled') %>"><%= editorEspecializado || pagina.clave === 'orden-de-merito' ? 'Contenido editable' : (pagina.mostrarAviso ? 'Aviso activo' : 'Sin aviso') %></span>
+          </summary>
+          <% if (!editorEspecializado && pagina.clave !== 'orden-de-merito') { %>
+          <form method="post" action="/admin/contenidos" class="admin-settings-form">
+            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+            <input type="hidden" name="id" value="<%= pagina.id %>">
+            <div class="admin-content-location">
+              <span class="admin-content-location-label">Contenido general de la página</span>
+              <strong>Aviso opcional que aparece arriba del contenido de «<%= pagina.nombre %>».</strong>
+              <small>Si no necesitás mostrar un aviso, dejá la casilla desactivada.</small>
+            </div>
+            <div class="form-field">
+              <label for="titulo-<%= pagina.id %>">Título del aviso opcional</label>
+              <input id="titulo-<%= pagina.id %>" name="titulo" type="text" maxlength="160" value="<%= pagina.titulo %>" required>
+            </div>
+            <div class="form-field">
+              <label for="texto-<%= pagina.id %>">Mensaje del aviso</label>
+              <span class="admin-field-help">Este texto se verá destacado antes de la página, no reemplaza sus secciones.</span>
+              <textarea id="texto-<%= pagina.id %>" name="texto" maxlength="2000" rows="5" placeholder="Escribí un aviso para esta página"><%= pagina.texto %></textarea>
+            </div>
+            <div class="admin-toggle-row"><label><input type="checkbox" name="mostrarAviso" <%= pagina.mostrarAviso ? 'checked' : '' %>> Mostrar este bloque en la página pública</label></div>
+            <div class="form-actions"><a class="form-button form-button-secondary" href="<%= pagina.ruta %>" target="_blank" rel="noopener">Ver página</a><button class="form-button form-button-primary" type="submit">Guardar cambios</button></div>
+          </form>
+          <% } %>
+          <% if (pagina.clave === 'uba-en-accion') { %>
+ <%- include('uba-en-accion-editor', { secciones: seccionesGenericas['uba-en-accion'] || [] }) %>
+ <% } else if (pagina.clave === 'uba-verde') { %>
+ <%- include('uba-verde-editor', { secciones: seccionesGenericas['uba-verde'] || [] }) %>
+ <% } else if (pagina.clave === 'tramites-alumnos') { %>
+            <%- include('tramites-alumnos-editor', { secciones: seccionesGenericas['tramites-alumnos'] || [] }) %>
+          <% } else if (pagina.clave === 'sorteo') { %>
+            <%- include('sorteo-editor', { secciones: seccionesGenericas.sorteo || [] }) %>
+          <% } else if (pagina.clave === 'semana-tecnica') { %>
+            <%- include('semana-tecnica-editor', { secciones: seccionesGenericas['semana-tecnica'] || [] }) %>
+          <% } else if (pagina.clave === 'regimen-academico') { %>
+<%- include('regimen-academico-editor', { secciones: seccionesGenericas['regimen-academico'] || [] }) %>
+<% } else if (pagina.clave === 'rematriculacion') { %>
+            <%- include('rematriculacion-editor', { secciones: seccionesGenericas.rematriculacion || [] }) %>
+          <% } else if (pagina.clave === 'reglamento-ingreso') { %>
+            <%- include('reglamento-ingreso-editor', { secciones: seccionesGenericas['reglamento-ingreso'] || [] }) %>
+          <% } else if (pagina.clave === 'reglamento-convivencial') { %>
+            <%- include('reglamento-convivencial-editor', { secciones: seccionesGenericas['reglamento-convivencial'] || [] }) %>
+          <% } else if (pagina.clave === 'recursos-humanos') { %>
+            <%- include('recursos-humanos-editor', { secciones: seccionesGenericas['recursos-humanos'] || [] }) %>
+          <% } else if (pagina.clave === 'ingreso') { %>
+            <%- include('ingreso-editor', { secciones: seccionesGenericas.ingreso || [] }) %>
+          <% } else if (pagina.clave === 'condiciones-de-postulacion') { %>
+            <%- include('preguntas-editor', { preguntas: seccionesGenericas['condiciones-de-postulacion'] || [] }) %>
+          <% } else if (pagina.clave === 'plan') { %>
+            <%- include('plan-editor', { secciones: seccionesGenericas.plan || [] }) %>
+          <% } else if (pagina.clave === 'orientaciones') { %>
+            <%- include('orientaciones-editor', { secciones: seccionesGenericas.orientaciones || [] }) %>
+          <% } else if (pagina.clave === 'orden-de-merito') { %>
+            <%- include('orden-merito-editor') %>
+          <% } else if (pagina.clave === 'autoridades') { %>
+            <%
+              const gruposAutoridades = [...new Set(seccionesAutoridades.map((item) => item.grupo))];
+              const bloquesAutoridades = [];
+              const bloquesAutoridadesMap = new Map();
+              seccionesAutoridades.forEach((seccion) => {
+                if (!bloquesAutoridadesMap.has(seccion.grupo)) {
+                  const bloque = { nombre: seccion.grupo, cargos: [] };
+                  bloquesAutoridadesMap.set(seccion.grupo, bloque);
+                  bloquesAutoridades.push(bloque);
+                }
+                bloquesAutoridadesMap.get(seccion.grupo).cargos.push(seccion);
+              });
+            %>
+            <section class="admin-authorities-editor">
+              <div class="admin-section-heading"><div><h2>Secciones, subgrupos y cargos</h2><p>Abrí cada grupo para editar sus cargos. El subgrupo es opcional: usalo solo cuando un cargo dependa de un área principal, por ejemplo dentro de Gestión Administrativa.</p></div></div>
+              <% bloquesAutoridades.forEach((bloque) => { %>
+                <details class="admin-authority-block">
+                  <summary><h3><%= bloque.nombre %></h3><span>Ver cargos <i class="fa-solid fa-chevron-down" aria-hidden="true"></i></span></summary>
+                  <% bloque.cargos.forEach((seccion) => { %>
+                    <form id="autoridad-form-<%= seccion.id %>" method="post" action="/admin/contenidos/secciones" class="admin-authority-row-form">
+                      <input type="hidden" name="_csrf" value="<%= csrfToken %>"><input type="hidden" name="id" value="<%= seccion.id %>">
+                    </form>
+                  <% }) %>
+                  <div class="admin-table-wrapper">
+                    <table class="admin-table admin-authority-table">
+                      <thead><tr><th>Cargo o título</th><th>Personas o contenido</th><th>Sección principal</th><th>Subgrupo (opcional)</th><th>Visible</th><th>Acción</th></tr></thead>
+                      <tbody>
+                        <% bloque.cargos.forEach((seccion) => { %>
+                          <tr>
+                            <td><input form="autoridad-form-<%= seccion.id %>" name="titulo" maxlength="160" value="<%= seccion.titulo %>" required aria-label="Cargo o título"></td>
+                            <td><textarea form="autoridad-form-<%= seccion.id %>" name="contenido" rows="3" maxlength="2000" required aria-label="Personas o contenido"><%= seccion.contenido %></textarea></td>
+                            <td><select form="autoridad-form-<%= seccion.id %>" name="grupo" required aria-label="Sección"><% gruposAutoridades.forEach((grupo) => { %><option value="<%= grupo %>" <%= grupo === seccion.grupo ? 'selected' : '' %>><%= grupo %></option><% }) %></select></td>
+                            <td><input form="autoridad-form-<%= seccion.id %>" name="subgrupo" maxlength="120" value="<%= seccion.subgrupo || '' %>" placeholder="Ej. Compras" aria-label="Subgrupo opcional"></td>
+                            <td><label class="admin-calendar-visible"><input form="autoridad-form-<%= seccion.id %>" type="checkbox" name="activo" <%= seccion.activo ? 'checked' : '' %>> Sí</label></td>
+                            <td><button form="autoridad-form-<%= seccion.id %>" class="form-button form-button-primary" type="submit">Guardar</button></td>
+                          </tr>
+                        <% }) %>
+                      </tbody>
+                    </table>
+                  </div>
+                </details>
+              <% }) %>
+              <details class="admin-create-panel admin-create-section-panel"><summary><i class="fa-solid fa-plus" aria-hidden="true"></i> Agregar cargo o bloque</summary>
+                <form method="post" action="/admin/contenidos/secciones/nueva" class="admin-settings-form"><input type="hidden" name="_csrf" value="<%= csrfToken %>"><input type="hidden" name="paginaClave" value="autoridades"><div class="admin-edit-grid"><div class="form-field"><label for="nuevo-grupo">Sección principal</label><select id="nuevo-grupo" name="grupo" data-authority-group required><% gruposAutoridades.forEach((grupo) => { %><option value="<%= grupo %>"><%= grupo %></option><% }) %><option value="__nueva__">Crear una nueva sección…</option></select><span class="admin-field-help">Elegí la sección principal a la que pertenece.</span></div><div class="form-field" data-new-authority-group hidden><label for="nuevo-grupo-nombre">Nombre de la nueva sección</label><input id="nuevo-grupo-nombre" name="nuevoGrupo" maxlength="120" placeholder="Ej. Gestión Administrativa"><span class="admin-field-help">Este nombre quedará disponible en los próximos desplegables.</span></div><div class="form-field"><label for="nuevo-subgrupo">Subgrupo dependiente (opcional)</label><input id="nuevo-subgrupo" name="subgrupo" maxlength="120" placeholder="Ej. Compras y contrataciones"><span class="admin-field-help">Dejalo vacío si el cargo depende directamente de la sección principal.</span></div><div class="form-field"><label for="nuevo-titulo">Cargo o título</label><input id="nuevo-titulo" name="titulo" maxlength="160" required></div></div><div class="form-field"><label for="nuevo-contenido">Personas o contenido</label><textarea id="nuevo-contenido" name="contenido" rows="4" maxlength="2000" placeholder="Una persona o dato por línea" required></textarea></div><button class="form-button form-button-primary" type="submit">Agregar cargo</button></form>
+              </details>
+            </section>
+          <% } else if (pagina.clave === 'historia') { %>
+            <section class="admin-authorities-editor admin-history-editor">
+              <div class="admin-section-heading"><div><h2>Línea de tiempo de Historia</h2><p>Estos hitos aparecen en la línea de tiempo pública, en el mismo orden en que los ves aquí.</p></div><a class="form-button form-button-secondary" href="/historia" target="_blank" rel="noopener">Ver Historia pública</a></div>
+              <div class="admin-content-location admin-history-help"><span class="admin-content-location-label">Cómo se refleja cada cambio</span><strong>Etapa o fecha:</strong> etiqueta a la izquierda. <strong>Título:</strong> encabezado del hito. <strong>Descripción:</strong> texto debajo. Desmarcá «Visible» para ocultarlo sin borrarlo.</div>
+              <% if (!seccionesHistoria.length) { %><div class="form-alert">Todavía no hay hitos cargados para Historia.</div><% } %>
+              <div class="admin-history-items">
+                <% seccionesHistoria.forEach((seccion) => { %>
+                  <details class="admin-editable-section admin-history-item">
+                    <summary><span><strong><%= seccion.titulo %></strong><small><%= seccion.grupo %> · <%= seccion.activo ? 'Visible en la página pública' : 'Oculto en la página pública' %></small></span><span>Editar</span></summary>
+                    <form method="post" action="/admin/contenidos/secciones" class="admin-settings-form">
+                      <input type="hidden" name="_csrf" value="<%= csrfToken %>"><input type="hidden" name="id" value="<%= seccion.id %>">
+                      <div class="form-field"><label for="historia-grupo-<%= seccion.id %>">Etapa o fecha visible</label><input id="historia-grupo-<%= seccion.id %>" name="grupo" maxlength="120" value="<%= seccion.grupo %>" placeholder="Ej. Diciembre 2014" required><span class="admin-field-help">Aparece como etiqueta a la izquierda de este hito.</span></div>
+                      <div class="form-field"><label for="historia-titulo-<%= seccion.id %>">Título del hito</label><input id="historia-titulo-<%= seccion.id %>" name="titulo" maxlength="160" value="<%= seccion.titulo %>" required></div>
+                      <div class="form-field"><label for="historia-contenido-<%= seccion.id %>">Descripción del hito</label><textarea id="historia-contenido-<%= seccion.id %>" name="contenido" rows="5" maxlength="2000" required><%= seccion.contenido %></textarea><span class="admin-field-help">Podés usar saltos de línea para separar ideas.</span></div>
+                      <div class="admin-toggle-row"><label><input type="checkbox" name="activo" <%= seccion.activo ? 'checked' : '' %>> Mostrar este hito en Historia</label></div>
+                      <div class="form-actions"><button class="form-button form-button-primary" type="submit">Guardar hito</button></div>
+                    </form>
+                  </details>
+                <% }) %>
+              </div>
+              <details class="admin-create-panel admin-create-section-panel"><summary><i class="fa-solid fa-plus" aria-hidden="true"></i> Agregar hito</summary>
+                <form method="post" action="/admin/contenidos/secciones/nueva" class="admin-settings-form"><input type="hidden" name="_csrf" value="<%= csrfToken %>"><input type="hidden" name="paginaClave" value="historia"><div class="admin-create-explanation">Los nuevos hitos se agregan al final de la línea de tiempo pública.</div><div class="admin-edit-grid"><div class="form-field"><label for="historia-nuevo-grupo">Etapa o fecha visible</label><input id="historia-nuevo-grupo" name="grupo" placeholder="Ej. 2026" maxlength="120" required></div><div class="form-field"><label for="historia-nuevo-titulo">Título del hito</label><input id="historia-nuevo-titulo" name="titulo" maxlength="160" placeholder="Ej. Un nuevo capítulo" required></div></div><div class="form-field"><label for="historia-nuevo-contenido">Descripción del hito</label><textarea id="historia-nuevo-contenido" name="contenido" rows="5" maxlength="2000" placeholder="Escribí el texto que aparecerá debajo del título" required></textarea></div><div class="admin-toggle-row"><label><input type="checkbox" name="activo" checked> Mostrar inmediatamente en Historia</label></div><button class="form-button form-button-primary" type="submit">Agregar hito</button></form>
+              </details>
+            </section>
+          <% } else if (pagina.clave === 'informacion-general') { %>
+            <section class="admin-authorities-editor admin-history-editor">
+              <div class="admin-section-heading"><div><h2>Información general del Curso de Ingreso</h2><p>Estos bloques representan los apartados reales de la página pública. Abrí cada uno para editarlo, ocultarlo o revisar dónde aparece.</p></div><a class="form-button form-button-secondary" href="/informaciongeneral" target="_blank" rel="noopener">Ver Información pública</a></div>
+              <div class="admin-content-location admin-history-help"><span class="admin-content-location-label">Cómo se refleja cada cambio</span><strong>Grupo:</strong> organiza el contenido. <strong>Título:</strong> encabezado del apartado. <strong>Contenido:</strong> texto que se muestra debajo; para listas, usá una línea por viñeta empezando con «• ». Desmarcá «Visible» para ocultarlo sin borrarlo.</div>
+              <div class="admin-history-items">
+                <% (Array.isArray(seccionesGenericas['informacion-general']) ? seccionesGenericas['informacion-general'] : []).forEach((seccion) => { %>
+                  <details class="admin-editable-section admin-history-item">
+                    <summary><span><strong><%= seccion.titulo %></strong><small><%= seccion.grupo %> · <%= seccion.activo ? 'Visible en la página pública' : 'Oculto en la página pública' %></small></span><span>Editar</span></summary>
+                    <form method="post" action="/admin/contenidos/secciones" class="admin-settings-form">
+                      <input type="hidden" name="_csrf" value="<%= csrfToken %>"><input type="hidden" name="id" value="<%= seccion.id %>">
+                      <div class="form-field"><label for="info-grupo-<%= seccion.id %>">Grupo o ubicación</label><input id="info-grupo-<%= seccion.id %>" name="grupo" maxlength="120" value="<%= seccion.grupo %>" required><span class="admin-field-help">«Presentación» aparece arriba; «Aspectos relevantes» agrupa el resto de los apartados.</span></div>
+                      <div class="form-field"><label for="info-titulo-<%= seccion.id %>">Título del apartado</label><input id="info-titulo-<%= seccion.id %>" name="titulo" maxlength="160" value="<%= seccion.titulo %>" required></div>
+                      <div class="form-field"><label for="info-contenido-<%= seccion.id %>">Contenido</label><textarea id="info-contenido-<%= seccion.id %>" name="contenido" rows="6" maxlength="2000" required><%= seccion.contenido %></textarea><span class="admin-field-help">Para listas, escribí cada elemento en una línea y empezalo con «• ».</span></div>
+                      <div class="admin-toggle-row"><label><input type="checkbox" name="activo" <%= seccion.activo ? 'checked' : '' %>> Mostrar este apartado en Información general</label></div>
+                      <div class="form-actions"><button class="form-button form-button-primary" type="submit">Guardar apartado</button></div>
+                    </form>
+                  </details>
+                <% }) %>
+              </div>
+              <details class="admin-create-panel admin-create-section-panel"><summary><i class="fa-solid fa-plus" aria-hidden="true"></i> Agregar apartado</summary>
+                <form method="post" action="/admin/contenidos/secciones/nueva" class="admin-settings-form"><input type="hidden" name="_csrf" value="<%= csrfToken %>"><input type="hidden" name="paginaClave" value="informacion-general"><div class="admin-create-explanation">El nuevo apartado se agrega al final de Información general.</div><div class="admin-edit-grid"><div class="form-field"><label for="info-nuevo-grupo">Grupo o ubicación</label><select id="info-nuevo-grupo" name="grupo"><option value="Aspectos relevantes">Aspectos relevantes</option><option value="Presentación">Presentación</option></select></div><div class="form-field"><label for="info-nuevo-titulo">Título del apartado</label><input id="info-nuevo-titulo" name="titulo" maxlength="160" placeholder="Ej. Consultas frecuentes" required></div></div><div class="form-field"><label for="info-nuevo-contenido">Contenido</label><textarea id="info-nuevo-contenido" name="contenido" rows="6" maxlength="2000" placeholder="Escribí el texto; para listas usá una línea por viñeta con «• »" required></textarea></div><div class="admin-toggle-row"><label><input type="checkbox" name="activo" checked> Mostrar inmediatamente en Información general</label></div><button class="form-button form-button-primary" type="submit">Agregar apartado</button></form>
+              </details>
+            </section>
+          <% } else if (pagina.clave === 'calendario') { %>
+            <%
+              const filasCalendario = Array.isArray(seccionesGenericas.calendario) ? seccionesGenericas.calendario : [];
+              const bloquesCalendario = [];
+              const bloquesCalendarioMap = new Map();
+              filasCalendario.forEach((fila) => {
+                if (!bloquesCalendarioMap.has(fila.grupo)) {
+                  const bloque = { nombre: fila.grupo, filas: [] };
+                  bloquesCalendarioMap.set(fila.grupo, bloque);
+                  bloquesCalendario.push(bloque);
+                }
+                bloquesCalendarioMap.get(fila.grupo).filas.push(fila);
+              });
+            %>
+            <section class="admin-calendar-editor">
+              <div class="admin-section-heading"><div><h2>Calendario académico</h2><p>Estas tablas representan directamente las tablas de la página pública. Editá una fila y guardala desde la última columna.</p></div></div>
+              <% if (!filasCalendario.length) { %><div class="form-alert">Todavía no hay fechas precargadas para este calendario.</div><% } %>
+              <% bloquesCalendario.forEach((bloque) => { %>
+                <details class="admin-calendar-block">
+                  <summary><h3><%= bloque.nombre %></h3><span>Ver fechas <i class="fa-solid fa-chevron-down" aria-hidden="true"></i></span></summary>
+                  <% bloque.filas.forEach((fila) => { %>
+                    <form id="calendario-form-<%= fila.id %>" method="post" action="/admin/contenidos/secciones" class="admin-calendar-row-form">
+                      <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                      <input type="hidden" name="id" value="<%= fila.id %>">
+                      <input type="hidden" name="grupo" value="<%= fila.grupo %>">
+                    </form>
+                  <% }) %>
+                  <div class="admin-table-wrapper">
+                    <table class="admin-table admin-calendar-table">
+                      <thead><tr><th>Actividad o concepto</th><th>Fecha o período</th><th>Visible</th><th>Acción</th></tr></thead>
+                      <tbody>
+                        <% bloque.filas.forEach((fila) => { %>
+                          <tr>
+                            <td><input form="calendario-form-<%= fila.id %>" name="titulo" maxlength="160" value="<%= fila.titulo %>" required aria-label="Actividad o concepto"></td>
+                            <td><textarea form="calendario-form-<%= fila.id %>" name="contenido" rows="2" maxlength="2000" required aria-label="Fecha o período"><%= fila.contenido %></textarea></td>
+                            <td><label class="admin-calendar-visible"><input form="calendario-form-<%= fila.id %>" type="checkbox" name="activo" <%= fila.activo ? 'checked' : '' %>> Sí</label></td>
+                            <td><button form="calendario-form-<%= fila.id %>" class="form-button form-button-primary" type="submit">Guardar</button></td>
+                          </tr>
+                        <% }) %>
+                      </tbody>
+                    </table>
+                  </div>
+                </details>
+              <% }) %>
+              <details class="admin-create-panel admin-create-section-panel"><summary><i class="fa-solid fa-plus" aria-hidden="true"></i> Agregar una nueva fecha</summary>
+                <form method="post" action="/admin/contenidos/secciones/nueva" class="admin-settings-form"><input type="hidden" name="_csrf" value="<%= csrfToken %>"><input type="hidden" name="paginaClave" value="calendario"><div class="admin-create-explanation">Agregá una fila nueva y elegí el bloque en el que debe aparecer.</div><div class="admin-edit-grid"><div class="form-field"><label for="calendario-nuevo-grupo">Bloque del calendario</label><select id="calendario-nuevo-grupo" name="grupo" required><% bloquesCalendario.forEach((bloque) => { %><option value="<%= bloque.nombre %>"><%= bloque.nombre %></option><% }) %></select></div><div class="form-field"><label for="calendario-nuevo-titulo">Actividad o concepto</label><input id="calendario-nuevo-titulo" name="titulo" maxlength="160" placeholder="Ej. Reunión con familias" required></div></div><div class="form-field"><label for="calendario-nuevo-contenido">Fecha o período</label><input id="calendario-nuevo-contenido" name="contenido" maxlength="2000" placeholder="Ej. 15 de agosto" required></div><button class="form-button form-button-primary" type="submit">Agregar fecha</button></form>
+              </details>
+            </section>
+          <% } else if (pagina.clave === 'cronograma-curso-ingreso') { %>
+            <%- include('cronograma-ingreso-editor', { secciones: typeof seccionesCronograma !== 'undefined' ? seccionesCronograma : null, csrfToken }) %>
+          <% } else if (pagina.clave === 'empresas') { %>
+            <%- include('empresas-editor', { empresas: typeof contenidoEmpresas !== 'undefined' ? contenidoEmpresas : null, csrfToken }) %>
+          <% } else if (pagina.clave === 'eventos') { %>
+            <section class="admin-event-editor"><h2>Calendario de eventos</h2><p>Administrá las actividades reales del calendario por año y mes. Podés cargar varias para una misma fecha y editar sus horarios, descripción, lugar y visibilidad.</p><a class="form-button form-button-primary" href="/admin/eventos">Administrar actividades por mes</a></section>
+          <% } else if (pagina.clave === 'ingresantes') { %>
+            <section class="admin-event-editor"><h2>Lista de ingresantes</h2><p>Cargá un CSV para reemplazar la tabla pública completa. El archivo debe tener Número, Apellido y Nombre.</p><a class="form-button form-button-primary" href="/admin/ingresantes">Cargar o reemplazar CSV</a><% if (contenidoIngresantes) { %><p class="form-help">Lista actual: <%= contenidoIngresantes.cicloLectivo %> · <%= contenidoIngresantes.filas.length %> registros precargados.</p><% } %></section>
+          <% } else if (pagina.clave === 'beca-ricardo-rojas') { %>
+            <%
+              const bloquesBeca = Array.isArray(seccionesGenericas['beca-ricardo-rojas']) ? seccionesGenericas['beca-ricardo-rojas'] : [];
+              const ubicacionesBeca = {
+                Presentación: 'Encabezado de la página: presentación de la beca y su objetivo.',
+                Requisitos: 'Cuerpo principal: lista de requisitos para postularse.',
+                Postulación: 'Cuerpo principal: instrucciones y botón de Trámites a Distancia.',
+                Aviso: 'Cierre de la página: fechas y canal de consultas.',
+              };
+            %>
+            <section class="admin-scholarship-editor">
+              <div class="admin-section-heading"><div><h2>Contenido de Becas</h2><p>Elegí un bloque según la parte de la página que quieras modificar. Cada tarjeta indica exactamente dónde se verá el cambio.</p></div></div>
+              <div class="admin-scholarship-blocks">
+                <% bloquesBeca.forEach((seccion) => { %>
+                  <% const postulacion = seccion.grupo === 'Postulación' ? leerPostulacionBeca(seccion.contenido) : null; %>
+                  <details class="admin-scholarship-block">
+                    <summary><span><strong><%= seccion.titulo %></strong><small><%= ubicacionesBeca[seccion.grupo] || `Página de Becas: bloque «${seccion.grupo}».` %></small></span><span>Editar <i class="fa-solid fa-chevron-down" aria-hidden="true"></i></span></summary>
+                    <form method="post" action="/admin/contenidos/secciones" class="admin-settings-form">
+                      <input type="hidden" name="_csrf" value="<%= csrfToken %>"><input type="hidden" name="id" value="<%= seccion.id %>"><input type="hidden" name="grupo" value="<%= seccion.grupo %>">
+                      <div class="admin-content-location"><span class="admin-content-location-label">Esta tarjeta modifica</span><strong><%= ubicacionesBeca[seccion.grupo] || `Página de Becas: bloque «${seccion.grupo}».` %></strong></div>
+                      <div class="form-field"><label for="beca-titulo-<%= seccion.id %>">Título visible</label><input id="beca-titulo-<%= seccion.id %>" name="titulo" maxlength="160" value="<%= seccion.titulo %>" required><span class="admin-field-help">Es el título que verá la comunidad educativa en esta parte de la página.</span></div>
+                      <div class="form-field"><label for="beca-contenido-<%= seccion.id %>"><%= postulacion ? 'Instrucciones para postularse' : 'Contenido' %></label><span class="admin-field-help"><%= postulacion ? 'Este texto aparece encima del botón de postulación.' : (seccion.grupo === 'Requisitos' ? 'Escribí un requisito por línea.' : 'Escribí el texto tal como querés que aparezca.') %></span><textarea id="beca-contenido-<%= seccion.id %>" name="contenido" rows="5" maxlength="1500" required><%= postulacion ? postulacion.instrucciones : seccion.contenido %></textarea></div>
+                      <% if (postulacion) { %>
+                        <%- include('beca-boton', { sufijo: seccion.id, boton: postulacion }) %>
+                      <% } %>
+                      <div class="admin-toggle-row"><label><input type="checkbox" name="activo" <%= seccion.activo ? 'checked' : '' %>> Mostrar este bloque en la página pública</label></div>
+                      <div class="form-actions"><button class="form-button form-button-primary" type="submit">Guardar bloque</button></div>
+                    </form>
+                  </details>
+                <% }) %>
+              </div>
+              <details class="admin-create-panel admin-create-section-panel"><summary><i class="fa-solid fa-plus" aria-hidden="true"></i> Agregar otro bloque de Becas</summary>
+                <form method="post" action="/admin/contenidos/secciones/nueva" class="admin-settings-form" data-beca-create>
+                  <input type="hidden" name="_csrf" value="<%= csrfToken %>"><input type="hidden" name="paginaClave" value="beca-ricardo-rojas">
+                  <div class="admin-edit-grid"><div class="form-field"><label for="beca-nuevo-tipo">Tipo de bloque</label><select id="beca-nuevo-tipo" name="grupo" required><option value="Presentación">Presentación</option><option value="Requisitos">Requisitos</option><option value="Postulación">Postulación</option><option value="Aviso">Aviso</option><option value="Otro">Otro bloque</option></select></div><div class="form-field"><label for="beca-nuevo-titulo">Título visible</label><input id="beca-nuevo-titulo" name="titulo" maxlength="160" placeholder="Ej. Documentación necesaria" required></div></div>
+                  <div class="form-field"><label for="beca-nuevo-contenido">Contenido inicial</label><textarea id="beca-nuevo-contenido" name="contenido" rows="6" maxlength="1500" placeholder="Escribí el contenido del nuevo bloque" required></textarea></div>
+                  <fieldset data-beca-button-fields hidden disabled>
+                    <legend>Botón de postulación</legend>
+                    <%- include('beca-boton', { sufijo: 'nuevo', boton: { botonTexto: 'Ir a Trámites a Distancia (TAD)', botonUrl: '' } }) %>
+                  </fieldset>
+                  <button class="form-button form-button-primary" type="submit">Agregar bloque</button>
+                </form>
+              </details>
+            </section>
+          <% } else if (pagina.clave === 'contrataciones') { %>
+            <%
+              const compras = Array.isArray(seccionesGenericas.contrataciones) ? seccionesGenericas.contrataciones : [];
+              const añosCompras = [...new Set(compras.map((seccion) => seccion.grupo).filter((grupo) => /^\d{4}$/.test(grupo)))].sort((a, b) => Number(b) - Number(a));
+              const encabezadoCompra = compras.find((seccion) => seccion.grupo === 'Encabezado');
+              const finalizadasCompra = compras.find((seccion) => seccion.grupo === 'Finalizadas');
+              const vigentesCompras = compras.filter((seccion) => seccion.grupo === 'Vigentes');
+              const finalizadasCompras = añosCompras.map((año) => ({ año, items: compras.filter((seccion) => seccion.grupo === año) }));
+              const sinPdf = (contenido) => String(contenido || '').split(/\r?\n/).filter((linea) => !/^PDF:\s*/i.test(linea.trim())).join('\n').trim();
+              const obtenerPdf = (contenido) => String(contenido || '').match(/^PDF:\s*(\S+)/im)?.[1] || '';
+            %>
+            <section class="admin-purchases-editor">
+              <div class="admin-section-heading"><div><h2>Compras y contrataciones</h2><p>Administrá por separado las licitaciones vigentes y las finalizadas. El pliego se carga como PDF y aparece como botón en la página pública.</p></div></div>
+              <% if (encabezadoCompra || finalizadasCompra) { %>
+                <details class="admin-purchases-general"><summary>Editar títulos y textos generales</summary>
+                  <% [encabezadoCompra, finalizadasCompra].filter(Boolean).forEach((seccion) => { %>
+                    <form method="post" action="/admin/contenidos/secciones" class="admin-settings-form admin-purchase-form"><input type="hidden" name="_csrf" value="<%= csrfToken %>"><input type="hidden" name="id" value="<%= seccion.id %>"><input type="hidden" name="grupo" value="<%= seccion.grupo %>"><div class="admin-edit-grid"><div class="form-field"><label>Título visible</label><input name="titulo" maxlength="160" value="<%= seccion.titulo %>" required></div><div class="form-field"><label>Texto de apoyo</label><textarea name="contenido" rows="3" maxlength="2000"><%= seccion.contenido %></textarea></div></div><div class="form-actions"><button class="form-button form-button-primary" type="submit">Guardar texto</button></div></form>
+                  <% }) %>
+                </details>
+              <% } %>
+              <section class="admin-purchases-group"><h3>Licitaciones vigentes</h3><p class="admin-field-help">Estas contrataciones aparecen fuera del historial anual.</p>
+                <% vigentesCompras.forEach((seccion) => { %>
+                  <form method="post" action="/admin/contenidos/secciones" class="admin-settings-card admin-settings-form admin-purchase-form">
+                    <input type="hidden" name="_csrf" value="<%= csrfToken %>"><input type="hidden" name="id" value="<%= seccion.id %>"><input type="hidden" name="grupo" value="Vigentes"><input type="hidden" name="pliegoUrl" data-pdf-url value="<%= obtenerPdf(seccion.contenido) %>">
+                    <div class="form-field"><label>Identificación de la contratación</label><input name="titulo" maxlength="160" value="<%= seccion.titulo %>" required></div>
+                    <div class="form-field"><label>Datos de la licitación vigente</label><textarea name="contenido" rows="7" maxlength="2000" required><%= sinPdf(seccion.contenido) %></textarea></div>
+                    <div class="admin-pdf-upload" data-pdf-upload><input id="pdf-<%= seccion.id %>" type="file" data-pdf-file accept="application/pdf" hidden><label for="pdf-<%= seccion.id %>" class="form-button form-button-secondary" data-pdf-select><i class="fa-solid fa-file-pdf" aria-hidden="true"></i> Subir pliego PDF</label><span data-pdf-name><%= obtenerPdf(seccion.contenido) ? 'Pliego cargado' : 'Todavía no hay pliego cargado' %></span><small data-pdf-status></small></div>
+                    <div class="form-actions"><button class="form-button form-button-primary" type="submit">Guardar licitación vigente</button></div>
+                  </form>
+                <% }) %>
+                <details class="admin-create-panel admin-create-section-panel"><summary><i class="fa-solid fa-plus" aria-hidden="true"></i> Agregar licitación vigente</summary>
+                  <form method="post" action="/admin/contenidos/secciones/nueva" class="admin-settings-form admin-purchase-form"><input type="hidden" name="_csrf" value="<%= csrfToken %>"><input type="hidden" name="paginaClave" value="contrataciones"><input type="hidden" name="grupo" value="Vigentes"><input type="hidden" name="pliegoUrl" data-pdf-url><div class="form-field"><label>Identificación de la contratación</label><input name="titulo" maxlength="160" placeholder="Ej. CD 13-26 · Contratación Directa" required></div><div class="form-field"><label>Datos de la licitación vigente</label><textarea name="contenido" rows="7" maxlength="2000" placeholder="Descripción, fechas, lugar y demás información" required></textarea></div><div class="admin-pdf-upload" data-pdf-upload><input id="pdf-nueva-vigente" type="file" data-pdf-file accept="application/pdf" hidden><label for="pdf-nueva-vigente" class="form-button form-button-secondary" data-pdf-select><i class="fa-solid fa-file-pdf" aria-hidden="true"></i> Subir pliego PDF</label><span data-pdf-name>No hay pliego cargado</span><small data-pdf-status></small></div><button class="form-button form-button-primary" type="submit">Agregar licitación vigente</button></form>
+                </details>
+              </section>
+              <section class="admin-purchases-group"><h3>Licitaciones finalizadas</h3><p class="admin-field-help">Cada año se muestra en un desplegable como en la página pública.</p>
+                <% finalizadasCompras.forEach((bloque) => { %>
+                  <details class="admin-purchase-year"><summary><strong>Historial <%= bloque.año %></strong><span>Ver contrataciones <i class="fa-solid fa-chevron-down" aria-hidden="true"></i></span></summary><div class="admin-purchase-year-content">
+                    <% bloque.items.forEach((seccion) => { %>
+                      <form method="post" action="/admin/contenidos/secciones" class="admin-settings-card admin-settings-form admin-purchase-form"><input type="hidden" name="_csrf" value="<%= csrfToken %>"><input type="hidden" name="id" value="<%= seccion.id %>"><input type="hidden" name="grupo" value="<%= bloque.año %>"><input type="hidden" name="pliegoUrl" data-pdf-url value="<%= obtenerPdf(seccion.contenido) %>"><div class="form-field"><label>Identificación</label><input name="titulo" maxlength="160" value="<%= seccion.titulo %>" required></div><div class="form-field"><label>Datos de la contratación finalizada</label><textarea name="contenido" rows="7" maxlength="2000" required><%= sinPdf(seccion.contenido) %></textarea></div><div class="admin-pdf-upload" data-pdf-upload><input id="pdf-<%= seccion.id %>-finalizada" type="file" data-pdf-file accept="application/pdf" hidden><label for="pdf-<%= seccion.id %>-finalizada" class="form-button form-button-secondary" data-pdf-select><i class="fa-solid fa-file-pdf" aria-hidden="true"></i> Subir pliego PDF</label><span data-pdf-name><%= obtenerPdf(seccion.contenido) ? 'Pliego cargado' : 'Todavía no hay pliego cargado' %></span><small data-pdf-status></small></div><div class="form-actions"><button class="form-button form-button-primary" type="submit">Guardar contratación</button></div></form>
+                    <% }) %>
+                  </div></details>
+                <% }) %>
+                <details class="admin-create-panel admin-create-section-panel"><summary><i class="fa-solid fa-plus" aria-hidden="true"></i> Agregar contratación finalizada</summary><form method="post" action="/admin/contenidos/secciones/nueva" class="admin-settings-form admin-purchase-form"><input type="hidden" name="_csrf" value="<%= csrfToken %>"><input type="hidden" name="paginaClave" value="contrataciones"><div class="admin-edit-grid"><div class="form-field"><label>Año</label><select name="grupo" data-purchases-year required><% añosCompras.forEach((año) => { %><option value="<%= año %>"><%= año %></option><% }) %><option value="__nueva__">Crear otro año…</option></select></div><div class="form-field" data-purchases-new-year hidden><label>Nuevo año</label><input name="nuevoGrupo" pattern="\d{4}" maxlength="4" placeholder="Ej. 2027"></div><div class="form-field"><label>Identificación</label><input name="titulo" maxlength="160" placeholder="Ej. TS 22-26 · FINALIZADA" required></div></div><div class="form-field"><label>Datos de la contratación finalizada</label><textarea name="contenido" rows="7" maxlength="2000" placeholder="Ganador, expediente, descripción y fecha de apertura" required></textarea></div><input type="hidden" name="pliegoUrl" data-pdf-url><div class="admin-pdf-upload" data-pdf-upload><input id="pdf-nueva-finalizada" type="file" data-pdf-file accept="application/pdf" hidden><label for="pdf-nueva-finalizada" class="form-button form-button-secondary" data-pdf-select><i class="fa-solid fa-file-pdf" aria-hidden="true"></i> Subir pliego PDF</label><span data-pdf-name>No hay pliego cargado</span><small data-pdf-status></small></div><button class="form-button form-button-primary" type="submit">Agregar contratación finalizada</button></form></details>
+              </section>
+            </section>
+          <% } else if (['genero', 'recursos-humanos', 'ingreso', 'beca-ricardo-rojas', 'contrataciones', 'novedades', 'odontologia-estudiantes', 'home', 'orientaciones', 'actividades-extracurriculares', 'semana-tecnica'].includes(pagina.clave)) { %>
+            <%- include('../admin-secciones-editor', { paginaClave: pagina.clave, tituloEditor: 'Bloques editables', secciones: seccionesGenericas[pagina.clave], csrfToken }) %>
+          <% } %>
+        </details>
+      <% }) %>
+    </section>
+
+  </div>
+</main>
+
+<%- include('../partials/footer') %>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

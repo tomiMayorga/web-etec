@@ -1,0 +1,49 @@
+<%
+  const ubicaciones = {
+    'Carrusel principal': ['1. Fotos de portada', 'Imágenes grandes que van cambiando detrás de «ORIENTACIONES». El texto alternativo describe la imagen para accesibilidad.'],
+    'Introducción': ['2. Presentación de las orientaciones', 'Texto de la franja naranja, debajo de las fotos de portada.'],
+    'Especialidades': ['3. Elección de especialidad, Mecatrónica y TIC', 'Paneles con foto de fondo al final de la página. Cada elemento tiene su propio título y descripción visibles.'],
+  };
+%>
+<section class="admin-authorities-editor">
+  <div class="admin-section-heading"><div><h2>Contenido de Orientaciones</h2><p>Abrí la parte que querés modificar. Los campos contienen la información actual de la página.</p></div><a class="form-button form-button-secondary" href="/orientaciones" target="_blank" rel="noopener">Ver página pública</a></div>
+  <div class="admin-collapsible-grid">
+  <% secciones.forEach((seccion) => {
+    const portada = seccion.grupo === 'Carrusel principal';
+    const multimedia = portada || seccion.grupo === 'Especialidades';
+    const ubicacion = ubicaciones[seccion.grupo] || [seccion.titulo, 'Apartado adicional al final de Orientaciones.'];
+    const filas = String(seccion.contenido || '').split(/\r?\n/).filter((linea) => linea.trim()).map((linea) => linea.split('|').map((parte) => parte.trim()));
+  %>
+    <details class="admin-editable-section">
+      <summary><span><strong><%= ubicacion[0] %></strong><small><%= seccion.activo ? 'Visible' : 'Oculto' %> · <%= ubicacion[1] %></small></span><span>Editar</span></summary>
+      <form method="post" action="/admin/contenidos/secciones" class="admin-settings-card admin-settings-form" <%= multimedia ? 'data-media-form' : '' %>>
+        <input type="hidden" name="_csrf" value="<%= csrfToken %>"><input type="hidden" name="id" value="<%= seccion.id %>"><input type="hidden" name="grupo" value="<%= seccion.grupo %>">
+        <div class="admin-content-location"><strong>Dónde aparece</strong><p><%= ubicacion[1] %></p></div>
+        <% if (ubicaciones[seccion.grupo]) { %><input type="hidden" name="titulo" value="<%= seccion.titulo %>"><% } else { %><label>Título del apartado<input name="titulo" value="<%= seccion.titulo %>" maxlength="160" required></label><% } %>
+        <% if (multimedia) { %>
+          <p class="admin-field-help">Subí imágenes JPG, PNG o WebP. «Quitar elemento» se aplica al guardar. El orden de las filas es el orden público.</p>
+          <div data-media-rows class="admin-media-rows">
+            <% filas.forEach((fila) => { %><div data-media-row class="admin-settings-card"><%- include('orientaciones-imagen', { fila, portada }) %></div><% }) %>
+          </div>
+          <template data-media-template><%- include('orientaciones-imagen', { fila: [], portada }) %></template>
+          <button class="form-button form-button-secondary" type="button" data-media-add><%= portada ? 'Agregar foto' : 'Agregar panel de especialidad' %></button>
+          <textarea name="contenido" data-media-value hidden><%= seccion.contenido %></textarea>
+        <% } else { %>
+          <div class="form-field"><label for="orientacion-texto-<%= seccion.id %>">Texto que verá el visitante</label><textarea id="orientacion-texto-<%= seccion.id %>" name="contenido" rows="5" maxlength="2000"><%= seccion.contenido %></textarea></div>
+        <% } %>
+        <div class="admin-toggle-row"><label><input type="checkbox" name="activo" <%= seccion.activo ? 'checked' : '' %>> Mostrar esta parte en Orientaciones</label></div>
+        <div class="form-actions"><button class="form-button form-button-primary" type="submit">Guardar cambios de este bloque</button></div>
+      </form>
+    </details>
+  <% }) %>
+  </div>
+  <details class="admin-create-panel admin-create-section-panel"><summary>Agregar apartado informativo</summary>
+    <form method="post" action="/admin/contenidos/secciones/nueva" class="admin-settings-form">
+      <input type="hidden" name="_csrf" value="<%= csrfToken %>"><input type="hidden" name="paginaClave" value="orientaciones"><input type="hidden" name="grupo" value="Información adicional">
+      <p>Se agrega después de los paneles de especialidades. Para agregar fotos o paneles, usá los bloques anteriores.</p>
+      <div class="form-field"><label for="orientacion-nuevo-titulo">Título</label><input id="orientacion-nuevo-titulo" name="titulo" maxlength="160" required></div>
+      <div class="form-field"><label for="orientacion-nuevo-texto">Descripción</label><textarea id="orientacion-nuevo-texto" name="contenido" maxlength="2000" rows="4" required></textarea></div>
+      <button class="form-button form-button-primary" type="submit">Agregar y publicar apartado</button>
+    </form>
+  </details>
+</section>

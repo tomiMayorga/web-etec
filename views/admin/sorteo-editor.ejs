@@ -1,0 +1,33 @@
+<%
+ const ubicaciones = {
+   'Presentación': 'Título e instrucciones al comienzo de Sorteo.',
+   'Listado': 'Encabezado y explicación encima de la tabla, después del cierre.',
+   'Espera': 'Mensaje que se muestra mientras la tabla todavía no está publicada.'
+ };
+%>
+<section class="admin-authorities-editor">
+  <div class="admin-section-heading"><div><h2>Sorteo y postulantes preinscriptos</h2><p>Editá los textos que acompañan al listado automático.</p></div><a class="form-button form-button-secondary" href="/sorteo" target="_blank" rel="noopener">Ver página pública</a></div>
+  <div class="admin-content-location"><strong>Cómo se publica la tabla</strong><p>Se toma el ciclo más reciente que haya salido de borrador. La tabla aparece al pasar su fecha de cierre o al marcarlo como Cerrado. Si reabrís el ciclo con una fecha futura, vuelve a ocultarse; un ciclo archivado tampoco publica el listado.</p><p>Incluye todas las inscripciones confirmadas, ordenadas por su número original, con nombre y apellido. Las anuladas y eliminadas quedan fuera. No se renumeran aspirantes ni se eligen ganadores desde esta pantalla.</p><a class="form-button form-button-secondary" href="/admin/ciclos">Configurar ciclos y fechas</a></div>
+  <div class="admin-collapsible-grid">
+  <% secciones.forEach(s => { %>
+    <details class="admin-editable-section">
+      <summary><span><strong><%= s.grupo %></strong><small><%= ubicaciones[s.grupo] || 'Información adicional al final de la página.' %></small></span><span>Editar</span></summary>
+      <form method="post" action="/admin/contenidos/secciones" class="admin-settings-card admin-settings-form">
+        <input type="hidden" name="_csrf" value="<%= csrfToken %>"><input type="hidden" name="id" value="<%= s.id %>"><input type="hidden" name="grupo" value="<%= s.grupo %>"><input type="hidden" name="activo" value="on">
+        <div class="form-field"><label for="sorteo-titulo-<%= s.id %>">Título visible</label><input id="sorteo-titulo-<%= s.id %>" name="titulo" value="<%= s.titulo %>" minlength="2" maxlength="160" required></div>
+        <div class="form-field"><label for="sorteo-texto-<%= s.id %>">Mensaje o instrucciones</label><textarea id="sorteo-texto-<%= s.id %>" name="contenido" rows="4" maxlength="2000"><%= s.contenido %></textarea></div>
+        <div class="form-actions"><button type="submit" class="form-button form-button-primary">Guardar estos textos</button></div>
+      </form>
+    </details>
+  <% }) %>
+  </div>
+  <details class="admin-create-panel admin-create-section-panel"><summary>Agregar instrucciones del sorteo</summary>
+    <form method="post" action="/admin/contenidos/secciones/nueva" class="admin-settings-form">
+      <input type="hidden" name="_csrf" value="<%= csrfToken %>"><input type="hidden" name="paginaClave" value="sorteo"><input type="hidden" name="grupo" value="Información adicional">
+      <div class="form-field"><label for="sorteo-nuevo-titulo">Título del apartado</label><input id="sorteo-nuevo-titulo" name="titulo" minlength="2" maxlength="160" required></div>
+      <div class="form-field"><label for="sorteo-nuevo-texto">Instrucciones</label><textarea id="sorteo-nuevo-texto" name="contenido" rows="4" maxlength="2000" required></textarea></div>
+      <button type="submit" class="form-button form-button-primary">Agregar y publicar instrucciones</button>
+    </form>
+  </details>
+</section>
+

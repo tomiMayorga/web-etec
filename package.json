@@ -1,0 +1,62 @@
+{
+    "name": "etec-uba",
+    "version": "1.0.0",
+    "description": "Réplica del sitio web de ETEC UBA en TypeScript",
+    "main": "dist/server.js",
+    "engines": {
+        "node": ">=20.0.0"
+    },
+    "scripts": {
+        "build": "tsc",
+        "start": "node dist/server.js",
+        "dev": "nodemon --exec ts-node src/server.ts",
+        "dev:watch": "nodemon --watch src --watch views --watch public --exec ts-node src/server.ts",
+        "test": "node --test -r ts-node/register tests/security.test.ts tests/eventos.test.ts tests/ingresantes.test.ts",
+        "typecheck": "tsc --noEmit && tsc -p tsconfig.test.json",
+        "security:audit": "npm audit",
+        "db:generate": "prisma generate",
+        "db:push": "prisma db push",
+        "db:status": "prisma migrate status",
+        "admin:bootstrap": "node scripts/crear-superadmin.mjs",
+        "chatbot:seed": "node scripts/configurar-chatbot.mjs",
+        "check": "npm run typecheck && npm test && npm run security:audit",
+        "import:sorteo": "node scripts/importar-sorteo.mjs",
+        "import:ingresantes": "node scripts/importar-ingresantes.mjs"
+    },
+    "dependencies": {
+        "@prisma/client": "^6.12.0",
+        "argon2": "^0.45.1",
+        "csrf-sync": "^4.2.1",
+        "dotenv": "^17.4.2",
+        "ejs": "^3.1.10",
+        "express": "^4.18.2",
+        "express-rate-limit": "^8.7.0",
+        "express-session": "^1.19.0",
+        "helmet": "^8.3.0",
+        "nodemailer": "^10.0.1",
+        "zod": "^4.5.4"
+    },
+    "devDependencies": {
+        "@types/better-sqlite3": "^9.6.0",
+        "@types/ejs": "^3.1.5",
+        "@types/express": "^4.17.21",
+        "@types/express-session": "^1.19.0",
+        "@types/node": "^20.11.0",
+        "@types/nodemailer": "^8.0.1",
+        "nodemon": "^3.0.3",
+        "prisma": "^6.12.0",
+        "ts-node": "^10.9.2",
+        "typescript": "^5.3.3"
+    },
+    "overrides": {
+        "qs": "6.16.0"
+    },
+    "allowScripts": {
+        "argon2@0.45.1": true,
+        "better-sqlite3@12.11.1": true,
+        "better-sqlite3@13.0.3": true,
+        "@prisma/client@6.12.0": true,
+        "@prisma/engines@6.12.0": true,
+        "prisma@6.12.0": true
+    }
+}

@@ -1,0 +1,39 @@
+<%
+ const destinos = {
+  'Encabezado':'Título principal y nombre de la facultad sobre la presentación.',
+  'Presentación':'Nombre y descripción del programa dentro de la tarjeta.',
+  'Acceso al servicio':'Recuadro que explica cómo reservar un lugar.',
+  'Atención':'Datos de frecuencia, horario y cupos que aparecen juntos.',
+  'Coordinación':'Aviso destacado al final de la tarjeta.'
+ };
+%>
+<section class="admin-authorities-editor">
+ <div class="admin-section-heading"><div><h2>UBA en Acción</h2><p>Editá la información del servicio odontológico para la comunidad.</p></div><a class="form-button form-button-secondary" href="/uba-en-accion" target="_blank" rel="noopener">Ver página pública</a></div>
+ <div class="admin-collapsible-grid">
+ <% [...new Set(secciones.map(s => s.grupo))].forEach(grupo => { %>
+  <details class="admin-editable-section"><summary><span><strong><%= grupo %></strong><small><%= destinos[grupo] || 'Apartado adicional debajo de la tarjeta principal.' %></small></span><span>Editar</span></summary>
+  <% secciones.filter(s => s.grupo === grupo).forEach(s => { %>
+   <form method="post" action="/admin/contenidos/secciones" class="admin-settings-card admin-settings-form">
+    <input type="hidden" name="_csrf" value="<%= csrfToken %>"><input type="hidden" name="id" value="<%= s.id %>"><input type="hidden" name="grupo" value="<%= s.grupo %>">
+    <% if(grupo === 'Coordinación') { %><input type="hidden" name="titulo" value="<%= s.titulo %>"><% } else { %>
+     <div class="form-field"><label for="accion-titulo-<%= s.id %>"><%= grupo === 'Atención' ? 'Etiqueta visible (Frecuencia, Horario o Cupos)' : 'Título visible' %></label><input id="accion-titulo-<%= s.id %>" name="titulo" value="<%= s.titulo %>" minlength="2" maxlength="160" required></div>
+    <% } %>
+    <div class="form-field"><label for="accion-texto-<%= s.id %>"><%= grupo === 'Atención' ? 'Dato que aparece debajo de la etiqueta' : grupo === 'Encabezado' ? 'Nombre de la institución' : grupo === 'Coordinación' ? 'Mensaje de coordinación' : 'Descripción o instrucciones' %></label><textarea id="accion-texto-<%= s.id %>" name="contenido" rows="<%= grupo === 'Atención' ? 2 : 4 %>" maxlength="2000"><%= s.contenido %></textarea></div>
+    <div class="admin-toggle-row"><label><input type="checkbox" name="activo" <%= s.activo ? 'checked' : '' %>> Mostrar este elemento</label></div>
+    <div class="form-actions"><button type="submit" class="form-button form-button-primary">Guardar este elemento</button></div>
+   </form>
+  <% }) %>
+  </details>
+ <% }) %>
+ </div>
+ <details class="admin-create-panel admin-create-section-panel"><summary>Agregar información del servicio</summary>
+  <form method="post" action="/admin/contenidos/secciones/nueva" class="admin-settings-form">
+   <input type="hidden" name="_csrf" value="<%= csrfToken %>"><input type="hidden" name="paginaClave" value="uba-en-accion">
+   <div class="form-field"><label for="accion-nuevo-grupo">Dónde aparecerá</label><select id="accion-nuevo-grupo" name="grupo"><option value="Información adicional">Apartado debajo de la tarjeta principal</option><option value="Atención">Dato junto a Frecuencia, Horario y Cupos</option></select></div>
+   <div class="form-field"><label for="accion-nuevo-titulo">Título o etiqueta</label><input id="accion-nuevo-titulo" name="titulo" minlength="2" maxlength="160" required></div>
+   <div class="form-field"><label for="accion-nuevo-texto">Descripción o dato</label><textarea id="accion-nuevo-texto" name="contenido" rows="4" maxlength="2000" required></textarea></div>
+   <button type="submit" class="form-button form-button-primary">Agregar y publicar información</button>
+  </form>
+ </details>
+</section>
+

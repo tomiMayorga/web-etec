@@ -1,0 +1,36 @@
+<%- include('partials/header') %>
+<%
+  const bloquesIngreso = (Array.isArray(seccionesIngreso) ? seccionesIngreso : []).filter((s) => s.activo);
+  const ingresoLineas = (contenido) => String(contenido || '').split(/\r?\n/).map((linea) => linea.trim()).filter(Boolean);
+  const ordenIngreso = ['Presentación', 'Pilares', 'Propuesta', 'Calidad Educativa y Diversidad', 'Cierre'];
+  const bloquesOrdenados = [...ordenIngreso.flatMap((grupo) => bloquesIngreso.filter((s) => s.grupo === grupo)), ...bloquesIngreso.filter((s) => !ordenIngreso.includes(s.grupo))];
+%>
+<main class="presentation-page">
+  <section class="presentation-layout">
+    <div class="presentation-container">
+      <% if (!bloquesIngreso.some((s) => s.grupo === 'Presentación')) { %><h1>Presentación del Curso de Ingreso</h1><% } %>
+      <% bloquesOrdenados.forEach((bloque) => { %>
+        <% if (bloque.grupo === 'Presentación') { %>
+          <h1><%= bloque.titulo %></h1>
+          <% ingresoLineas(bloque.contenido).forEach((linea) => { %><p class="presentation-introduction"><%= linea %></p><% }) %>
+          <div class="presentation-divider"></div>
+        <% } else if (bloque.grupo === 'Pilares') { %>
+          <div class="presentation-pillars">
+            <% ingresoLineas(bloque.titulo.replace(/\s*[·|/]\s*/g, '\n')).forEach((pilar, indice) => { %>
+              <article class="presentation-pillar"><span class="presentation-pillar-icon" aria-hidden="true"><%= ['🎓', '🔍', '🤝'][indice] || '📘' %></span><strong><%= pilar %></strong></article>
+            <% }) %>
+          </div>
+          <% ingresoLineas(bloque.contenido).forEach((linea) => { %><p class="presentation-text"><%= linea %></p><% }) %>
+        <% } else if (bloque.grupo === 'Propuesta') { %>
+          <blockquote class="presentation-quote"><%= ingresoLineas(bloque.contenido).join(' ') %></blockquote>
+        <% } else if (bloque.grupo === 'Cierre') { %>
+          <div class="presentation-closing"><%= ingresoLineas(bloque.contenido).join(' ') %></div>
+        <% } else { %>
+          <section class="presentation-quality"><h2><%= bloque.titulo %></h2><% ingresoLineas(bloque.contenido).forEach((linea) => { %><p><%= linea %></p><% }) %></section>
+        <% } %>
+      <% }) %>
+    </div>
+  </section>
+</main>
+<%- include('partials/footer') %>
+

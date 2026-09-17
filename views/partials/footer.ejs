@@ -1,0 +1,92 @@
+<% if (String(page || '') === 'home') { %>
+<section class="contact-section">
+  <div class="contact-inner">
+
+    <div class="footer-social">
+      <h2>Seguinos</h2>
+
+      <ul>
+        <li>
+          <a
+            href="https://facebook.com/escuelatecnicauba"
+            target="_blank"
+            rel="noopener">
+            <i class="fab fa-facebook-f"></i>
+            <span>/escuelatecnicauba</span>
+          </a>
+        </li>
+
+        <li>
+          <a
+            href="https://www.instagram.com/etec_uba/"
+            target="_blank"
+            rel="noopener">
+            <i class="fab fa-instagram"></i>
+            <span>@etec_uba</span>
+          </a>
+        </li>
+
+        <li>
+          <a href="mailto:info@etec.uba.ar">
+            <i class="fas fa-envelope"></i>
+            <span>info@etec.uba.ar</span>
+          </a>
+        </li>
+
+        <li>
+          <a
+            href="https://tiktok.com/@eteclugano"
+            target="_blank"
+            rel="noopener">
+            <i class="fab fa-tiktok"></i>
+            <span>@eteclugano</span>
+          </a>
+        </li>
+      </ul>
+    </div>
+
+    <div class="footer-map">
+      <iframe
+        title="Mapa ETEC UBA"
+        src="https://maps.google.com/maps?q=Avenida+Escalada+4801+CABA&t=m&z=15&output=embed&iwloc=near"
+        width="100%"
+        height="456"
+        style="border: 0"
+        allowfullscreen
+        loading="lazy"
+        referrerpolicy="no-referrer-when-downgrade">
+      </iframe>
+    </div>
+
+  </div>
+</section>
+
+<footer class="site-footer">
+  <div class="footer-bottom">
+    <a href="/">
+      <img src="/img/logo-etec.png" alt="ETEC UBA" />
+    </a>
+
+    <p>Todos los derechos reservados</p>
+  </div>
+</footer>
+<% } %>
+
+<% if (!String(page || '').startsWith('admin-')) { %>
+  <%- include('chatbot') %>
+<% } %>
+
+<script src="/js/main.js"></script>
+<script src="/js/preinscripcion.js" defer></script>
+<script src="/js/chatbot.js" defer></script>
+<% if (String(page || '') === 'eventos') { %>
+  <script src="/js/eventos.js" defer></script>
+<% } %>
+<% if (String(page || '') === 'admin-eventos') { %>
+  <script src="/js/admin-eventos.js" defer></script>
+<% } %>
+<% if (String(page || '') === 'admin-contenidos') { %>
+  <script src="/js/admin-contenidos.js" defer></script>
+<% } %>
+</body>
+</html>

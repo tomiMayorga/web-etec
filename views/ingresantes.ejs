@@ -1,0 +1,29 @@
+<%- include('partials/header') %>
+<main class="admission-results-page">
+  <article class="admission-results-container">
+    <h1>Ingresantes</h1>
+    <section class="admission-results-content">
+      <h2><%= cicloLectivoIngresantes ? `Ingresantes del ciclo lectivo ${cicloLectivoIngresantes}` : 'Postulantes que han salido sorteados el 5 de mayo:' %></h2>
+      <label class="admission-results-search">
+        <span>Buscar por apellido o nombre</span>
+        <input id="ingresantes-search" type="search" placeholder="Escribí para buscar…" autocomplete="off">
+      </label>
+      <p id="ingresantes-count" class="admission-results-count" aria-live="polite"></p>
+      <div class="admission-results-table-wrapper" tabindex="0" role="region" aria-label="Listado de postulantes sorteados">
+        <table class="admission-results-table" id="ingresantes-table">
+          <thead><tr><th scope="col">N°</th><th scope="col">Apellido del POSTULANTE</th><th scope="col">Nombre del POSTULANTE</th></tr></thead>
+          <tbody>
+            <% if (ingresantes.length > 0) { %>
+              <% ingresantes.forEach((ingresante) => { %>
+                <tr><td><%= ingresante.numero %></td><td><%= ingresante.apellido %></td><td><%= ingresante.nombre %></td></tr>
+              <% }) %>
+            <% } else { %>
+              <tr class="admission-results-empty"><td colspan="3">El listado local todavía no está disponible.</td></tr>
+            <% } %>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </article>
+</main>
+<%- include('partials/footer') %>

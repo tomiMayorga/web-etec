@@ -1,0 +1,26 @@
+<%- include('partials/header') %>
+
+<%
+  const bloquesSemana = (Array.isArray(seccionesSemana) ? seccionesSemana : []).filter(s => s.activo);
+  const semanaLineas = (contenido) => String(contenido || '').split(/\r?\n/).map((linea) => linea.trim()).filter(Boolean);
+  const parsearFoto = (contenido) => semanaLineas(contenido).map((linea) => linea.split('|').map((parte) => parte.trim())).filter((foto) => /^(https?:\/\/|\/)/i.test(foto[0] || ''));
+  const presentacionSemana = bloquesSemana.find((bloque) => bloque.grupo === 'Presentación');
+  const galeriaSemana = bloquesSemana.find((bloque) => bloque.grupo === 'Carrusel');
+  const cierreSemana = bloquesSemana.find((bloque) => bloque.grupo === 'Cierre');
+  const fotosSemana = galeriaSemana ? parsearFoto(galeriaSemana.contenido) : [];
+%>
+
+<main class="technical-week-page">
+  <% if (presentacionSemana) { %><section class="technical-week-hero"><div class="technical-week-hero-inner"><span>Comunidad ETEC</span><h1><%= presentacionSemana.titulo %></h1><p><%= presentacionSemana ? semanaLineas(presentacionSemana.contenido).join(' ') : 'Es la semana donde los alumnos muestran diferentes proyectos que fueron armando durante el año. Tanto los chicos de Mecatrónica como los chicos de TICs exponen sus proyectos.' %></p></div></section><% } %>
+  <% if (galeriaSemana && fotosSemana.length) { %><section class="technical-week-gallery" aria-labelledby="technical-week-gallery-title"><div class="technical-week-gallery-heading"><div><span>Proyectos y experiencias</span><h2 id="technical-week-gallery-title"><%= galeriaSemana?.titulo || 'Así se vive la Semana Técnica' %></h2></div><p>Deslizá para conocer algunos de los trabajos y momentos compartidos por nuestros estudiantes.</p></div>
+    <div class="technical-week-carousel" data-technical-week-carousel><div class="technical-week-slides" aria-live="polite">
+      <% fotosSemana.forEach((foto, indice) => { %><figure class="technical-week-slide <%= indice === 0 ? 'is-active' : '' %>" data-slide-index="<%= indice %>"><img src="<%= foto[0] %>" alt="<%= foto[1] || 'Proyecto de la Semana Técnica' %>" <%= indice === 0 ? '' : 'loading="lazy"' %>><figcaption><strong><%= foto[1] || '' %></strong><span><%= foto[2] || '' %></span></figcaption></figure><% }) %>
+    </div><button class="technical-week-control technical-week-prev" type="button" aria-label="Foto anterior">‹</button><button class="technical-week-control technical-week-next" type="button" aria-label="Foto siguiente">›</button><div class="technical-week-dots" role="tablist" aria-label="Seleccionar foto"><% fotosSemana.forEach((_foto, indice) => { %><button type="button" role="tab" aria-label="Ver foto <%= indice + 1 %>" aria-selected="<%= indice === 0 ? 'true' : 'false' %>" class="<%= indice === 0 ? 'is-active' : '' %>" data-slide-to="<%= indice %>"></button><% }) %></div></div>
+  </section><% } %>
+  <% if (cierreSemana) { %><section class="technical-week-note"><div><h2><%= cierreSemana?.titulo || 'Una escuela que crea y comparte' %></h2><p><%= cierreSemana ? semanaLineas(cierreSemana.contenido).join(' ') : 'La Semana Técnica es una oportunidad para mostrar el recorrido de cada curso, intercambiar conocimientos y acercar a las familias y a la comunidad los proyectos que se realizan en la ETEC.' %></p></div></section><% } %>
+  <% bloquesSemana.filter(s => !['Presentación','Carrusel','Cierre'].includes(s.grupo)).forEach(s => { %>
+    <section class="technical-week-note"><div><h2><%= s.titulo %></h2><% semanaLineas(s.contenido).forEach(linea => { %><p><%= linea %></p><% }) %></div></section>
+  <% }) %>
+</main>
+<%- include('partials/footer') %>
+

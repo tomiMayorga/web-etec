@@ -1,0 +1,119 @@
+<%- include('partials/header') %>
+
+<%
+  const bloquesGenero = Array.isArray(seccionesGenero) ? seccionesGenero : [];
+  const enlacesNormativa = new Map([
+    ['1918/19', 'https://cms.fi.uba.ar/uploads/Res_CS_1918_19_19c36646a0.pdf'],
+    ['8548/17', 'https://campus.clavesacademica.rec.uba.ar/pluginfile.php/1723/course/section/192/Res%20CS%208548-17%20Lineamientos%20escuelas%20secundarias_UBA.pdf'],
+  ]);
+  const lineas = (contenido) => String(contenido || '').split(/\r?\n/).map((linea) => linea.trim()).filter(Boolean);
+  const bloquePrincipal = bloquesGenero.find((bloque) => bloque.grupo === 'Información principal') || bloquesGenero[0];
+  const bloqueMision = bloquesGenero.find((bloque) => bloque.grupo === 'Misión');
+  const titulosInformacion = ['RESPONSABLE', 'UBICACIÓN', 'HORARIOS DE ATENCIÓN', 'CONTACTO DIRECTO'];
+  const bloquesInformacion = titulosInformacion.map((titulo) => bloquesGenero.find((bloque) => bloque.titulo === titulo)).filter(Boolean);
+  const bloquePoster = bloquesGenero.find((bloque) => bloque.grupo === 'Medios');
+  const idsReservados = new Set([bloquePrincipal?.id, bloqueMision?.id, bloquePoster?.id, ...bloquesInformacion.map((bloque) => bloque.id)]);
+  const bloquesPosteriores = bloquesGenero.filter((bloque) => !idsReservados.has(bloque.id));
+  const posterLinea = bloquePoster && lineas(bloquePoster.contenido)[0];
+  const posterUrl = posterLinea ? posterLinea.split('|')[0].trim() : 'https://etec.uba.ar/wp-content/uploads/2025/03/Captura-de-pantalla-2025-03-31-120852.png';
+  const posterAlt = posterLinea && posterLinea.includes('|') ? posterLinea.split('|').slice(1).join('|').trim() : 'Información sobre violencia de género, asistencia y denuncias';
+%>
+
+<main class="gender-page">
+  <header class="gender-page-header">
+    <div class="gender-wide-container">
+      <h1><%= (typeof contenidoPagina !== 'undefined' && contenidoPagina?.titulo) || 'Oficina de Género' %></h1>
+    </div>
+  </header>
+
+  <section class="gender-layout">
+    <div class="gender-card">
+      <% if (bloquePrincipal) { %>
+        <header class="gender-card-header">
+          <h2><%= bloquePrincipal.titulo %></h2>
+          <% lineas(bloquePrincipal.contenido).forEach((linea) => { %>
+            <p><%= linea %></p>
+          <% }) %>
+        </header>
+      <% } else { %>
+        <header class="gender-card-header">
+          <h2>OFICINA DE ASISTENCIA CONTRA LA VIOLENCIA DE GÉNERO, ACOSO SEXUAL Y DISCRIMINACIÓN</h2>
+          <p>ETEC UBA (ODVDG)</p>
+        </header>
+      <% } %>
+
+      <div class="gender-card-body">
+        <% if (bloqueMision) { %>
+          <p class="gender-mission"><%= lineas(bloqueMision.contenido).join(' ') %></p>
+        <% } else { %>
+          <p class="gender-mission">
+            Nuestra misión es garantizar un ambiente libre de discriminación,
+            hostigamiento o violencia por razones de identidad sexual, género u
+            orientación sexual.
+          </p>
+        <% } %>
+
+        <% if (bloquesInformacion.length) { %>
+          <div class="gender-information-grid">
+            <% bloquesInformacion.forEach((bloque, indice) => { %>
+              <article class="gender-information-card">
+                <span class="gender-information-icon" aria-hidden="true"><%= ['👩‍⚖️', '📍', '🕒', '📧'][indice] || 'ℹ️' %></span>
+                <div>
+                  <strong><%= bloque.titulo %></strong>
+                  <% lineas(bloque.contenido).forEach((linea) => { %>
+                    <% const email = linea.match(/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i); %>
+                    <p><% if (email) { %><a href="mailto:<%= email[0] %>"><%= linea %></a><% } else { %><%= linea %><% } %></p>
+                  <% }) %>
+                </div>
+              </article>
+            <% }) %>
+          </div>
+        <% } %>
+
+        <% bloquesPosteriores.forEach((bloque) => { %>
+          <% const contenido = lineas(bloque.contenido); %>
+          <% if (bloque.grupo === 'Formación') { %>
+            <section class="gender-educational-note">
+              <strong><%= bloque.titulo %></strong>
+              <% contenido.forEach((linea) => { %><p><%= linea %></p><% }) %>
+            </section>
+          <% } else if (bloque.grupo === 'Normativas') { %>
+            <section class="gender-regulations">
+              <h4><%= bloque.titulo %></h4>
+              <% contenido.forEach((linea) => { %>
+                <% const referencia = linea.match(/\b(1918\/19|8548\/17)\b/)?.[0]; %>
+                <p><span aria-hidden="true">📄</span> <% if (referencia) { %><a href="<%= enlacesNormativa.get(referencia) %>"><%= linea %></a><% } else { %><%= linea %><% } %></p>
+              <% }) %>
+            </section>
+          <% } else { %>
+            <section class="gender-contact-box">
+              <h3><%= bloque.titulo %></h3>
+              <% contenido.forEach((linea) => { %>
+                <p><%= linea %></p>
+              <% }) %>
+              <% const correo = contenido.join(' ').match(/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/i)?.[0]; %>
+              <% if (correo) { %>
+                <a href="mailto:<%= correo %>">Enviar correo a la Oficina</a>
+              <% } %>
+            </section>
+          <% } %>
+        <% }) %>
+      </div>
+
+      <% if (!bloquesGenero.length) { %>
+        <section class="gender-regulations">
+          <h4>Normativas y Resoluciones</h4>
+          <p>La información de esta sección se está actualizando.</p>
+        </section>
+      <% } %>
+    </div>
+
+    <div class="gender-poster">
+      <img
+        src="<%= posterUrl %>"
+        alt="<%= posterAlt %>">
+    </div>
+  </section>
+</main>
+
+<%- include('partials/footer') %>

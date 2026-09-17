@@ -1,0 +1,27 @@
+<section class="admin-authorities-editor">
+  <div class="admin-section-heading"><div><h2>Preguntas frecuentes del ingreso</h2><p>Las preguntas aparecen en la página pública en el mismo orden que aquí. Abrí una para editar su pregunta y respuesta.</p></div><a class="form-button form-button-secondary" href="/condiciones-de-postulacion" target="_blank" rel="noopener">Ver página pública</a></div>
+  <div class="admin-content-location"><strong>Qué modifica cada campo</strong><p>La pregunta es el encabezado que ve el visitante; la respuesta aparece debajo. Podés separar párrafos con saltos de línea y comenzar una línea con «• » para crear una viñeta.</p><small>Las fechas escritas en las respuestas son texto editable; no cambian automáticamente al configurar un ciclo de preinscripción.</small></div>
+  <div class="admin-collapsible-grid">
+    <% preguntas.forEach((pregunta, indice) => { %>
+      <details class="admin-editable-section">
+        <summary><span><strong><%= indice + 1 %>. <%= pregunta.titulo %></strong><small><%= pregunta.activo ? 'Visible en Preguntas frecuentes' : 'Oculta en la página pública' %></small></span><span>Editar</span></summary>
+        <form method="post" action="/admin/contenidos/secciones" class="admin-settings-card admin-settings-form">
+          <input type="hidden" name="_csrf" value="<%= csrfToken %>"><input type="hidden" name="id" value="<%= pregunta.id %>"><input type="hidden" name="grupo" value="<%= pregunta.grupo %>">
+          <div class="form-field"><label for="faq-pregunta-<%= pregunta.id %>">Pregunta visible</label><input id="faq-pregunta-<%= pregunta.id %>" name="titulo" maxlength="160" minlength="2" value="<%= pregunta.titulo %>" required></div>
+          <div class="form-field"><label for="faq-respuesta-<%= pregunta.id %>">Respuesta</label><textarea id="faq-respuesta-<%= pregunta.id %>" name="contenido" rows="6" maxlength="2000" required><%= pregunta.contenido %></textarea></div>
+          <div class="admin-toggle-row"><label><input type="checkbox" name="activo" <%= pregunta.activo ? 'checked' : '' %>> Mostrar esta pregunta y respuesta</label></div>
+          <div class="form-actions"><button class="form-button form-button-primary" type="submit">Guardar pregunta y respuesta</button></div>
+        </form>
+      </details>
+    <% }) %>
+  </div>
+  <details class="admin-create-panel admin-create-section-panel"><summary>Agregar pregunta frecuente</summary>
+    <form method="post" action="/admin/contenidos/secciones/nueva" class="admin-settings-form">
+      <input type="hidden" name="_csrf" value="<%= csrfToken %>"><input type="hidden" name="paginaClave" value="condiciones-de-postulacion"><input type="hidden" name="grupo" value="Preguntas">
+      <p>La nueva pregunta se publicará al final del listado.</p>
+      <div class="form-field"><label for="faq-nueva-pregunta">Pregunta</label><input id="faq-nueva-pregunta" name="titulo" maxlength="160" minlength="2" required></div>
+      <div class="form-field"><label for="faq-nueva-respuesta">Respuesta</label><textarea id="faq-nueva-respuesta" name="contenido" rows="5" maxlength="2000" required></textarea></div>
+      <button class="form-button form-button-primary" type="submit">Agregar y publicar pregunta</button>
+    </form>
+  </details>
+</section>
