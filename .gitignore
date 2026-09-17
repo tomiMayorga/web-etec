@@ -9,6 +9,16 @@ dist/
 .env.*
 !.env.example
 
+# Base de datos local de Prisma
+prisma/*.db
+prisma/*.db-journal
+prisma/*.db-shm
+prisma/*.db-wal
+
+# Datos personales generados localmente
+src/data/postulantes-sorteo.json
+src/data/ingresantes.json
+
 # Logs
 *.log
 npm-debug.log*
